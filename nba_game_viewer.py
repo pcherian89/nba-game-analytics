@@ -1,25 +1,20 @@
 import streamlit as st
 import pandas as pd
+import requests
 
-# Dummy data to simulate output from n8n
-team1_data = [
-    {"player": "Jalen Brunson", "points": 22, "rebounds": 6},
-    {"player": "Josh Hart", "points": 12, "rebounds": 8}
-]
-
-team2_data = [
-    {"player": "Tyrese Haliburton", "points": 25, "rebounds": 4},
-    {"player": "Myles Turner", "points": 10, "rebounds": 9}
-]
-
-team_stats = [
-    {"team": "Knicks", "eFG%": 54.2, "TO%": 11.0},
-    {"team": "Pacers", "eFG%": 50.1, "TO%": 8.5}
-]
-
-# App UI
 st.title("🏀 NBA Game Viewer")
 
+# Send POST request to your webhook
+url = "https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start"
+response = requests.post(url)
+data = response.json()
+
+# Extract the sections
+team1_data = data["team1Players"]
+team2_data = data["team2Players"]
+team_stats = data["teamStats"]
+
+# Show output
 st.subheader("👥 Team 1 Player Stats")
 st.dataframe(pd.DataFrame(team1_data))
 
