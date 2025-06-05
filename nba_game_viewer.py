@@ -13,7 +13,7 @@ if st.button("Analyze Game"):
     try:
         # Send POST request to n8n Webhook
         response = requests.post(
-            "https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start",
+            "https://pcherian89.app.n8n.cloud/webhook/nba-chatbot-start",
             json={"team1": team1.strip(), "team2": team2.strip()},
             timeout=30,
         )
