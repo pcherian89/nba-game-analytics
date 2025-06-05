@@ -3,37 +3,40 @@ import streamlit as st
 import pandas as pd
 
 st.title("🏀 NBA Game Viewer")
-matchup = st.text_input("🤖 Which NBA matchup do you want to analyze today?", value="Knicks vs Pacers")
+
+matchup = st.text_input("🤖 Which NBA matchup do you want to analyze today?", "Knicks vs Pacers")
+
 if st.button("Analyze Game"):
+    try:
+        # Trigger n8n
+        response = requests.post("https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start", json={"matchup": matchup})
+        data = response.json()
 
-    with st.spinner("Fetching data..."):
-        try:
-            # 1️⃣ Trigger the n8n webhook and get full merged data
-            url = "https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start"
-            payload = {"matchup": matchup}
-            res = requests.post(url, json=payload)
-            data = res.json()
+        # 🧠 Separate items
+        team1Players = []
+        team2Players = []
+        teamStats = []
 
-            # 2️⃣ Extract and split inside Python
-            merged = data
+        for item in data:
+            if "personId" in item:
+                if item["team"] in matchup:
+                    if matchup.split(" vs ")[0] == item["team"]:
+                        team1Players.append(item)
+                    else:
+                        team2Players.append(item)
+            elif "teamName" in item:
+                teamStats.append(item)
 
-            # Split team players and stats
-            team1_players = pd.DataFrame(merged["team1Players"])
-            team2_players = pd.DataFrame(merged["team2Players"])
-            team_stats = pd.DataFrame(merged["teamStats"])
+        st.subheader("👥 Team 1 Player Stats")
+        st.dataframe(pd.DataFrame(team1Players))
 
-            # 3️⃣ Display
-            st.subheader("👥 Team 1 Player Stats")
-            st.dataframe(team1_players)
+        st.subheader("👥 Team 2 Player Stats")
+        st.dataframe(pd.DataFrame(team2Players))
 
-            st.subheader("👥 Team 2 Player Stats")
-            st.dataframe(team2_players)
+        st.subheader("📊 Team Stats")
+        st.dataframe(pd.DataFrame(teamStats))
 
-            st.subheader("📊 Team Stats")
-            st.dataframe(team_stats)
-
-        except Exception as e:
-            st.error("Failed to fetch game data.")
-            st.code(str(e))
-
+    except Exception as e:
+        st.error("Failed to fetch game data.")
+        st.code(str(e))
 
