@@ -1,42 +1,56 @@
-import requests
 import streamlit as st
-import pandas as pd
+import requests
+import json
 
 st.title("🏀 NBA Game Viewer")
+st.markdown("🤖 **Which NBA matchup do you want to analyze today?**")
 
-matchup = st.text_input("🤖 Which NBA matchup do you want to analyze today?", "Knicks vs Pacers")
+# Game input
+matchup = st.text_input(" ", "Knicks vs Pacers")
+team1, team2 = matchup.split(" vs ")
 
 if st.button("Analyze Game"):
     try:
-        # Trigger n8n
-        response = requests.post("https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start", json={"matchup": matchup})
+        # Send POST request to n8n Webhook
+        response = requests.post(
+            "https://pcherian89.app.n8n.cloud/webhook-test/nba-chatbot-start",
+            json={"team1": team1.strip(), "team2": team2.strip()},
+            timeout=30,
+        )
+
+        # Raise error if bad response
+        response.raise_for_status()
+
+        # Parse the response
         data = response.json()
 
-        # 🧠 Separate items
-        team1Players = []
-        team2Players = []
-        teamStats = []
+        team1Players = data.get("team1Players", [])
+        team2Players = data.get("team2Players", [])
+        teamStats = data.get("teamStats", [])
 
-        for item in data:
-            if "personId" in item:
-                if item["team"] in matchup:
-                    if matchup.split(" vs ")[0] == item["team"]:
-                        team1Players.append(item)
-                    else:
-                        team2Players.append(item)
-            elif "teamName" in item:
-                teamStats.append(item)
-
+        # Display Results
         st.subheader("👥 Team 1 Player Stats")
-        st.dataframe(pd.DataFrame(team1Players))
+        if team1Players:
+            st.dataframe(team1Players)
+        else:
+            st.warning("No data for Team 1")
 
         st.subheader("👥 Team 2 Player Stats")
-        st.dataframe(pd.DataFrame(team2Players))
+        if team2Players:
+            st.dataframe(team2Players)
+        else:
+            st.warning("No data for Team 2")
 
         st.subheader("📊 Team Stats")
-        st.dataframe(pd.DataFrame(teamStats))
+        if teamStats:
+            st.dataframe(teamStats)
+        else:
+            st.warning("No team stats available")
 
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         st.error("Failed to fetch game data.")
+        st.code(str(e))
+    except json.JSONDecodeError as e:
+        st.error("Received malformed JSON.")
         st.code(str(e))
 
