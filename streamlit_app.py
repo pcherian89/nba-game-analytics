@@ -62,15 +62,11 @@ if "vs" in user_input.lower():
             'turnovers', 'foulsPersonal', 'plusMinusPoints'
         ]
 
-        col1, col2 = st.columns(2)
+        st.subheader(f"📊 {home_team} Player Stats")
+        st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
 
-        with col1:
-            st.subheader(f"📊 {home_team} Player Stats")
-            st.dataframe(home_players[player_display_cols].reset_index(drop=True))
-
-        with col2:
-            st.subheader(f"📊 {away_team} Player Stats")
-            st.dataframe(away_players[player_display_cols].reset_index(drop=True))
+        st.subheader(f"📊 {away_team} Player Stats")
+        st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
 
         # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
