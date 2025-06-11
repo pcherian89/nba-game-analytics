@@ -195,7 +195,7 @@ if "vs" in user_input.lower():
         # === Step 2: Compute Custom Scores and Ratings ===
         for df in [home_players, away_players]:
             df["offensiveScore"] = (
-                1.5 * df["points"]
+                df["points"]
                 + 1.5 * df["assists"]
                 - 2.0 * df["turnovers"]
                 + 1.0 * df["reboundsOffensive"] 
