@@ -102,7 +102,7 @@ if "vs" in user_input.lower():
             )
         
         # === User Selects Stat to View ===
-        stat_option = st.selectbox("📈 View top players by:", ["plusMinusPoints", "points", "assists", "reboundsTotal"])
+        stat_option = st.selectbox("📈 View top players by:", ["plusMinusPoints", "points", "assists", "reboundsTotal", "turnovers"])
         
         # === Filter Top 6 Players for the Selected Stat ===
         top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
