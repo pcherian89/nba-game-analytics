@@ -87,6 +87,46 @@ if "vs" in user_input.lower():
 
         st.subheader("🏟️ Full Team Stats")
         st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
+
+        # === Compute Offensive & Defensive Ratings ===
+        def estimate_possessions(row):
+            return (
+                row["fieldGoalsAttempted"] +
+                0.44 * row["freeThrowsAttempted"] -
+                row["reboundsOffensive"] +
+                row["turnovers"]
+            )
+        
+        team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
+        
+        # Match rows
+        team1 = team_stats.iloc[0]
+        team2 = team_stats.iloc[1]
+        
+        team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
+        team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
+        
+        team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
+        team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
+        
+        # === Visualize Ratings ===
+        ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
+        ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
+        
+        fig_ratings = px.bar(
+            ratings_melted,
+            x="teamName",
+            y="Value",
+            color="RatingType",
+            barmode="group",
+            title="Team Offensive vs Defensive Ratings",
+            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
+            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"}
+        )
+        
+        st.plotly_chart(fig_ratings, use_container_width=True)
+
+        
         import plotly.express as px
 
         # === Combine Home & Away Players ===
