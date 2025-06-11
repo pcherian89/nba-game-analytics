@@ -40,7 +40,7 @@ if "vs" in user_input.lower():
         )
 
         selected_label = st.selectbox("✅ Select a game", matches['label'].tolist())
-        selected_game = matches[matches['label'] == selected_label].iloc[0]  # <-- This is now a Series
+        selected_game = matches[matches['label'] == selected_label].iloc[0]
         selected_gameId = selected_game['gameId']
 
         # === Filter player stats for that game ===
@@ -49,21 +49,46 @@ if "vs" in user_input.lower():
         # Split by team
         home_team = selected_game['hometeamName']
         away_team = selected_game['awayteamName']
-
         home_players = game_players[game_players['playerteamName'] == home_team]
         away_players = game_players[game_players['playerteamName'] == away_team]
 
-        # === Show Player Stats ===
-        st.subheader(f"📊 {home_team} Player Stats")
-        st.dataframe(home_players[['firstName', 'lastName', 'points', 'assists', 'reboundsTotal']].reset_index(drop=True))
+        # === Display Player Stats (Full View) ===
+        player_display_cols = [
+            'firstName', 'lastName', 'numMinutes', 'points', 'assists', 'blocks', 'steals',
+            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
+            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
+            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
+            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
+            'turnovers', 'foulsPersonal', 'plusMinusPoints'
+        ]
 
-        st.subheader(f"📊 {away_team} Player Stats")
-        st.dataframe(away_players[['firstName', 'lastName', 'points', 'assists', 'reboundsTotal']].reset_index(drop=True))
+        col1, col2 = st.columns(2)
 
-        # === Team stats ===
+        with col1:
+            st.subheader(f"📊 {home_team} Player Stats")
+            st.dataframe(home_players[player_display_cols].reset_index(drop=True))
+
+        with col2:
+            st.subheader(f"📊 {away_team} Player Stats")
+            st.dataframe(away_players[player_display_cols].reset_index(drop=True))
+
+        # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
-        st.subheader("🏟️ Team Stats")
-        st.dataframe(team_stats[['teamName', 'teamScore', 'assists', 'reboundsTotal', 'turnovers']])
+        team_display_cols = [
+            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
+            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
+            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
+            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
+            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
+            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
+            'q1Points', 'q2Points', 'q3Points', 'q4Points',
+            'biggestLead', 'biggestScoringRun', 'leadChanges',
+            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
+        ]
+
+        st.subheader("🏟️ Full Team Stats")
+        st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
+
     else:
         st.warning("❌ No games found for that matchup.")
 else:
