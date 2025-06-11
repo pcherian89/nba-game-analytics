@@ -86,6 +86,44 @@ if "vs" in user_input.lower():
 
         st.subheader("🏟️ Full Team Stats")
         st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
+        import plotly.express as px
+
+        # === Combine Home & Away Players ===
+        combined_players = pd.concat([home_players, away_players], ignore_index=True)
+        
+        # === Add Full Name Column ===
+        combined_players["fullName"] = combined_players["firstName"] + " " + combined_players["lastName"]
+        
+        # === Add Rebound Total (if not already in the data) ===
+        if "reboundsTotal" not in combined_players.columns:
+            combined_players["reboundsTotal"] = (
+                combined_players.get("reboundsOffensive", 0) + combined_players.get("reboundsDefensive", 0)
+            )
+        
+        # === User Selects Stat to View ===
+        stat_option = st.selectbox("📈 View top players by:", ["plusMinusPoints", "points", "assists", "reboundsTotal"])
+        
+        # === Filter Top 6 Players for the Selected Stat ===
+        top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
+        
+        # === Create Interactive Plotly Bar Chart ===
+        fig = px.bar(
+            top6,
+            x=stat_option,
+            y="fullName",
+            color="playerteamName",
+            orientation="h",
+            title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
+            labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
+            color_discrete_sequence=["dodgerblue", "darkorange"]  # Customize color mapping
+        )
+        
+        # Reverse Y-axis (so highest is on top)
+        fig.update_layout(yaxis=dict(autorange="reversed"))
+        
+        # === Display Chart in Streamlit ===
+        st.plotly_chart(fig, use_container_width=True)
+        
 
     else:
         st.warning("❌ No games found for that matchup.")
