@@ -2,6 +2,8 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
+
 # === Load filtered data from GitHub ===
 @st.cache_data
 def load_data():
