@@ -166,7 +166,84 @@ if "vs" in user_input.lower():
         
         # === Display Chart in Streamlit ===
         st.plotly_chart(fig, use_container_width=True)
+
+        import numpy as np
+
+        # === Step 1: Estimate Player Possessions ===
+        team_minutes_home = home_players["numMinutes"].fillna(0).sum()
+        team_minutes_away = away_players["numMinutes"].fillna(0).sum()
         
+        # Avoid division by zero
+        if team_minutes_home == 0:
+            team_minutes_home = 1
+        if team_minutes_away == 0:
+            team_minutes_away = 1
+        
+        # Use previously computed possessions from team_stats
+        poss_home = team_stats.iloc[0]["possessions"]
+        poss_away = team_stats.iloc[1]["possessions"]
+        
+        home_players["estimatedPossessions"] = (
+            home_players["numMinutes"].fillna(0) / team_minutes_home
+        ) * poss_home
+        
+        away_players["estimatedPossessions"] = (
+            away_players["numMinutes"].fillna(0) / team_minutes_away
+        ) * poss_away
+        
+        # === Step 2: Offensive + Defensive Rating Formulas ===
+        for df in [home_players, away_players]:
+            df["offensiveScore"] = (
+                df["points"]
+                + 1.5 * df["assists"]
+                + 1.0 * df["threePointersMade"]
+                + 0.5 * df["freeThrowsMade"]
+                - 2.0 * df["turnovers"]
+                + 0.5 * df["fieldGoalsMade"]
+            )
+        
+            df["defensiveScore"] = (
+                1.5 * df["steals"]
+                + 1.5 * df["blocks"]
+                + 1.0 * df["reboundsDefensive"]
+                - 0.5 * df["foulsPersonal"]
+            )
+        
+            # Normalize by possessions
+            df["OffensiveRating"] = df["offensiveScore"] / df["estimatedPossessions"]
+            df["DefensiveRating"] = df["defensiveScore"] / df["estimatedPossessions"]
+        
+        # === Step 3: Combine and Clean ===
+        combined_players = pd.concat([home_players, away_players], ignore_index=True)
+        combined_players["fullName"] = combined_players["firstName"] + " " + combined_players["lastName"]
+        
+        # Handle NaNs or infs
+        for col in ["OffensiveRating", "DefensiveRating"]:
+            combined_players[col] = combined_players[col].replace([np.inf, -np.inf], np.nan)
+        
+        combined_players = combined_players.dropna(subset=["OffensiveRating", "DefensiveRating"])
+        
+        # === Step 4: Visualization Toggle ===
+        st.subheader("📊 Player Offensive / Defensive Ratings")
+        
+        rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
+        
+        # Sort by selected rating
+        combined_sorted = combined_players.sort_values(by=rating_type, ascending=False)
+        
+        fig = px.bar(
+            combined_sorted,
+            x="fullName",
+            y=rating_type,
+            color="playerteamName",
+            title=f"Player {rating_type} (Custom Formula)",
+            labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
+            color_discrete_sequence=["dodgerblue", "darkorange"]
+        )
+        
+        fig.update_layout(xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
+
 
     else:
         st.warning("❌ No games found for that matchup.")
