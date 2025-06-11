@@ -226,7 +226,7 @@ if "vs" in user_input.lower():
         combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 5]
         
         # === Step 4: Interactive Visualization ===
-        st.subheader("📊 Player Ratings Per 100 Possessions")
+        st.subheader("📊 Player Impact Ratings Per 100 Possessions")
         
         rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
         
