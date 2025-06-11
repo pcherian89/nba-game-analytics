@@ -168,7 +168,7 @@ if "vs" in user_input.lower():
         st.plotly_chart(fig, use_container_width=True)
 
         import numpy as np
-
+        
         # === Step 1: Estimate Player Possessions ===
         team_minutes_home = home_players["numMinutes"].fillna(0).sum()
         team_minutes_away = away_players["numMinutes"].fillna(0).sum()
@@ -179,10 +179,11 @@ if "vs" in user_input.lower():
         if team_minutes_away == 0:
             team_minutes_away = 1
         
-        # Use previously computed possessions from team_stats
+        # Use possessions from team stats
         poss_home = team_stats.iloc[0]["possessions"]
         poss_away = team_stats.iloc[1]["possessions"]
         
+        # Estimate possessions per player
         home_players["estimatedPossessions"] = (
             home_players["numMinutes"].fillna(0) / team_minutes_home
         ) * poss_home
@@ -191,7 +192,7 @@ if "vs" in user_input.lower():
             away_players["numMinutes"].fillna(0) / team_minutes_away
         ) * poss_away
         
-        # === Step 2: Offensive + Defensive Rating Formulas ===
+        # === Step 2: Compute Custom Scores and Ratings ===
         for df in [home_players, away_players]:
             df["offensiveScore"] = (
                 df["points"]
@@ -200,6 +201,7 @@ if "vs" in user_input.lower():
                 + 0.5 * df["freeThrowsMade"]
                 - 2.0 * df["turnovers"]
                 + 0.5 * df["fieldGoalsMade"]
+                + 1.0 * df["reboundsOffensive"] 
             )
         
             df["defensiveScore"] = (
@@ -209,26 +211,28 @@ if "vs" in user_input.lower():
                 - 0.5 * df["foulsPersonal"]
             )
         
-            # Normalize by possessions
-            df["OffensiveRating"] = df["offensiveScore"] / df["estimatedPossessions"]
-            df["DefensiveRating"] = df["defensiveScore"] / df["estimatedPossessions"]
+            # Normalize by possessions, then scale to 100 possessions
+            df["OffensiveRating"] = 100 * df["offensiveScore"] / df["estimatedPossessions"]
+            df["DefensiveRating"] = 100 * df["defensiveScore"] / df["estimatedPossessions"]
         
-        # === Step 3: Combine and Clean ===
+        # === Step 3: Combine & Clean ===
         combined_players = pd.concat([home_players, away_players], ignore_index=True)
         combined_players["fullName"] = combined_players["firstName"] + " " + combined_players["lastName"]
         
-        # Handle NaNs or infs
+        # Clean NaNs/Infs
         for col in ["OffensiveRating", "DefensiveRating"]:
             combined_players[col] = combined_players[col].replace([np.inf, -np.inf], np.nan)
         
         combined_players = combined_players.dropna(subset=["OffensiveRating", "DefensiveRating"])
         
-        # === Step 4: Visualization Toggle ===
-        st.subheader("📊 Player Offensive / Defensive Ratings")
+        # Optional: Filter players who played < 5 mins
+        combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 5]
+        
+        # === Step 4: Interactive Visualization ===
+        st.subheader("📊 Player Ratings Per 100 Possessions")
         
         rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
         
-        # Sort by selected rating
         combined_sorted = combined_players.sort_values(by=rating_type, ascending=False)
         
         fig = px.bar(
@@ -236,7 +240,7 @@ if "vs" in user_input.lower():
             x="fullName",
             y=rating_type,
             color="playerteamName",
-            title=f"Player {rating_type} (Custom Formula)",
+            title=f"Player {rating_type} (Per 100 Possessions)",
             labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
             color_discrete_sequence=["dodgerblue", "darkorange"]
         )
