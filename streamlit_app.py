@@ -38,37 +38,30 @@ if "vs" in user_input.lower():
             " vs " +
             matches['awayteamName'] + " " + matches['awayScore'].astype(str)
         )
+
         selected_label = st.selectbox("✅ Select a game", matches['label'].tolist())
-        selected_game = matches[matches['label'] == selected_label].iloc[0]
+        selected_game = matches[matches['label'] == selected_label].iloc[0]  # <-- This is now a Series
         selected_gameId = selected_game['gameId']
 
-        # === Filter player and team stats ===
-        # player_stats = player_df[player_df['gameId'] == selected_gameId].copy()
-        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
-        # --- Filter player stats for the selected game ---
-        player_stats = pd.read_csv("PlayerStatistics_filtered.csv")
-        selected_game_id = selected_game['gameId'].values[0]
-        game_players = player_stats[player_stats['gameId'] == selected_game_id].copy()
-        
-        # Separate by team
-        home_team = selected_game['hometeamName'].values[0]
-        away_team = selected_game['awayteamName'].values[0]
-        
+        # === Filter player stats for that game ===
+        game_players = player_df[player_df['gameId'] == selected_gameId].copy()
+
+        # Split by team
+        home_team = selected_game['hometeamName']
+        away_team = selected_game['awayteamName']
+
         home_players = game_players[game_players['playerteamName'] == home_team]
         away_players = game_players[game_players['playerteamName'] == away_team]
-        
-        # Display in Streamlit
+
+        # === Show Player Stats ===
         st.subheader(f"📊 {home_team} Player Stats")
-        st.dataframe(home_players.reset_index(drop=True))
-        
+        st.dataframe(home_players[['firstName', 'lastName', 'points', 'assists', 'reboundsTotal']].reset_index(drop=True))
+
         st.subheader(f"📊 {away_team} Player Stats")
-        st.dataframe(away_players.reset_index(drop=True))
+        st.dataframe(away_players[['firstName', 'lastName', 'points', 'assists', 'reboundsTotal']].reset_index(drop=True))
 
-
-        # === Show Outputs ===
-        #st.subheader("📊 Player Stats")
-        #st.dataframe(player_stats[['firstName', 'lastName', 'playerteamName', 'points', 'assists', 'reboundsTotal']])
-
+        # === Team stats ===
+        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
         st.subheader("🏟️ Team Stats")
         st.dataframe(team_stats[['teamName', 'teamScore', 'assists', 'reboundsTotal', 'turnovers']])
     else:
