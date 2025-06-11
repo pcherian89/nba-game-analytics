@@ -232,6 +232,33 @@ if "vs" in user_input.lower():
         
         combined_sorted = combined_players.sort_values(by=rating_type, ascending=False)
         
+        # Dynamic tooltips based on rating type
+        if rating_type == "OffensiveRating":
+            hover_cols = {
+                "numMinutes": True,
+                "estimatedPossessions": True,
+                "points": True,
+                "assists": True,
+                "turnovers": True,
+                "reboundsOffensive": True,
+                "OffensiveRating": True,
+                "DefensiveRating": False,
+                "fullName": False
+            }
+        else:
+            hover_cols = {
+                "numMinutes": True,
+                "estimatedPossessions": True,
+                "steals": True,
+                "blocks": True,
+                "reboundsDefensive": True,
+                "foulsPersonal": True,
+                "DefensiveRating": True,
+                "OffensiveRating": False,
+                "fullName": False
+            }
+        
+        # Updated chart with smart hover
         fig = px.bar(
             combined_sorted,
             x="fullName",
@@ -239,8 +266,10 @@ if "vs" in user_input.lower():
             color="playerteamName",
             title=f"Player {rating_type} (Per 100 Possessions)",
             labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
-            color_discrete_sequence=["dodgerblue", "darkorange"]
+            color_discrete_sequence=["dodgerblue", "darkorange"],
+            hover_data=hover_cols
         )
+
         
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
