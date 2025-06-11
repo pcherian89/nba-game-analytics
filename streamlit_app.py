@@ -25,7 +25,7 @@ games_df, player_df, team_df = load_data()
 
 # === UI: Matchup Input ===
 st.title("🏀 NBA Game Analyzer (2024–25)")
-user_input = st.text_input("What game do you want to check? (e.g., 'Knicks vs Pacers')", "")
+user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
 if "vs" in user_input.lower():
     team1, team2 = [t.strip().lower() for t in user_input.split("vs")]
