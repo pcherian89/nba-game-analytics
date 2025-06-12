@@ -300,76 +300,97 @@ if "vs" in user_input.lower():
         st.dataframe(comparison_df, use_container_width=True)
 
         import io
-
+        from fpdf import FPDF
+        import plotly.graph_objects as go
+        
+        # === Scouting Card Snapshot ===
         st.subheader("📋 Scouting Card Snapshot")
         
-        # Step 1: Player selector
-        selected_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
+        selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
         
-        # Step 2: Get player row
-        player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
+        scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
         
-        # Step 3: Layout using columns
-        col1, col2 = st.columns(2)
+        # === Create 3-column layout ===
+        col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.markdown(f"🧑 **Player:** {player_row['fullName']}")
-            st.markdown(f"🏀 **Team:** {player_row['playerteamName']}")
-            st.markdown(f"⏱️ **Minutes Played:** {round(player_row['numMinutes'], 1)}")
+            st.markdown(f"🧑 **Player**: {scout_data['fullName']}")
+            st.markdown(f"🏀 **Team**: {scout_data['playerteamName']}")
+            st.markdown(f"⏱️ **Minutes Played**: {scout_data['numMinutes']:.1f}")
             st.markdown("📊 **Stats:**")
-            st.markdown(f"- Points: {round(player_row['points'], 1)}")
-            st.markdown(f"- Assists: {round(player_row['assists'], 1)}")
-            st.markdown(f"- Rebounds: {round(player_row['reboundsTotal'], 1)}")
+            st.markdown(f"- Points: {scout_data['points']}")
+            st.markdown(f"- Assists: {scout_data['assists']}")
+            st.markdown(f"- Rebounds: {scout_data['reboundsTotal']}")
         
         with col2:
             st.markdown("🔥 **Shooting:**")
-            st.markdown(f"- FG%: {round(player_row['fieldGoalsPercentage'] * 100, 1)}%")
-            st.markdown(f"- 3P%: {round(player_row['threePointersPercentage'] * 100, 1)}%")
-            st.markdown(f"- FT%: {round(player_row['freeThrowsPercentage'] * 100, 1)}%")
-            st.markdown("🧱 **Defense:**")
-            st.markdown(f"- Steals: {round(player_row['steals'], 1)}")
-            st.markdown(f"- Blocks: {round(player_row['blocks'], 1)}")
-            st.markdown(f"- Turnovers: {round(player_row['turnovers'], 1)}")
-            st.markdown(f"➕ **Plus/Minus:** {round(player_row['plusMinusPoints'], 1)}")
-            st.markdown(f"📈 **Offensive Rating:** {round(player_row['OffensiveRating'], 2)}")
-            st.markdown(f"🛡️ **Defensive Rating:** {round(player_row['DefensiveRating'], 2)}")
+            st.markdown(f"- FG%: {scout_data['fieldGoalsPercentage']:.1%}")
+            st.markdown(f"- 3P%: {scout_data['threePointersPercentage']:.1%}")
+            st.markdown(f"- FT%: {scout_data['freeThrowsPercentage']:.1%}")
         
-        # Step 4: Download as text
-        scouting_text = f"""
-        Player: {player_row['fullName']}
-        Team: {player_row['playerteamName']}
-        Minutes Played: {round(player_row['numMinutes'], 1)}
+            st.markdown("🧱 **Defense:**")
+            st.markdown(f"- Steals: {scout_data['steals']}")
+            st.markdown(f"- Blocks: {scout_data['blocks']}")
+            st.markdown(f"- Turnovers: {scout_data['turnovers']}")
+        
+        with col3:
+            st.markdown(f"➕ **Plus/Minus**: {scout_data['plusMinusPoints']}")
+            st.markdown(f"📈 **Offensive Rating**: {scout_data['OffensiveRating']:.2f}")
+            st.markdown(f"🛡️ **Defensive Rating**: {scout_data['DefensiveRating']:.2f}")
+        
+            # === Radar Chart ===
+            st.markdown("📉 **Performance Radar**")
+            radar_features = ["points", "assists", "reboundsTotal", "turnovers", "OffensiveRating", "DefensiveRating"]
+            player_vals = scout_data[radar_features].values
+            norm_vals = player_vals / max(player_vals.max(), 1)
+        
+            fig = go.Figure()
+            fig.add_trace(go.Scatterpolar(
+                r=norm_vals,
+                theta=radar_features,
+                fill='toself',
+                name=scout_data["fullName"]
+            ))
+            fig.update_layout(polar=dict(radialaxis=dict(visible=True)), showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # === Download as PDF ===
+        from fpdf import FPDF
+        
+        scout_text = f"""Player: {scout_data['fullName']}
+        Team: {scout_data['playerteamName']}
+        Minutes Played: {scout_data['numMinutes']:.1f}
         
         Stats:
-        - Points: {round(player_row['points'], 1)}
-        - Assists: {round(player_row['assists'], 1)}
-        - Rebounds: {round(player_row['reboundsTotal'], 1)}
+        - Points: {scout_data['points']}
+        - Assists: {scout_data['assists']}
+        - Rebounds: {scout_data['reboundsTotal']}
         
         Shooting:
-        - FG%: {round(player_row['fieldGoalsPercentage'] * 100, 1)}%
-        - 3P%: {round(player_row['threePointersPercentage'] * 100, 1)}%
-        - FT%: {round(player_row['freeThrowsPercentage'] * 100, 1)}%
+        - FG%: {scout_data['fieldGoalsPercentage']:.1%}
+        - 3P%: {scout_data['threePointersPercentage']:.1%}
+        - FT%: {scout_data['freeThrowsPercentage']:.1%}
         
         Defense:
-        - Steals: {round(player_row['steals'], 1)}
-        - Blocks: {round(player_row['blocks'], 1)}
-        - Turnovers: {round(player_row['turnovers'], 1)}
+        - Steals: {scout_data['steals']}
+        - Blocks: {scout_data['blocks']}
+        - Turnovers: {scout_data['turnovers']}
         
-        Plus/Minus: {round(player_row['plusMinusPoints'], 1)}
-        Offensive Rating: {round(player_row['OffensiveRating'], 2)}
-        Defensive Rating: {round(player_row['DefensiveRating'], 2)}
+        Plus/Minus: {scout_data['plusMinusPoints']}
+        Offensive Rating: {scout_data['OffensiveRating']:.2f}
+        Defensive Rating: {scout_data['DefensiveRating']:.2f}
         """
         
-        scouting_bytes = io.BytesIO()
-        scouting_bytes.write(scouting_text.encode())
-        scouting_bytes.seek(0)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        for line in scout_text.split("\n"):
+            pdf.cell(200, 10, txt=line, ln=1)
+        pdf_path = f"/tmp/{scout_data['fullName'].replace(' ', '_')}_scouting_card.pdf"
+        pdf.output(pdf_path)
         
-        st.download_button(
-            label="⬇️ Download Scouting Card (.txt)",
-            data=scouting_bytes,
-            file_name=f"{player_row['fullName'].replace(' ', '_')}_scouting_card.txt",
-            mime="text/plain"
-        )
+        with open(pdf_path, "rb") as f:
+            st.download_button("📥 Download Scouting Card (.pdf)", f, file_name=os.path.basename(pdf_path), mime="application/pdf")
 
 
             
