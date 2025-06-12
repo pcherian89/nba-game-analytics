@@ -344,6 +344,54 @@ if "vs" in user_input.lower():
             
             st.dataframe(comparison_df, use_container_width=True)
 
+            st.subheader("📊 Compare Any Two Players")
+
+            # Create dropdowns to select players
+            player_names = combined_players["fullName"].unique().tolist()
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                player1 = st.selectbox("Select Player 1", player_names, key="p1")
+            with col2:
+                player2 = st.selectbox("Select Player 2", player_names, key="p2")
+            
+            # Filter player stats
+            p1_stats = combined_players[combined_players["fullName"] == player1].iloc[0]
+            p2_stats = combined_players[combined_players["fullName"] == player2].iloc[0]
+            
+            # Stats to display
+            compare_fields = [
+                "numMinutes", "points", "assists", "reboundsOffensive", "reboundsDefensive",
+                "reboundsTotal", "steals", "blocks", "turnovers", "foulsPersonal",
+                "fieldGoalsMade", "fieldGoalsAttempted", "fieldGoalsPercentage",
+                "threePointersMade", "threePointersAttempted", "threePointersPercentage",
+                "freeThrowsMade", "freeThrowsAttempted", "freeThrowsPercentage",
+                "plusMinusPoints", "OffensiveRating", "DefensiveRating"
+            ]
+            
+            # Prepare comparison table
+            comparison_table = pd.DataFrame({
+                "Stat": [field for field in compare_fields],
+                player1: [p1_stats[field] for field in compare_fields],
+                player2: [p2_stats[field] for field in compare_fields]
+            })
+            
+            # Beautify stat names
+            rename_map = {
+                "numMinutes": "Minutes Played", "points": "Points", "assists": "Assists",
+                "reboundsOffensive": "Offensive Rebounds", "reboundsDefensive": "Defensive Rebounds",
+                "reboundsTotal": "Total Rebounds", "steals": "Steals", "blocks": "Blocks",
+                "turnovers": "Turnovers", "foulsPersonal": "Fouls",
+                "fieldGoalsMade": "FG Made", "fieldGoalsAttempted": "FG Attempted", "fieldGoalsPercentage": "FG%",
+                "threePointersMade": "3P Made", "threePointersAttempted": "3P Attempted", "threePointersPercentage": "3P%",
+                "freeThrowsMade": "FT Made", "freeThrowsAttempted": "FT Attempted", "freeThrowsPercentage": "FT%",
+                "plusMinusPoints": "+/-", "OffensiveRating": "Offensive Rating", "DefensiveRating": "Defensive Rating"
+            }
+            comparison_table["Stat"] = comparison_table["Stat"].replace(rename_map)
+            
+            # Display
+            st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
+
 
     else:
         st.warning("❌ No games found for that matchup.")
