@@ -276,6 +276,30 @@ if "vs" in user_input.lower():
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
 
+
+        st.subheader("🏆 MVP Comparison Table – Top 3 Performers")
+
+        # Top 3 players by Offensive Rating
+        top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3)
+            
+        # Define the stats you want to display
+        stat_fields = [
+            "points", "assists", "reboundsTotal", "turnovers",
+            "OffensiveRating", "DefensiveRating", "plusMinusPoints"
+        ]
+            
+        # Format player names as column headers
+        comparison_df = top3[["fullName"] + stat_fields].set_index("fullName").T
+            
+        # Rename rows to be more readable
+        comparison_df.index = [
+            "Points", "Assists", "Total Rebounds", "Turnovers",
+            "Offensive Rating", "Defensive Rating", "+/- Impact"
+        ]
+            
+        st.dataframe(comparison_df, use_container_width=True)
+
+            
         st.subheader("📊 Compare Any Two Players")
 
         # Create dropdowns to select players
@@ -370,28 +394,6 @@ if "vs" in user_input.lower():
         
             st.markdown("### 📝 AI-Generated Game Summary")
             st.write(response.choices[0].message.content)
-
-            st.subheader("🏆 MVP Comparison Table – Top 3 Performers")
-
-            # Top 3 players by Offensive Rating
-            top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3)
-            
-            # Define the stats you want to display
-            stat_fields = [
-                "points", "assists", "reboundsTotal", "turnovers",
-                "OffensiveRating", "DefensiveRating", "plusMinusPoints"
-            ]
-            
-            # Format player names as column headers
-            comparison_df = top3[["fullName"] + stat_fields].set_index("fullName").T
-            
-            # Rename rows to be more readable
-            comparison_df.index = [
-                "Points", "Assists", "Total Rebounds", "Turnovers",
-                "Offensive Rating", "Defensive Rating", "+/- Impact"
-            ]
-            
-            st.dataframe(comparison_df, use_container_width=True)
 
             
     else:
