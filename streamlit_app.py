@@ -279,11 +279,6 @@ if "vs" in user_input.lower():
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
 
-
-
-        # Load key if using a file
-        with open("openai_key.txt") as f:
-            openai.api_key = f.read().strip()
         
         st.subheader("🧠 AI Game Summary")
         
