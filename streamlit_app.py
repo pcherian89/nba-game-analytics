@@ -303,8 +303,10 @@ if "vs" in user_input.lower():
         st.subheader("📊 Compare Any Two Players")
 
         # Create dropdowns to select players
-        player_names = combined_players["fullName"].unique().tolist()
-            
+        # Only include players who had recorded minutes
+        valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
+        player_names = valid_players["fullName"].unique().tolist()
+    
         col1, col2 = st.columns(2)
         with col1:
             player1 = st.selectbox("Select Player 1", player_names, key="p1")
@@ -312,9 +314,9 @@ if "vs" in user_input.lower():
             player2 = st.selectbox("Select Player 2", player_names, key="p2")
             
         # Filter player stats
-        p1_stats = combined_players[combined_players["fullName"] == player1].iloc[0]
-        p2_stats = combined_players[combined_players["fullName"] == player2].iloc[0]
-            
+        p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
+        p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
+
         # Stats to display
         compare_fields = [
             "numMinutes", "points", "assists", "reboundsOffensive", "reboundsDefensive",
