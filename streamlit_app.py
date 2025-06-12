@@ -280,6 +280,51 @@ if "vs" in user_input.lower():
         st.plotly_chart(fig, use_container_width=True)
 
 
+
+        # Load key if using a file
+        with open("openai_key.txt") as f:
+            openai.api_key = f.read().strip()
+        
+        st.subheader("🧠 AI Game Summary")
+        
+        if st.button("Generate AI Summary"):
+        
+            # Convert DataFrames to markdown
+            team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
+                                  "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
+            
+            player_md = combined_players[["fullName", "points", "assists", "reboundsOffensive", 
+                                          "reboundsDefensive", "turnovers", "plusMinusPoints", 
+                                          "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
+        
+            prompt = f"""
+            Analyze the following NBA game based on the stats below.
+        
+            TEAM STATS:
+            {team_md}
+        
+            PLAYER STATS:
+            {player_md}
+        
+            Write a 2-paragraph summary covering:
+            - Key performers
+            - Notable trends or momentum shifts
+            - Tactical insights (e.g., spacing, rebounding, turnovers)
+        
+            Use a professional but accessible tone. Label the teams and players clearly.
+            """
+        
+            with st.spinner("Analyzing game..."):
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.6,
+                    max_tokens=500
+                )
+        
+            st.markdown("### 📝 AI-Generated Game Summary")
+            st.write(response.choices[0].message.content)
+
     else:
         st.warning("❌ No games found for that matchup.")
 else:
