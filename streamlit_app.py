@@ -339,22 +339,7 @@ if "vs" in user_input.lower():
             st.markdown(f"📈 **Offensive Rating**: {scout_data['OffensiveRating']:.2f}")
             st.markdown(f"🛡️ **Defensive Rating**: {scout_data['DefensiveRating']:.2f}")
         
-            # === Radar Chart ===
-            st.markdown("📉 **Performance Radar**")
-            radar_features = ["points", "assists", "reboundsTotal", "turnovers", "OffensiveRating", "DefensiveRating"]
-            player_vals = scout_data[radar_features].values
-            norm_vals = player_vals / max(player_vals.max(), 1)
-        
-            fig = go.Figure()
-            fig.add_trace(go.Scatterpolar(
-                r=norm_vals,
-                theta=radar_features,
-                fill='toself',
-                name=scout_data["fullName"]
-            ))
-            fig.update_layout(polar=dict(radialaxis=dict(visible=True)), showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
-        
+           
         # === Download as PDF ===
         from fpdf import FPDF
         
