@@ -7,10 +7,6 @@ from openai import OpenAI  # ✅ new SDK
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamlit Cloud-ready
 
 
-
-
-
-
 st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
