@@ -2,9 +2,10 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import openai
+from openai import OpenAI  # ✅ new SDK
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]  # ✅ No inner quotes
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamlit Cloud-ready
+
 
 
 
@@ -280,6 +281,7 @@ if "vs" in user_input.lower():
         st.plotly_chart(fig, use_container_width=True)
 
         
+        # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
         
         if st.button("Generate AI Summary"):
@@ -287,7 +289,7 @@ if "vs" in user_input.lower():
             # Convert DataFrames to markdown
             team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
                                   "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
-            
+        
             player_md = combined_players[["fullName", "points", "assists", "reboundsOffensive", 
                                           "reboundsDefensive", "turnovers", "plusMinusPoints", 
                                           "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
@@ -310,7 +312,7 @@ if "vs" in user_input.lower():
             """
         
             with st.spinner("Analyzing game..."):
-                response = openai.ChatCompletion.create(
+                response = client.chat.completions.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.6,
@@ -319,6 +321,7 @@ if "vs" in user_input.lower():
         
             st.markdown("### 📝 AI-Generated Game Summary")
             st.write(response.choices[0].message.content)
+
 
     else:
         st.warning("❌ No games found for that matchup.")
