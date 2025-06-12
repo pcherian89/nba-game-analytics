@@ -326,6 +326,47 @@ if "vs" in user_input.lower():
             st.markdown("### 📝 AI-Generated Game Summary")
             st.write(response.choices[0].message.content)
 
+            import plotly.graph_objects as go
+
+            # === MVP Radar Chart (Top 3 Players) ===
+            st.subheader("🏆 MVP Radar – Top 3 Performers")
+            
+            # Select top 3 by Offensive Rating
+            top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3)
+            
+            # Radar Metrics
+            radar_stats = ["points", "assists", "reboundsTotal", "turnovers", "OffensiveRating", "DefensiveRating"]
+            
+            # Normalize values for visual comparison (0–1 scale)
+            def normalize_series(series):
+                min_val = series.min()
+                max_val = series.max()
+                return (series - min_val) / (max_val - min_val + 1e-9)
+            
+            normalized_data = top3.copy()
+            for stat in radar_stats:
+                normalized_data[stat] = normalize_series(top3[stat])
+            
+            # Create Radar Chart
+            fig_radar = go.Figure()
+            
+            for i, row in normalized_data.iterrows():
+                fig_radar.add_trace(go.Scatterpolar(
+                    r=row[radar_stats].values,
+                    theta=radar_stats,
+                    fill='toself',
+                    name=row["fullName"]
+                ))
+            
+            fig_radar.update_layout(
+                polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
+                showlegend=True,
+                height=500,
+                title="Performance Radar (Normalized)"
+            )
+            
+            st.plotly_chart(fig_radar, use_container_width=True)
+
 
     else:
         st.warning("❌ No games found for that matchup.")
