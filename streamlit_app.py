@@ -299,37 +299,77 @@ if "vs" in user_input.lower():
             
         st.dataframe(comparison_df, use_container_width=True)
 
-        # Add this below your existing visualizations or comparison section
+        import io
+
         st.subheader("📋 Scouting Card Snapshot")
-
-        player_name = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
-        player_row = combined_players[combined_players["fullName"] == player_name].iloc[0]
-
-        scouting_card_md = f"""
-        🧑 **Player**: {player_row['fullName']}  
-        🏀 **Team**: {player_row['playerteamName']}  
-        ⏱️ **Minutes Played**: {player_row['numMinutes']}  
-        📊 **Stats**:  
-        - Points: {player_row['points']}  
-        - Assists: {player_row['assists']}  
-        - Rebounds: {player_row['reboundsTotal']}  
         
-        🔥 **Shooting**:  
-        - FG%: {player_row['fieldGoalsPercentage'] * 100:.1f}%  
-        - 3P%: {player_row['threePointersPercentage'] * 100:.1f}%  
-        - FT%: {player_row['freeThrowsPercentage'] * 100:.1f}%  
+        # Step 1: Player selector
+        selected_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
         
-        🧱 **Defense**:  
-        - Steals: {player_row['steals']}  
-        - Blocks: {player_row['blocks']}  
-        - Turnovers: {player_row['turnovers']}  
+        # Step 2: Get player row
+        player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
         
-        ➕ **Plus/Minus**: {player_row['plusMinusPoints']}  
-        📈 **Offensive Rating**: {player_row['OffensiveRating']:.2f}  
-        🛡️ **Defensive Rating**: {player_row['DefensiveRating']:.2f}  
+        # Step 3: Layout using columns
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"🧑 **Player:** {player_row['fullName']}")
+            st.markdown(f"🏀 **Team:** {player_row['playerteamName']}")
+            st.markdown(f"⏱️ **Minutes Played:** {round(player_row['numMinutes'], 1)}")
+            st.markdown("📊 **Stats:**")
+            st.markdown(f"- Points: {round(player_row['points'], 1)}")
+            st.markdown(f"- Assists: {round(player_row['assists'], 1)}")
+            st.markdown(f"- Rebounds: {round(player_row['reboundsTotal'], 1)}")
+        
+        with col2:
+            st.markdown("🔥 **Shooting:**")
+            st.markdown(f"- FG%: {round(player_row['fieldGoalsPercentage'] * 100, 1)}%")
+            st.markdown(f"- 3P%: {round(player_row['threePointersPercentage'] * 100, 1)}%")
+            st.markdown(f"- FT%: {round(player_row['freeThrowsPercentage'] * 100, 1)}%")
+            st.markdown("🧱 **Defense:**")
+            st.markdown(f"- Steals: {round(player_row['steals'], 1)}")
+            st.markdown(f"- Blocks: {round(player_row['blocks'], 1)}")
+            st.markdown(f"- Turnovers: {round(player_row['turnovers'], 1)}")
+            st.markdown(f"➕ **Plus/Minus:** {round(player_row['plusMinusPoints'], 1)}")
+            st.markdown(f"📈 **Offensive Rating:** {round(player_row['OffensiveRating'], 2)}")
+            st.markdown(f"🛡️ **Defensive Rating:** {round(player_row['DefensiveRating'], 2)}")
+        
+        # Step 4: Download as text
+        scouting_text = f"""
+        Player: {player_row['fullName']}
+        Team: {player_row['playerteamName']}
+        Minutes Played: {round(player_row['numMinutes'], 1)}
+        
+        Stats:
+        - Points: {round(player_row['points'], 1)}
+        - Assists: {round(player_row['assists'], 1)}
+        - Rebounds: {round(player_row['reboundsTotal'], 1)}
+        
+        Shooting:
+        - FG%: {round(player_row['fieldGoalsPercentage'] * 100, 1)}%
+        - 3P%: {round(player_row['threePointersPercentage'] * 100, 1)}%
+        - FT%: {round(player_row['freeThrowsPercentage'] * 100, 1)}%
+        
+        Defense:
+        - Steals: {round(player_row['steals'], 1)}
+        - Blocks: {round(player_row['blocks'], 1)}
+        - Turnovers: {round(player_row['turnovers'], 1)}
+        
+        Plus/Minus: {round(player_row['plusMinusPoints'], 1)}
+        Offensive Rating: {round(player_row['OffensiveRating'], 2)}
+        Defensive Rating: {round(player_row['DefensiveRating'], 2)}
         """
         
-        st.markdown(scouting_card_md)
+        scouting_bytes = io.BytesIO()
+        scouting_bytes.write(scouting_text.encode())
+        scouting_bytes.seek(0)
+        
+        st.download_button(
+            label="⬇️ Download Scouting Card (.txt)",
+            data=scouting_bytes,
+            file_name=f"{player_row['fullName'].replace(' ', '_')}_scouting_card.txt",
+            mime="text/plain"
+        )
 
 
             
