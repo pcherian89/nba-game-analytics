@@ -4,10 +4,9 @@ import pandas as pd
 import plotly.express as px
 pip install openai
 import openai
-import os
-openai.api_key = os.getenv("OPENAI_API_KEY")
-from dotenv import load_dotenv
-load_dotenv()
+
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+
 
 
 
