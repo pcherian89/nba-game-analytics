@@ -295,21 +295,25 @@ if "vs" in user_input.lower():
                                           "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
         
             prompt = f"""
-            Analyze the following NBA game based on the stats below.
-        
+            You are a professional sports analyst. Analyze the following NBA game using the stats below:
+            
             TEAM STATS:
             {team_md}
-        
+            
             PLAYER STATS:
             {player_md}
-        
-            Write a 2-paragraph summary covering:
-            - Key performers
-            - Notable trends or momentum shifts
-            - Tactical insights (e.g., spacing, rebounding, turnovers)
-        
-            Use a professional but accessible tone. Label the teams and players clearly.
+            
+            Generate a structured analysis with the following sections:
+            
+            1. **Game Summary** – Provide a brief overview of the final score, standout players, and momentum shifts.
+            2. **Offensive Analysis** – Discuss offensive efficiency, field goal %, 3P%, assists, and player offensive ratings. Highlight who drove scoring and any inefficiencies.
+            3. **Defensive Analysis** – Analyze steals, blocks, defensive rebounds, and defensive ratings. Identify defensive anchors or lapses.
+            4. **Bench & Support Players** – Review bench contributions, depth scoring, and any surprising impact players.
+            5. **Final Verdict** – Conclude why the winning team prevailed and what limited the losing side.
+            
+            Keep your tone professional but readable, like a sports media recap. Use specific stat references when helpful.
             """
+
         
             with st.spinner("Analyzing game..."):
                 response = client.chat.completions.create(
