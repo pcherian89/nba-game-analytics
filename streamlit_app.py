@@ -276,7 +276,7 @@ if "vs" in user_input.lower():
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
 
-            st.subheader("📊 Compare Any Two Players")
+        st.subheader("📊 Compare Any Two Players")
 
             # Create dropdowns to select players
             player_names = combined_players["fullName"].unique().tolist()
