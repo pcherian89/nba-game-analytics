@@ -3,3 +3,4 @@ pandas
 plotly
 openai>=1.0.0
 tabulate
+fpdf
