@@ -299,6 +299,39 @@ if "vs" in user_input.lower():
             
         st.dataframe(comparison_df, use_container_width=True)
 
+        # Add this below your existing visualizations or comparison section
+        st.subheader("📋 Scouting Card Snapshot")
+
+        player_name = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
+        player_row = combined_players[combined_players["fullName"] == player_name].iloc[0]
+
+        scouting_card_md = f"""
+        🧑 **Player**: {player_row['fullName']}  
+        🏀 **Team**: {player_row['playerteamName']}  
+        ⏱️ **Minutes Played**: {player_row['numMinutes']}  
+        📊 **Stats**:  
+        - Points: {player_row['points']}  
+        - Assists: {player_row['assists']}  
+        - Rebounds: {player_row['reboundsTotal']}  
+        
+        🔥 **Shooting**:  
+        - FG%: {player_row['fieldGoalsPercentage'] * 100:.1f}%  
+        - 3P%: {player_row['threePointersPercentage'] * 100:.1f}%  
+        - FT%: {player_row['freeThrowsPercentage'] * 100:.1f}%  
+        
+        🧱 **Defense**:  
+        - Steals: {player_row['steals']}  
+        - Blocks: {player_row['blocks']}  
+        - Turnovers: {player_row['turnovers']}  
+        
+        ➕ **Plus/Minus**: {player_row['plusMinusPoints']}  
+        📈 **Offensive Rating**: {player_row['OffensiveRating']:.2f}  
+        🛡️ **Defensive Rating**: {player_row['DefensiveRating']:.2f}  
+        """
+        
+        st.markdown(scouting_card_md)
+
+
             
         st.subheader("📊 Compare Any Two Players")
 
