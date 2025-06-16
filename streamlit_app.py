@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-from langchain_experimental.agents.agent_toolkits.pandas.base import create_pandas_dataframe_agent
+from langchain.agents import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
 
 from openai import OpenAI  # ✅ new SDK
