@@ -436,43 +436,43 @@ if "vs" in user_input.lower():
 
         # === Build LangChain Agent ===
         with st.expander("💬 Ask Questions About This Game"):
-        st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
-    
-        # Safety check
-        if team_stats.empty or combined_players.empty:
-            st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
-        else:
-            # ✅ Assign .name required by LangChain agent
-            team_stats.name = "team_stats"
-            combined_players.name = "players"
-    
-            # 🔁 Initialize session memory
-            if "chat_history" not in st.session_state:
-                st.session_state.chat_history = []
-    
-            # ✅ Create agent once
-            if "agent" not in st.session_state:
-                llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-                st.session_state.agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
-    
-            # 📥 Chat input
-            user_q = st.chat_input("Ask your basketball question...")
-            if user_q:
-                with st.spinner("Thinking..."):
-                    try:
-                        response = st.session_state.agent.run(user_q)
-                        st.session_state.chat_history.append(("user", user_q))
-                        st.session_state.chat_history.append(("bot", response))
-                    except Exception as e:
-                        st.error("Something went wrong.")
-                        st.exception(e)
-    
-            # 💬 Display chat history
-            for role, msg in st.session_state.chat_history:
-                if role == "user":
-                    st.markdown(f"🧍‍♂️ **You:** {msg}")
-                else:
-                    st.markdown(f"🤖 **Bot:** {msg}")
+            st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
+        
+            # Safety check
+            if team_stats.empty or combined_players.empty:
+                st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
+            else:
+                # ✅ Assign .name required by LangChain agent
+                team_stats.name = "team_stats"
+                combined_players.name = "players"
+        
+                # 🔁 Initialize session memory
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
+        
+                # ✅ Create agent once
+                if "agent" not in st.session_state:
+                    llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+                    st.session_state.agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+        
+                # 📥 Chat input
+                user_q = st.chat_input("Ask your basketball question...")
+                if user_q:
+                    with st.spinner("Thinking..."):
+                        try:
+                            response = st.session_state.agent.run(user_q)
+                            st.session_state.chat_history.append(("user", user_q))
+                            st.session_state.chat_history.append(("bot", response))
+                        except Exception as e:
+                            st.error("Something went wrong.")
+                            st.exception(e)
+        
+                # 💬 Display chat history
+                for role, msg in st.session_state.chat_history:
+                    if role == "user":
+                        st.markdown(f"🧍‍♂️ **You:** {msg}")
+                    else:
+                        st.markdown(f"🤖 **Bot:** {msg}")
 
 
 
