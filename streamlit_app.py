@@ -438,33 +438,29 @@ if "vs" in user_input.lower():
         with st.expander("💬 Ask Questions About This Game"):
             st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
         
-            # Build combined context from team + player stats
-            context_dfs = {
-                "team_stats": team_stats[team_display_cols].copy(),
-                "players": combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", "turnovers",
-                                             "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].copy()
-            }
+            # ✅ Safety check: Ensure required data is loaded
+            if team_stats.empty or combined_players.empty:
+                st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
+            else:
+                # ✅ Assign required .name to each DataFrame
+                team_stats.name = "team_stats"
+                combined_players.name = "players"
         
-            # Combine all into one DataFrame with source labels
-            combined_context = pd.concat(context_dfs.values(), axis=0, ignore_index=True)
+                # ✅ Build LangChain agent
+                llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+                agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
         
-            # Give tables a name (required by LangChain)
-            team_stats.name = "team_stats"
-            combined_players.name = "players"
-            
-            # LangChain Agent
-            llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-            agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+                # ✅ Chat UI
+                user_q = st.chat_input("Ask your basketball question...")
+                if user_q:
+                    with st.spinner("Thinking..."):
+                        try:
+                            response = agent.run(user_q)
+                            st.markdown(f"**🧠 Answer:** {response}")
+                        except Exception as e:
+                            st.error("Something went wrong while answering your question. Please try again.")
+                            st.exception(e)
 
-
-        
-            # Chat UI
-            user_q = st.chat_input("Ask your basketball question...")
-            if user_q:
-                with st.spinner("Thinking..."):
-                    response = agent.run(user_q)
-                    st.markdown(f"**🧠 Answer:** {response}")
-        
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
         
