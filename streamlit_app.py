@@ -434,50 +434,7 @@ if "vs" in user_input.lower():
         # Display
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
-       
-        st.markdown("## 🧠 Game Intelligence Chat (AI Analyst)")
-        st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
         
-        # Create one markdown table of relevant stats
-        team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
-                              "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
-        
-        player_md = combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", 
-                                      "turnovers", "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
-        
-        # Full context
-        context = f"""TEAM STATS:\n{team_md}\n\nPLAYER STATS:\n{player_md}"""
-        
-        # Define role + tone of the analyst
-        prompt_template = PromptTemplate(
-            input_variables=["context", "question"],
-            template="""
-        You are a highly skilled basketball analyst working for a professional team. 
-        You are reviewing detailed game data to provide sharp, insightful answers.
-        
-        Game context:
-        {context}
-        
-        Answer the user's question using this data. 
-        Always highlight tactical trends, key player impact, and any relevant performance nuance.
-        
-        Question: {question}
-        Answer as an expert analyst:
-        """
-        )
-        
-        # Setup LLM
-        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.4)
-        chain = LLMChain(llm=llm, prompt=prompt_template)
-        
-        # Input and response
-        user_question = st.chat_input("Ask your basketball question...")
-        if user_question:
-            with st.spinner("🧠 Analyzing game data..."):
-                response = chain.run({"context": context, "question": user_question})
-            st.markdown("### 🔍 AI Analyst Response")
-            st.write(response)
-
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
         
@@ -522,6 +479,49 @@ if "vs" in user_input.lower():
         
             st.markdown("### 📝 AI-Generated Game Summary")
             st.write(response.choices[0].message.content)
+
+        st.markdown("## 🤖 Bot Analyst")
+        st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
+        
+        # Create one markdown table of relevant stats
+        team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
+                              "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
+        
+        player_md = combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", 
+                                      "turnovers", "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
+        
+        # Full context
+        context = f"""TEAM STATS:\n{team_md}\n\nPLAYER STATS:\n{player_md}"""
+        
+        # Define role + tone of the analyst
+        prompt_template = PromptTemplate(
+            input_variables=["context", "question"],
+            template="""
+        You are a highly skilled basketball analyst working for a professional team. 
+        You are reviewing detailed game data to provide sharp, insightful answers.
+        
+        Game context:
+        {context}
+        
+        Answer the user's question using this data. 
+        Always highlight tactical trends, key player impact, and any relevant performance nuance.
+        
+        Question: {question}
+        Answer as an expert analyst:
+        """
+        )
+        
+        # Setup LLM
+        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.4)
+        chain = LLMChain(llm=llm, prompt=prompt_template)
+        
+        # Input and response
+        user_question = st.chat_input("Ask your basketball question...")
+        if user_question:
+            with st.spinner("🧠 Analyzing game data..."):
+                response = chain.run({"context": context, "question": user_question})
+            st.markdown("### 🔍 AI Analyst Response")
+            st.write(response)
 
             
     else:
