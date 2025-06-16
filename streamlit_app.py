@@ -448,9 +448,14 @@ if "vs" in user_input.lower():
             # Combine all into one DataFrame with source labels
             combined_context = pd.concat(context_dfs.values(), axis=0, ignore_index=True)
         
+            # Give tables a name (required by LangChain)
+            team_stats.name = "team_stats"
+            combined_players.name = "players"
+            
             # LangChain Agent
             llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
             agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+
 
         
             # Chat UI
