@@ -146,10 +146,9 @@ if "vs" in user_input.lower():
             legend_title_text=""
         )
         
-        # Show in center column for narrow view
-        col1, col2, col3 = st.columns([1, 2, 1])  # [left, center, right]
-        with col2:
-            st.plotly_chart(fig_ratings, use_container_width=False)  # ✅ Turn off full-width
+        # Show it directly (left-aligned)
+        st.plotly_chart(fig_ratings, use_container_width=False)  # ✅ Don't stretch full width
+
 
         # === Combine Home & Away Players ===
         combined_players = pd.concat([home_players, away_players], ignore_index=True)
