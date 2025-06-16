@@ -438,30 +438,28 @@ if "vs" in user_input.lower():
         with st.expander("💬 Ask Questions About This Game"):
             st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
         
-            # Safety check
             if team_stats.empty or combined_players.empty:
                 st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
             else:
-                # ✅ Ensure .name is set *right before* agent
                 team_stats.name = "team_stats"
                 combined_players.name = "players"
         
-                # Initialize session state
                 if "chat_history" not in st.session_state:
                     st.session_state.chat_history = []
         
-                # ✅ Build agent only once
                 if "agent" not in st.session_state:
                     try:
                         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
                         st.session_state.agent = create_pandas_dataframe_agent(
-                            llm, [team_stats.copy(), combined_players.copy()], verbose=False
+                            llm,
+                            [team_stats.copy(), combined_players.copy()],
+                            verbose=False,
+                            allow_dangerous_code=True  # ✅ KEY FIX
                         )
                     except Exception as e:
                         st.error("❌ Agent creation failed.")
                         st.exception(e)
         
-                # === Chat UI ===
                 user_q = st.chat_input("Ask your basketball question...")
                 if user_q and "agent" in st.session_state:
                     with st.spinner("Thinking..."):
@@ -473,13 +471,12 @@ if "vs" in user_input.lower():
                             st.error("❌ Something went wrong while answering your question.")
                             st.exception(e)
         
-                # 💬 Show chat history
                 for role, msg in st.session_state.chat_history:
                     if role == "user":
                         st.markdown(f"🧍‍♂️ **You:** {msg}")
                     else:
                         st.markdown(f"🤖 **Bot:** {msg}")
-        
+
 
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
