@@ -450,16 +450,16 @@ if "vs" in user_input.lower():
                 if "agent" not in st.session_state:
                     try:
                         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+                    
                         st.session_state.agent = create_pandas_dataframe_agent(
                             llm,
                             [team_stats.copy(), combined_players.copy()],
                             verbose=False,
-                            allow_dangerous_code=True,  # ✅ Required for LangChain agent
-                            agent_executor_kwargs={     # ✅ Customize time/iteration limits
-                                "max_iterations": 15,
-                                "max_execution_time": 40
-                            }
+                            allow_dangerous_code=True,         # ✅ Required
+                            max_iterations=15,                 # ✅ Safe to pass directly
+                            max_execution_time=40              # ✅ Safe to pass directly
                         )
+
 
                     except Exception as e:
                         st.error("❌ Agent creation failed.")
