@@ -3,12 +3,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-from langchain.chains.llm import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain.agents.agent import AgentExecutor
 from langchain_experimental.agents.agent_toolkits.pandas.base import PandasDataframeToolkit
 from langchain_openai import ChatOpenAI
-
 
 
 from openai import OpenAI  # ✅ new SDK
