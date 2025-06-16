@@ -3,6 +3,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+from langchain.agents import create_pandas_dataframe_agent
+from langchain_openai import ChatOpenAI
+
 from openai import OpenAI  # ✅ new SDK
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamlit Cloud-ready
@@ -430,7 +433,30 @@ if "vs" in user_input.lower():
         # Display
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
-
+        # === Build LangChain Agent ===
+        with st.expander("💬 Ask Questions About This Game"):
+            st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
+        
+            # Build combined context from team + player stats
+            context_dfs = {
+                "team_stats": team_stats[team_display_cols].copy(),
+                "players": combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", "turnovers",
+                                             "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].copy()
+            }
+        
+            # Combine all into one DataFrame with source labels
+            combined_context = pd.concat(context_dfs.values(), axis=0, ignore_index=True)
+        
+            # LangChain Agent
+            llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.5)
+            agent = create_pandas_dataframe_agent(llm, combined_context, verbose=False)
+        
+            # Chat UI
+            user_q = st.chat_input("Ask your basketball question...")
+            if user_q:
+                with st.spinner("Thinking..."):
+                    response = agent.run(user_q)
+                    st.markdown(f"**🧠 Answer:** {response}")
         
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
