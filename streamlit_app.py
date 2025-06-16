@@ -442,39 +442,44 @@ if "vs" in user_input.lower():
             if team_stats.empty or combined_players.empty:
                 st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
             else:
-                # ✅ Assign .name required by LangChain agent
+                # ✅ Ensure .name is set *right before* agent
                 team_stats.name = "team_stats"
                 combined_players.name = "players"
         
-                # 🔁 Initialize session memory
+                # Initialize session state
                 if "chat_history" not in st.session_state:
                     st.session_state.chat_history = []
         
-                # ✅ Create agent once
+                # ✅ Build agent only once
                 if "agent" not in st.session_state:
-                    llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-                    st.session_state.agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+                    try:
+                        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+                        st.session_state.agent = create_pandas_dataframe_agent(
+                            llm, [team_stats.copy(), combined_players.copy()], verbose=False
+                        )
+                    except Exception as e:
+                        st.error("❌ Agent creation failed.")
+                        st.exception(e)
         
-                # 📥 Chat input
+                # === Chat UI ===
                 user_q = st.chat_input("Ask your basketball question...")
-                if user_q:
+                if user_q and "agent" in st.session_state:
                     with st.spinner("Thinking..."):
                         try:
                             response = st.session_state.agent.run(user_q)
                             st.session_state.chat_history.append(("user", user_q))
                             st.session_state.chat_history.append(("bot", response))
                         except Exception as e:
-                            st.error("Something went wrong.")
+                            st.error("❌ Something went wrong while answering your question.")
                             st.exception(e)
         
-                # 💬 Display chat history
+                # 💬 Show chat history
                 for role, msg in st.session_state.chat_history:
                     if role == "user":
                         st.markdown(f"🧍‍♂️ **You:** {msg}")
                     else:
                         st.markdown(f"🤖 **Bot:** {msg}")
-
-
+        
 
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
