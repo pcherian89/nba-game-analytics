@@ -436,44 +436,44 @@ if "vs" in user_input.lower():
 
         # === Build LangChain Agent ===
         with st.expander("💬 Ask Questions About This Game"):
-            st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
-        
-            # ✅ Safety check: Ensure required data is loaded
-            if team_stats.empty or combined_players.empty:
-                st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
-            else:
-                # ✅ Assign required .name to each DataFrame
-                team_stats.name = "team_stats"
-                combined_players.name = "players"
-        
-                # === Build LangChain Agent ===
-                with st.expander("💬 Ask Questions About This Game"):
-                    st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
-                
-                    # Build combined context from team + player stats
-                    context_dfs = {
-                        "team_stats": team_stats[team_display_cols].copy(),
-                        "players": combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", "turnovers",
-                                                     "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].copy()
-                    }
-                
-                    # Combine all into one DataFrame with source labels
-                    combined_context = pd.concat(context_dfs.values(), axis=0, ignore_index=True)
-                
-                    # ✅ Build LangChain agent with combined dataframe
-                    llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-                    agent = create_pandas_dataframe_agent(llm, combined_context, verbose=False)
-                
-                    # ✅ Chat UI
-                    user_q = st.chat_input("Ask your basketball question...")
-                    if user_q:
-                        with st.spinner("Thinking..."):
-                            try:
-                                response = agent.run(user_q)
-                                st.markdown(f"**🧠 Answer:** {response}")
-                            except Exception as e:
-                                st.error("Something went wrong while answering your question. Please try again.")
-                                st.exception(e)
+        st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
+    
+        # Safety check
+        if team_stats.empty or combined_players.empty:
+            st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
+        else:
+            # ✅ Assign .name required by LangChain agent
+            team_stats.name = "team_stats"
+            combined_players.name = "players"
+    
+            # 🔁 Initialize session memory
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
+    
+            # ✅ Create agent once
+            if "agent" not in st.session_state:
+                llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+                st.session_state.agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+    
+            # 📥 Chat input
+            user_q = st.chat_input("Ask your basketball question...")
+            if user_q:
+                with st.spinner("Thinking..."):
+                    try:
+                        response = st.session_state.agent.run(user_q)
+                        st.session_state.chat_history.append(("user", user_q))
+                        st.session_state.chat_history.append(("bot", response))
+                    except Exception as e:
+                        st.error("Something went wrong.")
+                        st.exception(e)
+    
+            # 💬 Display chat history
+            for role, msg in st.session_state.chat_history:
+                if role == "user":
+                    st.markdown(f"🧍‍♂️ **You:** {msg}")
+                else:
+                    st.markdown(f"🤖 **Bot:** {msg}")
+
 
 
         # === AI-Generated Summary ===
