@@ -435,42 +435,48 @@ if "vs" in user_input.lower():
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
        
-        # ✅ Smart Agent inside expander block
-        with st.expander("💬 Ask Questions About This Game"):
-            st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
+        st.markdown("## 🧠 Game Intelligence Chat (AI Analyst)")
+        st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
         
-            if team_stats.empty or combined_players.empty:
-                st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
-            else:
-                # Assign .name attributes (required)
-                team_stats.name = "team_stats"
-                combined_players.name = "players"
+        # Create one markdown table of relevant stats
+        team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
+                              "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
         
-                # ✅ Create & cache the agent
-                if "agent" not in st.session_state:
-                    try:
-                        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-                        st.session_state.agent = create_pandas_dataframe_agent(
-                            llm,
-                            [team_stats.copy(), combined_players.copy()],
-                            verbose=False,
-                            allow_dangerous_code=True,  # ✅ Required or it fails
-                            max_iterations=20           # ✅ Prevents early stop
-                        )
-                    except Exception as e:
-                        st.error("❌ Agent creation failed.")
-                        st.exception(e)
+        player_md = combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", 
+                                      "turnovers", "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
         
-                # ✅ Chat input
-                user_q = st.chat_input("Ask your basketball question...")
-                if user_q and "agent" in st.session_state:
-                    with st.spinner("Thinking..."):
-                        try:
-                            response = st.session_state.agent.run(user_q)
-                            st.markdown(f"**🧠 Answer:** {response}")
-                        except Exception as e:
-                            st.error("❌ Agent failed while answering.")
-                            st.exception(e)
+        # Full context
+        context = f"""TEAM STATS:\n{team_md}\n\nPLAYER STATS:\n{player_md}"""
+        
+        # Define role + tone of the analyst
+        prompt_template = PromptTemplate(
+            input_variables=["context", "question"],
+            template="""
+        You are a highly skilled basketball analyst working for a professional team. 
+        You are reviewing detailed game data to provide sharp, insightful answers.
+        
+        Game context:
+        {context}
+        
+        Answer the user's question using this data. 
+        Always highlight tactical trends, key player impact, and any relevant performance nuance.
+        
+        Question: {question}
+        Answer as an expert analyst:
+        """
+        )
+        
+        # Setup LLM
+        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.4)
+        chain = LLMChain(llm=llm, prompt=prompt_template)
+        
+        # Input and response
+        user_question = st.chat_input("Ask your basketball question...")
+        if user_question:
+            with st.spinner("🧠 Analyzing game data..."):
+                response = chain.run({"context": context, "question": user_question})
+            st.markdown("### 🔍 AI Analyst Response")
+            st.write(response)
 
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
