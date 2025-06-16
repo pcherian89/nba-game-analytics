@@ -122,6 +122,8 @@ if "vs" in user_input.lower():
         ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
+        
+        # Create the bar chart
         fig_ratings = px.bar(
             ratings_melted,
             x="teamName",
@@ -130,13 +132,24 @@ if "vs" in user_input.lower():
             barmode="group",
             title="Team Offensive vs Defensive Ratings",
             labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
-            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"}
+            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
+            width=700,   # ✅ Narrow chart
+            height=400
         )
         
-        st.plotly_chart(fig_ratings, use_container_width=True)
-
+        # Optional: aesthetic layout tweaks
+        fig_ratings.update_layout(
+            title_font=dict(size=20),
+            font=dict(size=14),
+            margin=dict(l=40, r=40, t=50, b=40),
+            plot_bgcolor="white",
+            legend_title_text=""
+        )
         
-        import plotly.express as px
+        # Show in center column for narrow view
+        col1, col2, col3 = st.columns([1, 2, 1])  # [left, center, right]
+        with col2:
+            st.plotly_chart(fig_ratings, use_container_width=False)  # ✅ Turn off full-width
 
         # === Combine Home & Away Players ===
         combined_players = pd.concat([home_players, away_players], ignore_index=True)
