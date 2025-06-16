@@ -83,7 +83,7 @@ if "vs" in user_input.lower():
         # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
         team_display_cols = [
-            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
+            'TeamName', 'teamScore', 'assists', 'blocks', 'steals',
             'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
             'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
             'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
