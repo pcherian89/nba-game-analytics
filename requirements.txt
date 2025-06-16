@@ -4,3 +4,6 @@ plotly
 openai>=1.0.0
 tabulate
 fpdf
+langchain>=0.1.13
+langchain-openai>=0.0.8
+openai>=1.0.0
