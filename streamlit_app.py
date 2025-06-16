@@ -3,10 +3,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-from langchain_experimental.agents.agent_toolkits.pandas.base import PandasDataframeToolkit
-
+from langchain_experimental.agents.agent_toolkits.pandas.base import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
-
 
 from openai import OpenAI  # ✅ new SDK
 
@@ -435,53 +433,43 @@ if "vs" in user_input.lower():
         # Display
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
-        # === Build LangChain Agent ===
-        # === LangChain Agent Chat (Smart + Safe Mode) ===
+       
+        # ✅ Smart Agent inside expander block
         with st.expander("💬 Ask Questions About This Game"):
             st.markdown("Chat with the data: Ask anything about players, team stats, performance, etc.")
         
-            # ✅ Step 1: Check Data
             if team_stats.empty or combined_players.empty:
                 st.warning("⚠️ One or more data tables are empty. Please run a game prediction first.")
             else:
-                # ✅ Step 2: Assign table names for LangChain
+                # Assign .name attributes (required)
                 team_stats.name = "team_stats"
                 combined_players.name = "players"
         
-                # ✅ Step 3: Setup LangChain Toolkit Agent
-                try:
-                    if "agent" not in st.session_state:
+                # ✅ Create & cache the agent
+                if "agent" not in st.session_state:
+                    try:
                         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
-        
-                        toolkit = PandasDataframeToolkit(
-                            dataframes=[team_stats.copy(), combined_players.copy()]
-                        )
-        
-                        st.session_state.agent = toolkit.get_agent(
-                            llm=llm,
+                        st.session_state.agent = create_pandas_dataframe_agent(
+                            llm,
+                            [team_stats.copy(), combined_players.copy()],
                             verbose=False,
-                            agent_type="openai-tools",  # uses simple tool-based agent
-                            agent_executor_kwargs={
-                                "max_iterations": 10,      # ✅ Controls loop depth
-                                "early_stopping_method": "generate",
-                                "handle_parsing_errors": True
-                            }
+                            allow_dangerous_code=True,  # ✅ Required or it fails
+                            max_iterations=20           # ✅ Prevents early stop
                         )
-                except Exception as e:
-                    st.error("❌ Agent creation failed.")
-                    st.exception(e)
+                    except Exception as e:
+                        st.error("❌ Agent creation failed.")
+                        st.exception(e)
         
-                # ✅ Step 4: Chat Input + Response
+                # ✅ Chat input
                 user_q = st.chat_input("Ask your basketball question...")
                 if user_q and "agent" in st.session_state:
-                    with st.spinner("🤖 Thinking..."):
+                    with st.spinner("Thinking..."):
                         try:
                             response = st.session_state.agent.run(user_q)
                             st.markdown(f"**🧠 Answer:** {response}")
                         except Exception as e:
-                            st.error("⚠️ Agent failed to respond. Try rephrasing or simplifying your question.")
+                            st.error("❌ Agent failed while answering.")
                             st.exception(e)
-
 
         # === AI-Generated Summary ===
         st.subheader("🧠 AI Game Summary")
