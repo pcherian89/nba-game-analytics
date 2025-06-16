@@ -3,8 +3,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-from langchain.agents import create_pandas_dataframe_agent
+from langchain_experimental.agents.agent_toolkits.pandas.base import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
+
 
 from openai import OpenAI  # ✅ new SDK
 
@@ -448,8 +449,9 @@ if "vs" in user_input.lower():
             combined_context = pd.concat(context_dfs.values(), axis=0, ignore_index=True)
         
             # LangChain Agent
-            llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.5)
-            agent = create_pandas_dataframe_agent(llm, combined_context, verbose=False)
+            llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0)
+            agent = create_pandas_dataframe_agent(llm, [team_stats, combined_players], verbose=False)
+
         
             # Chat UI
             user_q = st.chat_input("Ask your basketball question...")
