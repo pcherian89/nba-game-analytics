@@ -454,8 +454,13 @@ if "vs" in user_input.lower():
                             llm,
                             [team_stats.copy(), combined_players.copy()],
                             verbose=False,
-                            allow_dangerous_code=True  # ✅ KEY FIX
+                            allow_dangerous_code=True,  # ✅ Required for LangChain agent
+                            agent_executor_kwargs={     # ✅ Customize time/iteration limits
+                                "max_iterations": 15,
+                                "max_execution_time": 40
+                            }
                         )
+
                     except Exception as e:
                         st.error("❌ Agent creation failed.")
                         st.exception(e)
