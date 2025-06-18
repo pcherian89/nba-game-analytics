@@ -6,6 +6,8 @@ import os
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+import numpy as np
+
 
 from openai import OpenAI  # ✅ new SDK
 
