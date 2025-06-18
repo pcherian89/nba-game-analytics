@@ -223,7 +223,7 @@ if "vs" in user_input.lower():
         )
         
         # === Step 3: Interactive Visualization ===
-        st.subheader("📊 Player Impact Ratings Per Minute")
+        st.subheader("📊 Player Impact Ratings ")
         
         rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
         
