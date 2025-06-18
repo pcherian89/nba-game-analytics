@@ -348,13 +348,31 @@ if "vs" in user_input.lower():
         
         # === Display Clean Tables ===
         st.markdown("### 🔥 Offensive Summary")
-        st.table(offense_df.set_index("Metric"))
-        
+
+        # Loop and display Metric + Value in tighter columns
+        for metric, value in zip(offense_df["Metric"], offense_df["Value"]):
+            col1, col2 = st.columns([1.5, 1])  # Adjust the ratio to control spacing
+            with col1:
+                st.markdown(f"**{metric}**")
+            with col2:
+                st.markdown(f"{value}")
+
         st.markdown("### 🧱 Defensive Summary")
-        st.table(defense_df.set_index("Metric"))
-        
+        for metric, value in zip(defense_df["Metric"], defense_df["Value"]):
+            col1, col2 = st.columns([1.5, 1])
+            with col1:
+                st.markdown(f"**{metric}**")
+            with col2:
+                st.markdown(f"{value}")
+                
         st.markdown("### 📈 Player Summary")
-        st.table(summary_df.set_index("Metric"))
+        for metric, value in zip(summary_df["Metric"], summary_df["Value"]):
+            col1, col2 = st.columns([1.5, 1])
+            with col1:
+                st.markdown(f"**{metric}**")
+            with col2:
+                st.markdown(f"{value}")
+
 
             
         st.subheader("📊 Compare Any Two Players")
