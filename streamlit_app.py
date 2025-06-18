@@ -295,82 +295,40 @@ if "vs" in user_input.lower():
         from fpdf import FPDF
         import plotly.graph_objects as go
         
-        # === Scouting Card Snapshot ===
+        # === Scouting Card Snapshot (Table View) ===
         st.subheader("📋 Scouting Card Snapshot")
         
         selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
         
         scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
         
-        # === Create 3-column layout ===
-        col1, col2, col3 = st.columns(3)
+        # Prepare a dictionary of stats
+        scouting_table = {
+            "Category": [
+                "Team", "Minutes Played", "Points", "Assists", "Rebounds",
+                "FG%", "3P%", "FT%",
+                "Steals", "Blocks", "Turnovers",
+                "Plus/Minus", "Offensive Rating", "Defensive Rating"
+            ],
+            "Value": [
+                scout_data["playerteamName"],
+                round(scout_data["numMinutes"], 1),
+                scout_data["points"], scout_data["assists"], scout_data["reboundsTotal"],
+                f"{scout_data['fieldGoalsPercentage']:.1%}",
+                f"{scout_data['threePointersPercentage']:.1%}",
+                f"{scout_data['freeThrowsPercentage']:.1%}",
+                scout_data["steals"], scout_data["blocks"], scout_data["turnovers"],
+                scout_data["plusMinusPoints"],
+                round(scout_data["OffensiveRating"], 2),
+                round(scout_data["DefensiveRating"], 2)
+            ]
+        }
         
-        with col1:
-            st.markdown(f"🧑 **Player**: {scout_data['fullName']}")
-            st.markdown(f"🏀 **Team**: {scout_data['playerteamName']}")
-            st.markdown(f"⏱️ **Minutes Played**: {scout_data['numMinutes']:.1f}")
-            st.markdown("📊 **Stats:**")
-            st.markdown(f"- Points: {scout_data['points']}")
-            st.markdown(f"- Assists: {scout_data['assists']}")
-            st.markdown(f"- Rebounds: {scout_data['reboundsTotal']}")
+        # Show as compact dataframe
+        scout_df = pd.DataFrame(scouting_table)
+        st.dataframe(scout_df.set_index("Category"), use_container_width=True)
         
-        with col2:
-            st.markdown("🔥 **Shooting:**")
-            st.markdown(f"- FG%: {scout_data['fieldGoalsPercentage']:.1%}")
-            st.markdown(f"- 3P%: {scout_data['threePointersPercentage']:.1%}")
-            st.markdown(f"- FT%: {scout_data['freeThrowsPercentage']:.1%}")
-        
-            st.markdown("🧱 **Defense:**")
-            st.markdown(f"- Steals: {scout_data['steals']}")
-            st.markdown(f"- Blocks: {scout_data['blocks']}")
-            st.markdown(f"- Turnovers: {scout_data['turnovers']}")
-        
-        with col3:
-            st.markdown(f"➕ **Plus/Minus**: {scout_data['plusMinusPoints']}")
-            st.markdown(f"📈 **Offensive Rating**: {scout_data['OffensiveRating']:.2f}")
-            st.markdown(f"🛡️ **Defensive Rating**: {scout_data['DefensiveRating']:.2f}")
-        
-           
-        # === Download as PDF ===
-        from fpdf import FPDF
-        
-        scout_text = f"""Player: {scout_data['fullName']}
-        Team: {scout_data['playerteamName']}
-        Minutes Played: {scout_data['numMinutes']:.1f}
-        
-        Stats:
-        - Points: {scout_data['points']}
-        - Assists: {scout_data['assists']}
-        - Rebounds: {scout_data['reboundsTotal']}
-        
-        Shooting:
-        - FG%: {scout_data['fieldGoalsPercentage']:.1%}
-        - 3P%: {scout_data['threePointersPercentage']:.1%}
-        - FT%: {scout_data['freeThrowsPercentage']:.1%}
-        
-        Defense:
-        - Steals: {scout_data['steals']}
-        - Blocks: {scout_data['blocks']}
-        - Turnovers: {scout_data['turnovers']}
-        
-        Plus/Minus: {scout_data['plusMinusPoints']}
-        Offensive Rating: {scout_data['OffensiveRating']:.2f}
-        Defensive Rating: {scout_data['DefensiveRating']:.2f}
-        """
-        
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        for line in scout_text.split("\n"):
-            pdf.cell(200, 10, txt=line, ln=1)
-        pdf_path = f"/tmp/{scout_data['fullName'].replace(' ', '_')}_scouting_card.pdf"
-        pdf.output(pdf_path)
-        
-        with open(pdf_path, "rb") as f:
-            st.download_button("📥 Download Scouting Card (.pdf)", f, file_name=os.path.basename(pdf_path), mime="application/pdf")
-
-
-            
+    
         st.subheader("📊 Compare Any Two Players")
 
         # Create dropdowns to select players
