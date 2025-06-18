@@ -301,43 +301,52 @@ if "vs" in user_input.lower():
         selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
         scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
         
-        # === Format values (rounded) ===
-        def fmt(val, decimals=1):
-            return round(val, decimals)
+        # === Formatter ===
+        def format_value(val, style="int"):
+            if pd.isna(val):
+                return "-"
+            if style == "int":
+                return str(int(round(val)))
+            elif style == "float":
+                return f"{val:.2f}"
+            elif style == "pct":
+                return f"{val:.1%}"
+            else:
+                return str(val)
         
-        # === DataFrames ===
+        # === Tables ===
         offense_df = pd.DataFrame({
             "Metric": ["Points", "Assists", "Turnovers", "FG%", "3P%", "FT%"],
             "Value": [
-                fmt(scout_data["points"]),
-                fmt(scout_data["assists"]),
-                fmt(scout_data["turnovers"]),
-                f"{scout_data['fieldGoalsPercentage']:.1%}",
-                f"{scout_data['threePointersPercentage']:.1%}",
-                f"{scout_data['freeThrowsPercentage']:.1%}",
+                format_value(scout_data["points"], "int"),
+                format_value(scout_data["assists"], "int"),
+                format_value(scout_data["turnovers"], "int"),
+                format_value(scout_data["fieldGoalsPercentage"], "pct"),
+                format_value(scout_data["threePointersPercentage"], "pct"),
+                format_value(scout_data["freeThrowsPercentage"], "pct"),
             ]
         })
         
         defense_df = pd.DataFrame({
             "Metric": ["Rebounds", "Steals", "Blocks"],
             "Value": [
-                fmt(scout_data["reboundsTotal"]),
-                fmt(scout_data["steals"]),
-                fmt(scout_data["blocks"]),
+                format_value(scout_data["reboundsTotal"], "int"),
+                format_value(scout_data["steals"], "int"),
+                format_value(scout_data["blocks"], "int"),
             ]
         })
         
         summary_df = pd.DataFrame({
             "Metric": ["Minutes Played", "Plus/Minus", "Offensive Rating", "Defensive Rating"],
             "Value": [
-                fmt(scout_data["numMinutes"]),
-                fmt(scout_data["plusMinusPoints"]),
-                fmt(scout_data["OffensiveRating"], 2),
-                fmt(scout_data["DefensiveRating"], 2),
+                format_value(scout_data["numMinutes"], "float"),
+                format_value(scout_data["plusMinusPoints"], "float"),
+                format_value(scout_data["OffensiveRating"], "float"),
+                format_value(scout_data["DefensiveRating"], "float"),
             ]
         })
         
-        # === Display ===
+        # === Display Clean Tables ===
         st.markdown("### 🔥 Offensive Summary")
         st.table(offense_df.set_index("Metric"))
         
