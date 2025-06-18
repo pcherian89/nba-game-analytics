@@ -295,38 +295,58 @@ if "vs" in user_input.lower():
         from fpdf import FPDF
         import plotly.graph_objects as go
         
-        # === Scouting Card Snapshot (Table View) ===
         st.subheader("📋 Scouting Card Snapshot")
-        
+
         selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
-        
         scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
         
-        # Prepare a dictionary of stats
-        scouting_table = {
-            "Category": [
-                "Team", "Minutes Played", "Points", "Assists", "Rebounds",
-                "FG%", "3P%", "FT%",
-                "Steals", "Blocks", "Turnovers",
-                "Plus/Minus", "Offensive Rating", "Defensive Rating"
-            ],
+        # === Offensive Table ===
+        offense_data = {
+            "Metric": ["Points", "Assists", "Turnovers", "FG%", "3P%", "FT%"],
             "Value": [
-                scout_data["playerteamName"],
-                round(scout_data["numMinutes"], 1),
-                scout_data["points"], scout_data["assists"], scout_data["reboundsTotal"],
+                scout_data["points"],
+                scout_data["assists"],
+                scout_data["turnovers"],
                 f"{scout_data['fieldGoalsPercentage']:.1%}",
                 f"{scout_data['threePointersPercentage']:.1%}",
-                f"{scout_data['freeThrowsPercentage']:.1%}",
-                scout_data["steals"], scout_data["blocks"], scout_data["turnovers"],
+                f"{scout_data['freeThrowsPercentage']:.1%}"
+            ]
+        }
+        offense_df = pd.DataFrame(offense_data)
+        
+        # === Defensive Table ===
+        defense_data = {
+            "Metric": ["Rebounds", "Steals", "Blocks"],
+            "Value": [
+                scout_data["reboundsTotal"],
+                scout_data["steals"],
+                scout_data["blocks"]
+            ]
+        }
+        defense_df = pd.DataFrame(defense_data)
+        
+        # === Player Summary ===
+        summary_data = {
+            "Metric": ["Minutes Played", "Plus/Minus", "Offensive Rating", "Defensive Rating"],
+            "Value": [
+                round(scout_data["numMinutes"], 1),
                 scout_data["plusMinusPoints"],
                 round(scout_data["OffensiveRating"], 2),
                 round(scout_data["DefensiveRating"], 2)
             ]
         }
+        summary_df = pd.DataFrame(summary_data)
         
-        # Show as compact dataframe
-        scout_df = pd.DataFrame(scouting_table)
-        st.dataframe(scout_df.set_index("Category"), use_container_width=True)
+        # === Layout ===
+        st.markdown("### 🔥 Offensive Summary")
+        st.dataframe(offense_df.set_index("Metric"), use_container_width=True)
+        
+        st.markdown("### 🧱 Defensive Summary")
+        st.dataframe(defense_df.set_index("Metric"), use_container_width=True)
+        
+        st.markdown("### 📈 Player Summary")
+        st.dataframe(summary_df.set_index("Metric"), use_container_width=True)
+
         
     
         st.subheader("📊 Compare Any Two Players")
