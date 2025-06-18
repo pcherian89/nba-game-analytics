@@ -301,82 +301,43 @@ if "vs" in user_input.lower():
         selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
         scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
         
-        # === Build Metric Tables ===
-        offense_data = {
+        # === Format values (rounded) ===
+        def fmt(val, decimals=1):
+            return round(val, decimals)
+        
+        # === DataFrames ===
+        offense_df = pd.DataFrame({
             "Metric": ["Points", "Assists", "Turnovers", "FG%", "3P%", "FT%"],
             "Value": [
-                scout_data["points"],
-                scout_data["assists"],
-                scout_data["turnovers"],
+                fmt(scout_data["points"]),
+                fmt(scout_data["assists"]),
+                fmt(scout_data["turnovers"]),
                 f"{scout_data['fieldGoalsPercentage']:.1%}",
                 f"{scout_data['threePointersPercentage']:.1%}",
-                f"{scout_data['freeThrowsPercentage']:.1%}"
+                f"{scout_data['freeThrowsPercentage']:.1%}",
             ]
-        }
+        })
         
-        defense_data = {
+        defense_df = pd.DataFrame({
             "Metric": ["Rebounds", "Steals", "Blocks"],
             "Value": [
-                scout_data["reboundsTotal"],
-                scout_data["steals"],
-                scout_data["blocks"]
+                fmt(scout_data["reboundsTotal"]),
+                fmt(scout_data["steals"]),
+                fmt(scout_data["blocks"]),
             ]
-        }
+        })
         
-        summary_data = {
+        summary_df = pd.DataFrame({
             "Metric": ["Minutes Played", "Plus/Minus", "Offensive Rating", "Defensive Rating"],
             "Value": [
-                round(scout_data["numMinutes"], 1),
-                scout_data["plusMinusPoints"],
-                scout_data["OffensiveRating"],
-                scout_data["DefensiveRating"]
+                fmt(scout_data["numMinutes"]),
+                fmt(scout_data["plusMinusPoints"]),
+                fmt(scout_data["OffensiveRating"], 2),
+                fmt(scout_data["DefensiveRating"], 2),
             ]
-        }
+        })
         
-        # === Convert to DataFrames ===
-        offense_df = pd.DataFrame(offense_data)
-        defense_df = pd.DataFrame(defense_data)
-        summary_df = pd.DataFrame(summary_data)
-        
-        # === Highlight Key Metrics in Summary Table ===
-        def highlight_summary(val, metric):
-            if metric == "Plus/Minus":
-                if val > 5:
-                    return "color: green"
-                elif val >= 0:
-                    return "color: orange"
-                else:
-                    return "color: red"
-            if metric == "Offensive Rating":
-                if val > 0.6:
-                    return "color: green"
-                elif val > 0.3:
-                    return "color: orange"
-                else:
-                    return "color: red"
-            if metric == "Defensive Rating":
-                if val > 0.6:
-                    return "color: green"
-                elif val > 0.3:
-                    return "color: orange"
-                else:
-                    return "color: red"
-            return ""
-        
-        def highlight_summary_df(df):
-            styles = []
-            for row in df.itertuples():
-                row_styles = []
-                for col in df.columns:
-                    if col == "Value":
-                        style = highlight_summary(row.Value, row.Metric)
-                        row_styles.append(style)
-                    else:
-                        row_styles.append("")
-                styles.append(row_styles)
-            return pd.DataFrame(styles, columns=df.columns)
-        
-        # === Display Tables ===
+        # === Display ===
         st.markdown("### 🔥 Offensive Summary")
         st.table(offense_df.set_index("Metric"))
         
@@ -384,9 +345,8 @@ if "vs" in user_input.lower():
         st.table(defense_df.set_index("Metric"))
         
         st.markdown("### 📈 Player Summary")
-        styled_summary = summary_df.style.apply(lambda _: highlight_summary_df(summary_df), axis=None)
-        st.dataframe(styled_summary.set_index("Metric"), use_container_width=False, height=200)
-        
+        st.table(summary_df.set_index("Metric"))
+
             
         st.subheader("📊 Compare Any Two Players")
 
