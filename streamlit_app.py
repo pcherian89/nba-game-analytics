@@ -347,14 +347,15 @@ if "vs" in user_input.lower():
         })
         
         # === Display Clean Tables ===
-        st.markdown("#### 🔥 Offensive Stats")
+        st.markdown("### 🔥 Offensive Summary")
         st.table(offense_df.set_index("Metric"))
         
-        st.markdown("#### 🧱 Defensive Stats")
+        st.markdown("### 🧱 Defensive Summary")
         st.table(defense_df.set_index("Metric"))
         
-        st.markdown("#### 📈 Overall Stats")
+        st.markdown("### 📈 Player Summary")
         st.table(summary_df.set_index("Metric"))
+
 
             
         st.subheader("📊 Compare Any Two Players")
