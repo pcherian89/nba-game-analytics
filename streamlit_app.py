@@ -467,7 +467,7 @@ if "vs" in user_input.lower():
             st.markdown("### 📝 AI-Generated Game Summary")
             st.write(response.choices[0].message.content)
 
-        st.markdown("###🤖 **Bot Analyst**")
+        st.markdown("### 🤖 Bot Analyst")
         st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
         
         # Create one markdown table of relevant stats
