@@ -292,6 +292,85 @@ if "vs" in user_input.lower():
         
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
+        
+        # === Step 1: Compute Custom Scores and Ratings Per Minute ===
+        for df in [home_players, away_players]:
+            df["offensiveScore"] = (
+                df["points"]
+                + 1.5 * df["assists"]
+                - 2.0 * df["turnovers"]
+                + 1.0 * df["reboundsOffensive"]
+            )
+        
+            df["defensiveScore"] = (
+                1.5 * df["steals"]
+                + 1.5 * df["blocks"]
+                + 1.0 * df["reboundsDefensive"]
+                - 0.5 * df["foulsPersonal"]
+            )
+        
+            # Normalize by actual minutes played
+            df["OffensiveRating"] = df["offensiveScore"] / df["numMinutes"].replace(0, 1)
+            df["DefensiveRating"] = df["defensiveScore"] / df["numMinutes"].replace(0, 1)
+        
+        # === Step 2: Combine & Clean ===
+        combined_players = pd.concat([home_players, away_players], ignore_index=True)
+        combined_players["fullName"] = combined_players["firstName"] + " " + combined_players["lastName"]
+        
+        # Clean up invalid values
+        for col in ["OffensiveRating", "DefensiveRating"]:
+            combined_players[col] = combined_players[col].replace([np.inf, -np.inf], np.nan)
+        
+        # Filter players with at least 10 minutes played
+        combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 10].dropna(
+            subset=["OffensiveRating", "DefensiveRating"]
+        )
+        
+        # === Step 3: Interactive Visualization ===
+        st.subheader("📊 Player Impact Ratings Per Minute")
+        
+        rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
+        
+        combined_sorted = combined_players.sort_values(by=rating_type, ascending=False)
+        
+        # Dynamic hover columns
+        if rating_type == "OffensiveRating":
+            hover_cols = {
+                "numMinutes": True,
+                "points": True,
+                "assists": True,
+                "turnovers": True,
+                "reboundsOffensive": True,
+                "OffensiveRating": True,
+                "DefensiveRating": False,
+                "fullName": False
+            }
+        else:
+            hover_cols = {
+                "numMinutes": True,
+                "steals": True,
+                "blocks": True,
+                "reboundsDefensive": True,
+                "foulsPersonal": True,
+                "DefensiveRating": True,
+                "OffensiveRating": False,
+                "fullName": False
+            }
+        
+        # Chart
+        fig = px.bar(
+            combined_sorted,
+            x="fullName",
+            y=rating_type,
+            color="playerteamName",
+            title=f"Player {rating_type} (Per Minute)",
+            labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
+            color_discrete_sequence=["dodgerblue", "darkorange"],
+            hover_data=hover_cols
+        )
+        fig.update_layout(xaxis_tickangle=-45)
+        
+        st.plotly_chart(fig, use_container_width=True)
 
 
         st.subheader("🏆 MVP Comparison Table – Top 3 Performers")
