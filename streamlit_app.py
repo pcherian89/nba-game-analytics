@@ -295,7 +295,7 @@ if "vs" in user_input.lower():
         from fpdf import FPDF
         import plotly.graph_objects as go
         
-       # === Scouting Card Snapshot ===
+        # === Scouting Card Snapshot ===
         st.subheader("📋 Scouting Card Snapshot")
         
         selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
@@ -347,32 +347,14 @@ if "vs" in user_input.lower():
         })
         
         # === Display Clean Tables ===
-        st.markdown("### 🔥 Offensive Summary")
-
-        # Loop and display Metric + Value in tighter columns
-        for metric, value in zip(offense_df["Metric"], offense_df["Value"]):
-            col1, col2 = st.columns([1.5, 1])  # Adjust the ratio to control spacing
-            with col1:
-                st.markdown(f"**{metric}**")
-            with col2:
-                st.markdown(f"{value}")
-
-        st.markdown("### 🧱 Defensive Summary")
-        for metric, value in zip(defense_df["Metric"], defense_df["Value"]):
-            col1, col2 = st.columns([1.5, 1])
-            with col1:
-                st.markdown(f"**{metric}**")
-            with col2:
-                st.markdown(f"{value}")
-                
-        st.markdown("### 📈 Player Summary")
-        for metric, value in zip(summary_df["Metric"], summary_df["Value"]):
-            col1, col2 = st.columns([1.5, 1])
-            with col1:
-                st.markdown(f"**{metric}**")
-            with col2:
-                st.markdown(f"{value}")
-
+        st.markdown("## 🔥 Offensive Stats")
+        st.table(offense_df.set_index("Metric"))
+        
+        st.markdown("## 🧱 Defensive Stats")
+        st.table(defense_df.set_index("Metric"))
+        
+        st.markdown("## 📈 Overall Stats")
+        st.table(summary_df.set_index("Metric"))
 
             
         st.subheader("📊 Compare Any Two Players")
