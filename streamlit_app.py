@@ -350,7 +350,7 @@ if "vs" in user_input.lower():
         st.markdown("#### 🔥 Offensive Stats")
         st.table(offense_df.set_index("Metric"))
         
-        st.markdown("####🧱 Defensive Stats")
+        st.markdown("#### 🧱 Defensive Stats")
         st.table(defense_df.set_index("Metric"))
         
         st.markdown("#### 📈 Overall Stats")
@@ -493,7 +493,7 @@ if "vs" in user_input.lower():
         if user_question:
             with st.spinner("🧠 Analyzing game data..."):
                 response = chain.run({"context": context, "question": user_question})
-            st.markdown("### 🔍 AI Analyst Response")
+            st.markdown("#### 🔍 AI Analyst Response")
             st.write(response)
 
             
