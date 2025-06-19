@@ -481,7 +481,7 @@ if "vs" in user_input.lower():
 
         
         # === AI-Generated Game Summary with Session Persistence ===
-        st.subheader("🧠 AI Game Summary")
+        st.subheader("🧠 Game Summary")
         
         # Check if summary already exists for current game
         if "ai_summary" not in st.session_state or st.session_state.get("summary_game_id") != selected_gameId:
@@ -515,7 +515,7 @@ if "vs" in user_input.lower():
             """
         
             # Generate + store summary
-            with st.spinner("🧠 Generating AI game summary..."):
+            with st.spinner("🧠 Generating game summary..."):
                 response = client.chat.completions.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": prompt}],
@@ -527,7 +527,7 @@ if "vs" in user_input.lower():
                 st.session_state.summary_game_id = selected_gameId
         
         # Display stored summary
-        st.markdown("### 📝 AI-Generated Game Summary")
+        st.markdown("#### 📝 Game Summary")
         st.write(st.session_state.ai_summary)
 
 
