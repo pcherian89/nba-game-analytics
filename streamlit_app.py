@@ -527,7 +527,7 @@ if "vs" in user_input.lower():
                 st.session_state.summary_game_id = selected_gameId
         
         # Display stored summary
-        #st.markdown("#### 📝 Game Summary")
+        # st.markdown("#### 📝 Game Summary")
         st.write(st.session_state.ai_summary)
 
 
