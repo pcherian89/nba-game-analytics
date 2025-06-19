@@ -189,7 +189,7 @@ if "vs" in user_input.lower():
         st.plotly_chart(fig, use_container_width=True)
 
         
-        # === Step 1: Compute Custom Scores and Ratings Per Minute ===
+        # === Step 1: Compute Custom Scores and Per-Minute Ratings ===
         for df in [home_players, away_players]:
             df["offensiveScore"] = (
                 df["points"]
@@ -205,22 +205,36 @@ if "vs" in user_input.lower():
                 - 0.5 * df["foulsPersonal"]
             )
         
-            # Normalize by actual minutes played
-            df["OffensiveRating"] = df["offensiveScore"] / df["numMinutes"].replace(0, 1)
-            df["DefensiveRating"] = df["defensiveScore"] / df["numMinutes"].replace(0, 1)
+            # Score per minute (avoid divide-by-zero)
+            df["off_per_min"] = df["offensiveScore"] / df["numMinutes"].replace(0, 1)
+            df["def_per_min"] = df["defensiveScore"] / df["numMinutes"].replace(0, 1)
         
-        # === Step 2: Combine & Clean ===
+        # === Step 2: Combine, Normalize, and Clean ===
         combined_players = pd.concat([home_players, away_players], ignore_index=True)
         combined_players["fullName"] = combined_players["firstName"] + " " + combined_players["lastName"]
         
-        # Clean up invalid values
+        # Normalize per-minute scores to a 0–10 scale
+        off_min, off_max = combined_players["off_per_min"].min(), combined_players["off_per_min"].max()
+        def_min, def_max = combined_players["def_per_min"].min(), combined_players["def_per_min"].max()
+        off_range = off_max - off_min if off_max - off_min != 0 else 1
+        def_range = def_max - def_min if def_max - def_min != 0 else 1
+        
+        combined_players["OffensiveRating"] = 10 * (combined_players["off_per_min"] - off_min) / off_range
+        combined_players["DefensiveRating"] = 10 * (combined_players["def_per_min"] - def_min) / def_range
+        
+        # Round for better UI
+        combined_players["OffensiveRating"] = combined_players["OffensiveRating"].round(2)
+        combined_players["DefensiveRating"] = combined_players["DefensiveRating"].round(2)
+        
+        # Clean up infinite/NaN
         for col in ["OffensiveRating", "DefensiveRating"]:
             combined_players[col] = combined_players[col].replace([np.inf, -np.inf], np.nan)
         
-        # Filter players with at least 10 minutes played
+        # Filter: Played at least 10 minutes
         combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 10].dropna(
             subset=["OffensiveRating", "DefensiveRating"]
         )
+
         
         # === Step 3: Interactive Visualization ===
         st.subheader("📊 Player Impact Ratings ")
