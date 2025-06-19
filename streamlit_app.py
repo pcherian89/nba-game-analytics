@@ -480,12 +480,13 @@ if "vs" in user_input.lower():
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
         
-        # === AI-Generated Summary ===
+        # === AI-Generated Game Summary with Session Persistence ===
         st.subheader("🧠 AI Game Summary")
         
-        if st.button("Generate AI Summary"):
+        # Check if summary already exists for current game
+        if "ai_summary" not in st.session_state or st.session_state.get("summary_game_id") != selected_gameId:
         
-            # Convert DataFrames to markdown
+            # Convert team + player stats to markdown
             team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
                                   "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
         
@@ -495,35 +496,40 @@ if "vs" in user_input.lower():
         
             prompt = f"""
             You are a professional sports analyst. Analyze the following NBA game using the stats below:
-            
+        
             TEAM STATS:
             {team_md}
-            
+        
             PLAYER STATS:
             {player_md}
-            
-            Generate a structured analysis with the following sections:
-            
-            1. **Game Summary** – Provide a brief overview of the final score, standout players, and momentum shifts.
-            2. **Offensive Analysis** – Discuss offensive efficiency, field goal %, 3P%, assists, and player offensive ratings. Highlight who drove scoring and any inefficiencies.
-            3. **Defensive Analysis** – Analyze steals, blocks, defensive rebounds, and defensive ratings. Identify defensive anchors or lapses.
-            4. **Bench & Support Players** – Review bench contributions, depth scoring, and any surprising impact players.
-            5. **Final Verdict** – Conclude why the winning team prevailed and what limited the losing side.
-            
-            Keep your tone professional but readable, like a sports media recap. Use specific stat references when helpful.
-            """
-
         
-            with st.spinner("Analyzing game..."):
+            Generate a structured analysis with the following sections:
+        
+            1. **Game Summary** – Brief overview of final score, standout players, momentum shifts.
+            2. **Offensive Analysis** – Field goal %, 3P%, assists, offensive ratings, top scorers.
+            3. **Defensive Analysis** – Steals, blocks, defensive rebounds, defensive ratings, impact defenders.
+            4. **Bench & Support Players** – Contributions from depth players or surprises.
+            5. **Final Verdict** – Why the winner prevailed and what limited the losing team.
+        
+            Keep the tone analytical but readable — like a top-tier sports recap.
+            """
+        
+            # Generate + store summary
+            with st.spinner("🧠 Generating AI game summary..."):
                 response = client.chat.completions.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.6,
-                    max_tokens=500
+                    max_tokens=600
                 )
+                summary_text = response.choices[0].message.content
+                st.session_state.ai_summary = summary_text
+                st.session_state.summary_game_id = selected_gameId
         
-            st.markdown("### 📝 AI-Generated Game Summary")
-            st.write(response.choices[0].message.content)
+        # Display stored summary
+        st.markdown("### 📝 AI-Generated Game Summary")
+        st.write(st.session_state.ai_summary)
+
 
         st.markdown("### 🤖 Bot Analyst")
         st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
