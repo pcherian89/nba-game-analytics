@@ -561,12 +561,32 @@ if "vs" in user_input.lower():
         chain = LLMChain(llm=llm, prompt=prompt_template)
         
         # Input and response
+        # === Session State Initialization ===
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+        
+        # === Chat Input & Response Handling ===
         user_question = st.chat_input("Ask your basketball question...")
+        
         if user_question:
             with st.spinner("🧠 Analyzing game data..."):
                 response = chain.run({"context": context, "question": user_question})
-            st.markdown("#### 🔍 AI Analyst Response")
-            st.write(response)
+                st.session_state.chat_history.append(("You", user_question))
+                st.session_state.chat_history.append(("Bot", response))
+        
+        # === Display Chat History ===
+        if st.session_state.chat_history:
+            st.markdown("#### 🤖 Bot Analyst Conversation")
+        
+            for sender, msg in st.session_state.chat_history:
+                if sender == "You":
+                    st.markdown(f"🧍‍♂️ **{sender}**: {msg}")
+                else:
+                    st.markdown(f"🤖 **{sender}**: {msg}")
+        
+            # Add reset button
+            if st.button("🧹 Clear Chat"):
+                st.session_state.chat_history = []
 
             
     else:
