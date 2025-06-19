@@ -356,55 +356,63 @@ if "vs" in user_input.lower():
         st.markdown("#### 📈 Player Summary")
         st.table(summary_df.set_index("Metric"))
 
-        from langchain_openai import ChatOpenAI
         from langchain.prompts import ChatPromptTemplate
+        from langchain_openai import ChatOpenAI
         from langchain.chains import LLMChain
         
-        # === Player Summary Agent ===
-        st.subheader("🧠 AI Scouting Summary")
-        
-        # Prepare a simplified stat dict
-        summary_stats = {
-            "Player": scout_data['fullName'],
-            "Team": scout_data['playerteamName'],
-            "Minutes Played": round(scout_data['numMinutes'], 1),
-            "Points": scout_data['points'],
-            "Assists": scout_data['assists'],
-            "Turnovers": scout_data['turnovers'],
-            "Rebounds": scout_data['reboundsTotal'],
-            "FG%": f"{scout_data['fieldGoalsPercentage']:.1%}",
-            "3P%": f"{scout_data['threePointersPercentage']:.1%}",
-            "FT%": f"{scout_data['freeThrowsPercentage']:.1%}",
-            "Steals": scout_data['steals'],
-            "Blocks": scout_data['blocks'],
-            "Plus/Minus": scout_data['plusMinusPoints'],
-            "Offensive Rating": round(scout_data['OffensiveRating'], 2),
-            "Defensive Rating": round(scout_data['DefensiveRating'], 2),
-        }
-        
-        # Prompt template
+        # === Define prompt template ===
         summary_prompt = ChatPromptTemplate.from_template("""
-        You are a professional basketball scout. Based on the following player statistics:
+        You are a basketball performance analyst.
         
+        Below are game stats for {player_name}, who played {minutes} minutes in a recent game.
+        
+        Your task is to write a concise performance summary with the following:
+        - Key strengths (e.g., efficient scoring, strong defense, rebounding, etc.)
+        - Notable weaknesses (e.g., low shooting %, high turnovers, low impact)
+        - Clear suggestions for improvement, if applicable
+        
+        Important:
+        - In this system, higher Offensive and Defensive Ratings indicate better performance.
+        - Consider the player's stats relative to their minutes played.
+        - Do not assume values are low or high without comparing to playing time or efficiency.
+        - Keep the summary in 2–3 clear bullet points, each up to 50 words max.
+        
+        Stats:
         {stats}
-        
-        Write a short scouting summary with:
-        1. Key strengths
-        2. Key weaknesses
-        3. Suggestions for improvement
-        
-        Keep it objective and under 120 words.
         """)
         
-        # Initialize LLM
-        llm = ChatOpenAI(temperature=0.5, model="gpt-4")  # or "gpt-3.5-turbo" if preferred
-        chain = LLMChain(llm=llm, prompt=summary_prompt)
+        # === Initialize LLM ===
+        llm = ChatOpenAI(model="gpt-4", temperature=0)
+        summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
         
-        # Run chain
-        response = chain.run({"stats": summary_stats})
+        # === Prepare input ===
+        player_name = scout_data["fullName"]
+        minutes = scout_data["numMinutes"]
+        stats_text = f"""
+        Points: {scout_data['points']}
+        Assists: {scout_data['assists']}
+        Turnovers: {scout_data['turnovers']}
+        FG%: {scout_data['fieldGoalsPercentage']:.1%}
+        3P%: {scout_data['threePointersPercentage']:.1%}
+        FT%: {scout_data['freeThrowsPercentage']:.1%}
+        Rebounds: {scout_data['reboundsTotal']}
+        Steals: {scout_data['steals']}
+        Blocks: {scout_data['blocks']}
+        Plus/Minus: {scout_data['plusMinusPoints']}
+        Offensive Rating: {scout_data['OffensiveRating']:.2f}
+        Defensive Rating: {scout_data['DefensiveRating']:.2f}
+        """
         
-        st.write(response)
-
+        # === Run the agent ===
+        summary_output = summary_chain.run({
+            "player_name": player_name,
+            "minutes": minutes,
+            "stats": stats_text
+        })
+        
+        # === Display the scouting summary ===
+        st.markdown("### 🧠 Scouting Summary Report")
+        st.markdown(summary_output)
 
             
         st.subheader("📊 Compare Any Two Players")
