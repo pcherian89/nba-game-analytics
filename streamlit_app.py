@@ -78,25 +78,23 @@ if "vs" in user_input.lower():
 
         def display_player_cards(players_df, team_label):
             st.subheader(f"🏀 {team_label} Player Cards")
-            for _, row in players_df.iterrows():
-                full_name = f"{row['firstName']} {row['lastName']}"
-                player_id = int(row['personId'])
-                image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
         
-                col1, col2 = st.columns([1, 4])
-                with col1:
-                    st.image(image_url, width=100, caption=full_name)
-                with col2:
-                    stats = {
-                        "Points": row.get("points", 0),
-                        "Assists": row.get("assists", 0),
-                        "Rebounds": row.get("reboundsTotal", 0),
-                        "Turnovers": row.get("turnovers", 0),
-                        "+/-": row.get("plusMinusPoints", 0)
-                    }
-                    for stat, value in stats.items():
-                        st.markdown(f"**{stat}**: {value}")
-                st.markdown("---")
+            rows = [players_df.iloc[i:i+3] for i in range(0, len(players_df), 3)]
+            for row_df in rows:
+                cols = st.columns(len(row_df))
+                for idx, player in enumerate(row_df.itertuples(index=False)):
+                    full_name = f"{player.firstName} {player.lastName}"
+                    player_id = int(player.personId)
+                    image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
+        
+                    with cols[idx]:
+                        st.image(image_url, width=100, caption=full_name)
+                        st.markdown(f"**Points:** {player.points}")
+                        st.markdown(f"**Assists:** {player.assists}")
+                        st.markdown(f"**Rebounds:** {player.reboundsTotal}")
+                        st.markdown(f"**Turnovers:** {player.turnovers}")
+                        st.markdown(f"**+/-:** {player.plusMinusPoints}")
+
 
         display_player_cards(home_players, home_team)
         display_player_cards(away_players, away_team)
