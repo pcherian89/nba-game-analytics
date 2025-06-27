@@ -76,12 +76,38 @@ if "vs" in user_input.lower():
             'turnovers', 'foulsPersonal', 'plusMinusPoints'
         ]
 
-        st.subheader(f"📊 {home_team} Player Stats")
-        st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
+        def display_player_cards(players_df, team_label):
+        st.subheader(f"🏀 {team_label} Player Cards")
+        for _, row in players_df.iterrows():
+            full_name = f"{row['firstName']} {row['lastName']}"
+            player_id = int(row['personId'])
+            image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
+    
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                st.image(image_url, width=100, caption=full_name)
+            with col2:
+                stats = {
+                    "Points": row.get("points", 0),
+                    "Assists": row.get("assists", 0),
+                    "Rebounds": row.get("reboundsTotal", 0),
+                    "Turnovers": row.get("turnovers", 0),
+                    "+/-": row.get("plusMinusPoints", 0)
+                }
+                for stat, value in stats.items():
+                    st.markdown(f"**{stat}**: {value}")
+            st.markdown("---")
+
+        display_player_cards(home_players, home_team)
+        display_player_cards(away_players, away_team)
+
+
+        # st.subheader(f"📊 {home_team} Player Stats")
+        # st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
 
        
-        st.subheader(f"📊 {away_team} Player Stats")
-        st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
+        # st.subheader(f"📊 {away_team} Player Stats")
+        # st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
 
         # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
