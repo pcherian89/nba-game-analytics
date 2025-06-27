@@ -307,7 +307,32 @@ if "vs" in user_input.lower():
         
         st.plotly_chart(fig, use_container_width=True)
 
+        # === MVP Comparison Cards with Dynamic Player Images ===
+        st.subheader("🏆 MVP Comparison – Player Cards")
+        
+        # Get top 3 players by Offensive Rating
+        top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3).reset_index(drop=True)
+        
+        # Create 3 columns for layout
+        cols = st.columns(3)
+        
+        for idx, row in top3.iterrows():
+            with cols[idx % 3]:
+                # Dynamically build image URL from personId
+                image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(row['personId'])}.png"
+                st.image(image_url, width=120)
+        
+                # Display player name and stats
+                st.markdown(f"**{row['fullName']}**")
+                st.markdown(f"**Points:** {row['points']}")
+                st.markdown(f"**Assists:** {row['assists']}")
+                st.markdown(f"**Rebounds:** {row['reboundsTotal']}")
+                st.markdown(f"**Turnovers:** {row['turnovers']}")
+                st.markdown(f"**Offensive Rating:** {row['OffensiveRating']:.2f}")
+                st.markdown(f"**Defensive Rating:** {row['DefensiveRating']:.2f}")
+                st.markdown(f"**+/- Impact:** {row['plusMinusPoints']}")
 
+        
         st.subheader("🏆 MVP Comparison Table – Top 3 Performers")
 
         # Top 3 players by Offensive Rating
