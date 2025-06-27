@@ -76,8 +76,38 @@ if "vs" in user_input.lower():
             'turnovers', 'foulsPersonal', 'plusMinusPoints'
         ]
 
+        st.subheader(f"🏠 {home_team} Player Stats")
+
+        for _, row in home_players.iterrows():
+            full_name = row["firstName"] + " " + row["lastName"]
+            player_id = int(row["personId"])
+            image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
+            
+            col1, col2 = st.columns([1, 5])
+            with col1:
+                st.image(image_url, width=80)
+            with col2:
+                st.markdown(f"**{full_name}**")
+        
+        st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
+
         st.subheader(f"📊 {home_team} Player Stats")
         st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
+
+        st.subheader(f"🛫 {away_team} Player Stats")
+
+        for _, row in away_players.iterrows():
+            full_name = row["firstName"] + " " + row["lastName"]
+            player_id = int(row["personId"])
+            image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
+            
+            col1, col2 = st.columns([1, 5])
+            with col1:
+                st.image(image_url, width=80)
+            with col2:
+                st.markdown(f"**{full_name}**")
+        
+        st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
 
         st.subheader(f"📊 {away_team} Player Stats")
         st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
