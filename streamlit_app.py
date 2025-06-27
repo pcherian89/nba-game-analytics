@@ -79,7 +79,7 @@ if "vs" in user_input.lower():
         def display_player_cards(players_df, team_label):
             st.subheader(f"🏀 {team_label} Player Cards")
         
-            rows = [players_df.iloc[i:i+5] for i in range(0, len(players_df), 5)]
+            rows = [players_df.iloc[i:i+6] for i in range(0, len(players_df), 6)]
             for row_df in rows:
                 cols = st.columns(len(row_df))
                 for idx, player in enumerate(row_df.itertuples(index=False)):
