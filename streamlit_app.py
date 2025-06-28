@@ -420,6 +420,61 @@ if "vs" in user_input.lower():
         st.markdown("#### 📈 Player Summary")
         st.table(summary_df.set_index("Metric"))
 
+        import streamlit as st
+        import pandas as pd
+        
+        # === Load player stats ===
+        # Assuming combined_players DataFrame is already available
+        
+        # === Define Player Images CDN (use NBA CDN or local images ideally) ===
+        def get_player_image_url(player_id):
+            return f"https://cdn.nba.com/headshots/nba/latest/260x190/{player_id}.png"
+        
+        # === Dropdown to select player ===
+        player_names = combined_players["fullName"].unique()
+        selected_player = st.selectbox("Select a player to view scouting card:", player_names)
+        
+        # === Filter selected player's stats ===
+        player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
+        
+        # === Display headshot + name ===
+        st.markdown(f"## 🧾 Scouting Card: {selected_player}")
+        player_id = player_row["personId"]
+        image_url = get_player_image_url(player_id)
+        st.image(image_url, width=150)
+        
+        # === Offensive Summary ===
+        st.markdown("### 🔥 Offensive Summary")
+        offensive_stats = {
+            "Points": player_row["points"],
+            "Assists": player_row["assists"],
+            "Turnovers": player_row["turnovers"],
+            "FG%": f"{player_row['fieldGoalsPercentage']*100:.1f}%",
+            "3P%": f"{player_row['threePointersPercentage']*100:.1f}%",
+            "FT%": f"{player_row['freeThrowsPercentage']*100:.1f}%"
+        }
+        st.table(pd.DataFrame(offensive_stats.items(), columns=["Metric", "Value"]))
+        
+        # === Defensive Summary ===
+        st.markdown("### 🧱 Defensive Summary")
+        defensive_stats = {
+            "Rebounds": player_row["reboundsTotal"],
+            "Steals": player_row["steals"],
+            "Blocks": player_row["blocks"]
+        }
+        st.table(pd.DataFrame(defensive_stats.items(), columns=["Metric", "Value"]))
+        
+        # === Player Summary ===
+        st.markdown("### 📈 Player Summary")
+        summary_stats = {
+            "Minutes Played": round(player_row["numMinutes"], 2),
+            "Plus/Minus": player_row["plusMinusPoints"],
+            "Offensive Rating": round(player_row["OffensiveRating"], 2),
+            "Defensive Rating": round(player_row["DefensiveRating"], 2)
+        }
+        st.table(pd.DataFrame(summary_stats.items(), columns=["Metric", "Value"]))
+
+
         from langchain.prompts import ChatPromptTemplate
         from langchain_openai import ChatOpenAI
         from langchain.chains import LLMChain
