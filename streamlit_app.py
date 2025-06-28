@@ -211,7 +211,20 @@ if "vs" in user_input.lower():
         fig = px.bar(
             top6,
             x=stat_option,
-            y="full
+            y="fullName",
+            color="playerteamName",
+            orientation="h",
+            title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
+            labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
+            color_discrete_sequence=["Green", "Red"]
+        )
+        
+        # Reverse Y-axis (so highest is on top)
+        fig.update_layout(yaxis=dict(autorange="reversed"))
+        
+        # === Display Chart in Streamlit ===
+        st.plotly_chart(fig, use_container_width=True)
+
 
 
         
