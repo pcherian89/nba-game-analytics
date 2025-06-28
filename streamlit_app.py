@@ -353,37 +353,33 @@ if "vs" in user_input.lower():
         image_url = get_player_image_url(player_id)
         st.image(image_url, width=150)
         
-        # === Player Image & Name Centered ===
-        st.markdown(f"## 🧾 Scouting Card: {selected_player}", unsafe_allow_html=True)
-        st.image(image_url, width=150)
-        
-        # === 3 Side-by-Side Stat Columns Below ===
+        # === 3 Side-by-Side Columns ===
         col1, col2, col3 = st.columns(3)
         
         # === Column 1: Offensive Stats ===
         with col1:
             st.markdown("### 🔥 Offensive")
-            st.metric("Points", f"{player_row['points']}")
-            st.metric("Assists", f"{player_row['assists']}")
-            st.metric("Turnovers", f"{player_row['turnovers']}")
-            st.metric("FG%", f"{player_row['fieldGoalsPercentage']*100:.1f}%")
-            st.metric("3P%", f"{player_row['threePointersPercentage']*100:.1f}%")
-            st.metric("FT%", f"{player_row['freeThrowsPercentage']*100:.1f}%")
+            st.markdown(f"**Points:** {player_row['points']}")
+            st.markdown(f"**Assists:** {player_row['assists']}")
+            st.markdown(f"**Turnovers:** {player_row['turnovers']}")
+            st.markdown(f"**FG%:** {player_row['fieldGoalsPercentage']*100:.1f}%")
+            st.markdown(f"**3P%:** {player_row['threePointersPercentage']*100:.1f}%")
+            st.markdown(f"**FT%:** {player_row['freeThrowsPercentage']*100:.1f}%")
         
         # === Column 2: Defensive Stats ===
         with col2:
             st.markdown("### 🧱 Defensive")
-            st.metric("Rebounds", f"{player_row['reboundsTotal']}")
-            st.metric("Steals", f"{player_row['steals']}")
-            st.metric("Blocks", f"{player_row['blocks']}")
+            st.markdown(f"**Rebounds:** {player_row['reboundsTotal']}")
+            st.markdown(f"**Steals:** {player_row['steals']}")
+            st.markdown(f"**Blocks:** {player_row['blocks']}")
         
         # === Column 3: Summary Stats ===
         with col3:
             st.markdown("### 📊 Summary")
-            st.metric("Minutes", f"{round(player_row['numMinutes'], 1)}")
-            st.metric("Plus/Minus", f"{player_row['plusMinusPoints']}")
-            st.metric("Off Rating", f"{round(player_row['OffensiveRating'], 2)}")
-            st.metric("Def Rating", f"{round(player_row['DefensiveRating'], 2)}")
+            st.markdown(f"**Minutes Played:** {round(player_row['numMinutes'], 1)}")
+            st.markdown(f"**Plus/Minus:** {player_row['plusMinusPoints']}")
+            st.markdown(f"**Off Rating:** {round(player_row['OffensiveRating'], 2)}")
+            st.markdown(f"**Def Rating:** {round(player_row['DefensiveRating'], 2)}")
 
         from langchain.prompts import ChatPromptTemplate
         from langchain_openai import ChatOpenAI
