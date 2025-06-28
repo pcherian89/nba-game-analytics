@@ -504,9 +504,6 @@ if "vs" in user_input.lower():
         llm = ChatOpenAI(model="gpt-4", temperature=0)
         summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
 
-        # Filter the selected player's data
-        scout_data = player_df[player_df["fullName"] == selected_player].iloc[0]
-
         # === Prepare input ===
         player_name = scout_data["fullName"]
         minutes = scout_data["numMinutes"]
