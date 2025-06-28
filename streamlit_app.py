@@ -449,49 +449,45 @@ if "vs" in user_input.lower():
         st.markdown("### 🧠 Scouting Summary Report")
         st.markdown(summary_output)
 
-            
+        # === TOP OF FILE (add this CSS once) ===
+        st.markdown("""
+            <style>
+            /* Reduce padding in table rows */
+            thead tr th, tbody tr td {
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+                font-size: 14px !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         
-
-        import streamlit as st
-        import pandas as pd
         
-        # === Function to get NBA player headshot URL ===
-        def get_player_image_url(player_id):
-            return f"https://cdn.nba.com/headshots/nba/latest/260x190/{player_id}.png"
-        
-        # === Section Header ===
+        # === Compare Players Section ===
         st.subheader("📊 Compare Any Two Players")
         
-        # === Filter valid players ===
+        # Filter valid players
         valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
         player_names = valid_players["fullName"].unique().tolist()
         
-        # === Player Selection Dropdowns ===
+        # Create two dropdowns
         col1, col2 = st.columns(2)
         with col1:
-            player1 = st.selectbox("Select Player 1", player_names, key="p1")
+            player1 = st.selectbox("Select Player 1", player_names, key="compare_player_1")
         with col2:
-            player2 = st.selectbox("Select Player 2", player_names, key="p2")
+            player2 = st.selectbox("Select Player 2", player_names, key="compare_player_2")
         
-        # === Extract Player Stats ===
+        # Get player stats
         p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
         p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
         
-        # === Show Headshots and Names ===
-        p1_image_url = get_player_image_url(p1_stats["personId"])
-        p2_image_url = get_player_image_url(p2_stats["personId"])
+        # Show headshots
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(get_player_image_url(player1), width=150)
+        with col2:
+            st.image(get_player_image_url(player2), width=150)
         
-        img_col1, img_col2 = st.columns(2)
-        with img_col1:
-            st.image(p1_image_url, width=150)
-            st.markdown(f"<div style='text-align:center'><strong>{player1}</strong></div>", unsafe_allow_html=True)
-        with img_col2:
-            st.image(p2_image_url, width=150)
-            st.markdown(f"<div style='text-align:center'><strong>{player2}</strong></div>", unsafe_allow_html=True)
-        
-        st.markdown("---")
-        
-        # === Stats to Compare ===
+        # Stats to compare
         compare_fields = [
             "numMinutes", "points", "assists", "reboundsOffensive", "reboundsDefensive",
             "reboundsTotal", "steals", "blocks", "turnovers", "foulsPersonal",
@@ -501,14 +497,7 @@ if "vs" in user_input.lower():
             "plusMinusPoints", "OffensiveRating", "DefensiveRating"
         ]
         
-        # === Create Comparison Table ===
-        comparison_table = pd.DataFrame({
-            "Stat": [field for field in compare_fields],
-            player1: [p1_stats[field] for field in compare_fields],
-            player2: [p2_stats[field] for field in compare_fields]
-        })
-        
-        # === Rename for readability ===
+        # Rename display labels
         rename_map = {
             "numMinutes": "Minutes Played", "points": "Points", "assists": "Assists",
             "reboundsOffensive": "Offensive Rebounds", "reboundsDefensive": "Defensive Rebounds",
@@ -519,10 +508,17 @@ if "vs" in user_input.lower():
             "freeThrowsMade": "FT Made", "freeThrowsAttempted": "FT Attempted", "freeThrowsPercentage": "FT%",
             "plusMinusPoints": "+/-", "OffensiveRating": "Offensive Rating", "DefensiveRating": "Defensive Rating"
         }
-        comparison_table["Stat"] = comparison_table["Stat"].replace(rename_map)
         
-        # === Display Comparison Table ===
+        # Assemble comparison table
+        comparison_table = pd.DataFrame({
+            "Stat": [rename_map.get(field, field) for field in compare_fields],
+            player1: [p1_stats[field] for field in compare_fields],
+            player2: [p2_stats[field] for field in compare_fields]
+        })
+        
+        # Display table
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
+
   
         # === AI-Generated Game Summary with Session Persistence ===
         st.subheader("🧠 Game Summary")
