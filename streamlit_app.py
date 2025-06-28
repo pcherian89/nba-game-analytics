@@ -368,25 +368,31 @@ if "vs" in user_input.lower():
             st.metric("3P%", f"{player_row['threePointersPercentage']*100:.1f}%")
             st.metric("FT%", f"{player_row['freeThrowsPercentage']*100:.1f}%")
 
-        # === Defensive Summary ===
         st.markdown("### 🧱 Defensive Summary")
-        defensive_stats = {
-            "Rebounds": player_row["reboundsTotal"],
-            "Steals": player_row["steals"],
-            "Blocks": player_row["blocks"]
-        }
-        st.table(pd.DataFrame(defensive_stats.items(), columns=["Metric", "Value"]))
+        col1, col2, col3 = st.columns(3)
         
-        # === Player Summary ===
-        st.markdown("### 📈 Player Summary")
-        summary_stats = {
-            "Minutes Played": round(player_row["numMinutes"], 2),
-            "Plus/Minus": player_row["plusMinusPoints"],
-            "Offensive Rating": round(player_row["OffensiveRating"], 2),
-            "Defensive Rating": round(player_row["DefensiveRating"], 2)
-        }
-        st.table(pd.DataFrame(summary_stats.items(), columns=["Metric", "Value"]))
+        with col1:
+            st.metric("Rebounds", f"{player_row['reboundsTotal']}")
+        
+        with col2:
+            st.metric("Steals", f"{player_row['steals']}")
+        
+        with col3:
+            st.metric("Blocks", f"{player_row['blocks']}")
 
+        
+        st.markdown("### 📈 Player Summary")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Minutes Played", f"{round(player_row['numMinutes'], 2)}")
+        
+        with col2:
+            st.metric("Plus/Minus", f"{player_row['plusMinusPoints']}")
+        
+        with col3:
+            st.metric("Off Rating", f"{round(player_row['OffensiveRating'], 2)}")
+            st.metric("Def Rating", f"{round(player_row['DefensiveRating'], 2)}")
 
         from langchain.prompts import ChatPromptTemplate
         from langchain_openai import ChatOpenAI
