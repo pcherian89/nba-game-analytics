@@ -452,94 +452,87 @@ if "vs" in user_input.lower():
         import streamlit as st
         import pandas as pd
         
-        # Sample data setup (replace with your real data)
-        # combined_players = pd.read_csv("your_cleaned_combined_players.csv")
+        # Ensure combined_players is already defined
+        # e.g., combined_players = pd.read_csv("your_cleaned_player_data.csv")
         
         st.subheader("📊 Compare Any Two Players")
         
-        # Only include players with minutes recorded
+        # Only players who recorded minutes
         valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
         player_names = valid_players["fullName"].unique().tolist()
         
-        # --- Player Select ---
-        col_select1, col_select2 = st.columns(2)
-        with col_select1:
-            player1_name = st.selectbox("Select Player 1", player_names, key="compare1")
-        with col_select2:
-            player2_name = st.selectbox("Select Player 2", player_names, key="compare2")
-        
-        # Get player rows
-        player1 = valid_players[valid_players["fullName"] == player1_name].iloc[0]
-        player2 = valid_players[valid_players["fullName"] == player2_name].iloc[0]
-        
-        # --- Image function ---
-        def get_player_image_url(player_row):
-            try:
-                return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(player_row['personId'])}.png"
-            except:
-                return "https://cdn.nba.com/manage/2021/10/nba-headshot-placeholder.png"
-        
-        # --- Display player card ---
-        def display_player_card(player_row):
-            st.image(get_player_image_url(player_row), width=150)
-            st.markdown(f"### {player_row['fullName']}")
-            st.markdown("---")
-        
-            stats = {
-                "Minutes Played": round(player_row["numMinutes"], 2),
-                "Points": player_row["points"],
-                "Assists": player_row["assists"],
-                "Offensive Rebounds": player_row["reboundsOffensive"],
-                "Defensive Rebounds": player_row["reboundsDefensive"],
-                "Total Rebounds": player_row["reboundsTotal"],
-                "Steals": player_row["steals"],
-                "Blocks": player_row["blocks"],
-                "Turnovers": player_row["turnovers"],
-                "Fouls": player_row["foulsPersonal"],
-                "FG%": round(player_row["fieldGoalsPercentage"], 2) if pd.notnull(player_row["fieldGoalsPercentage"]) else "N/A",
-                "3P%": round(player_row["threePointersPercentage"], 2) if pd.notnull(player_row["threePointersPercentage"]) else "N/A",
-                "FT%": round(player_row["freeThrowsPercentage"], 2) if pd.notnull(player_row["freeThrowsPercentage"]) else "N/A",
-                "+/-": player_row["plusMinusPoints"],
-                "Offensive Rating": round(player_row["OffensiveRating"], 2) if pd.notnull(player_row["OffensiveRating"]) else "N/A",
-                "Defensive Rating": round(player_row["DefensiveRating"], 2) if pd.notnull(player_row["DefensiveRating"]) else "N/A"
-            }
-        
-            for stat, value in stats.items():
-                st.markdown(f"**{stat}:** {value}")
-        
-        # --- Display comparison bars ---
-        def display_comparison_bars(stat_fields):
-            for stat in stat_fields:
-                val1 = player1[stat]
-                val2 = player2[stat]
-        
-                # Normalize for bar chart (optional tweak)
-                max_val = max(val1, val2, 1)
-                percent1 = val1 / max_val if max_val != 0 else 0
-                percent2 = val2 / max_val if max_val != 0 else 0
-        
-                col1, col2 = st.columns([2, 6])
-                with col1:
-                    st.markdown(f"**{stat}**")
-                with col2:
-                    st.progress(percent1, text=f"{player1_name}: {round(val1, 1)}")
-                    st.progress(percent2, text=f"{player2_name}: {round(val2, 1)}")
-        
-        # --- Display cards ---
+        # Select players
         col1, col2 = st.columns(2)
         with col1:
-            display_player_card(player1)
+            player1 = st.selectbox("Select Player 1", player_names, key="p1")
         with col2:
-            display_player_card(player2)
+            player2 = st.selectbox("Select Player 2", player_names, key="p2")
         
-        # --- Comparison bar chart ---
-        st.markdown("### 🔄 Side-by-Side Stat Comparison")
-        stat_fields_to_compare = [
-            "points", "assists", "reboundsTotal", "steals", "blocks", "turnovers",
-            "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
-            "OffensiveRating", "DefensiveRating"
-        ]
-        display_comparison_bars(stat_fields_to_compare)
+        # Get stats
+        p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
+        p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
+        
+        # Headshot function
+        def get_headshot_url(personId):
+            return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(personId)}.png"
+        
+        # Stats to compare
+        compare_fields = {
+            "Points": "points",
+            "Assists": "assists",
+            "Total Rebounds": "reboundsTotal",
+            "Steals": "steals",
+            "Blocks": "blocks",
+            "Turnovers": "turnovers",
+            "FG%": "fieldGoalsPercentage",
+            "3P%": "threePointersPercentage",
+            "FT%": "freeThrowsPercentage",
+            "Offensive Rating": "OffensiveRating",
+            "Defensive Rating": "DefensiveRating"
+        }
+        
+        # Show profile and stat bars
+        left, right = st.columns(2)
+        
+        with left:
+            st.image(get_headshot_url(p1_stats["personId"]), width=180)
+            st.markdown(f"### {player1}")
+        
+        with right:
+            st.image(get_headshot_url(p2_stats["personId"]), width=180)
+            st.markdown(f"### {player2}")
+        
+        st.markdown("## 🔄 Side-by-Side Stat Comparison")
+        
+        for label, field in compare_fields.items():
+            p1_val = p1_stats.get(field, 0)
+            p2_val = p2_stats.get(field, 0)
+            max_val = max(p1_val, p2_val, 1)
+        
+            col1, col2 = st.columns([1, 5])
+            with col1:
+                st.markdown(f"**{label}**")
+        
+            col_left, col_right = st.columns(2)
+        
+            with col_left:
+                st.markdown(f"{player1}: {round(p1_val, 1)}")
+                st.markdown(
+                    f"""
+                    <div style="background-color:#eee; height:10px; border-radius:5px;">
+                        <div style="width:{(p1_val/max_val)*100}%; background-color:green; height:10px; border-radius:5px;"></div>
+                    </div>
+                    """, unsafe_allow_html=True)
+        
+            with col_right:
+                st.markdown(f"{player2}: {round(p2_val, 1)}")
+                st.markdown(
+                    f"""
+                    <div style="background-color:#eee; height:10px; border-radius:5px;">
+                        <div style="width:{(p2_val/max_val)*100}%; background-color:red; height:10px; border-radius:5px;"></div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
 
 
   
