@@ -353,18 +353,21 @@ if "vs" in user_input.lower():
         image_url = get_player_image_url(player_id)
         st.image(image_url, width=150)
         
-        # === Offensive Summary ===
         st.markdown("### 🔥 Offensive Summary")
-        offensive_stats = {
-            "Points": player_row["points"],
-            "Assists": player_row["assists"],
-            "Turnovers": player_row["turnovers"],
-            "FG%": f"{player_row['fieldGoalsPercentage']*100:.1f}%",
-            "3P%": f"{player_row['threePointersPercentage']*100:.1f}%",
-            "FT%": f"{player_row['freeThrowsPercentage']*100:.1f}%"
-        }
-        st.table(pd.DataFrame(offensive_stats.items(), columns=["Metric", "Value"]))
+        col1, col2, col3 = st.columns(3)
         
+        with col1:
+            st.metric("Points", f"{player_row['points']}")
+            st.metric("Assists", f"{player_row['assists']}")
+        
+        with col2:
+            st.metric("Turnovers", f"{player_row['turnovers']}")
+            st.metric("FG%", f"{player_row['fieldGoalsPercentage']*100:.1f}%")
+        
+        with col3:
+            st.metric("3P%", f"{player_row['threePointersPercentage']*100:.1f}%")
+            st.metric("FT%", f"{player_row['freeThrowsPercentage']*100:.1f}%")
+
         # === Defensive Summary ===
         st.markdown("### 🧱 Defensive Summary")
         defensive_stats = {
