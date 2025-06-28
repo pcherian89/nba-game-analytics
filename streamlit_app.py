@@ -184,7 +184,9 @@ if "vs" in user_input.lower():
         
         
         # === User Selects Stat to View ===
-        stat_option = st.selectbox("📈 View top players by:", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
+        st.markdown("### 📈 **View top players by:**")
+        stat_option = st.selectbox("", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
+
         
         # === Filter Top 6 Players for the Selected Stat ===
         top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
@@ -198,7 +200,7 @@ if "vs" in user_input.lower():
             orientation="h",
             title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
             labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
-            color_discrete_sequence=["dodgerblue", "darkorange"]  # Customize color mapping
+            color_discrete_sequence=["Green", "Red"]  # Customize color mapping
         )
         
         # Reverse Y-axis (so highest is on top)
