@@ -183,31 +183,36 @@ if "vs" in user_input.lower():
             )
         
         
+        import streamlit as st
+        import pandas as pd
+        import plotly.express as px
+        
+        # === Assume combined_players is already loaded with columns:
+        # 'fullName', 'playerteamName', 'points', 'assists', 'reboundsTotal', 'turnovers', 'plusMinusPoints', 'playerImageURL'
+        
         # === User Selects Stat to View ===
         st.markdown("### 📈 **View top players by:**")
-        stat_option = st.selectbox("", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
-
+        stat_option = st.selectbox("", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"], key="stat_selector")
         
         # === Filter Top 6 Players for the Selected Stat ===
         top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
+        
+        # === Display Headshots + Stat Cards ===
+        st.markdown("### 🧍‍♂️ **Top 6 Players**")
+        player_cols = st.columns(6)
+        
+        for i, row in enumerate(top6.itertuples()):
+            with player_cols[i]:
+                st.image(row.playerImageURL, width=80)
+                st.markdown(f"<b>{row.fullName}</b>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:16px'>{stat_option.title()}: <b>{getattr(row, stat_option):.1f}</b></div>", unsafe_allow_html=True)
         
         # === Create Interactive Plotly Bar Chart ===
         fig = px.bar(
             top6,
             x=stat_option,
-            y="fullName",
-            color="playerteamName",
-            orientation="h",
-            title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
-            labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
-            color_discrete_sequence=["Green", "Red"]  # Customize color mapping
-        )
-        
-        # Reverse Y-axis (so highest is on top)
-        fig.update_layout(yaxis=dict(autorange="reversed"))
-        
-        # === Display Chart in Streamlit ===
-        st.plotly_chart(fig, use_container_width=True)
+            y="full
+
 
         
         # === Step 1: Compute Custom Scores and Per-Minute Ratings ===
