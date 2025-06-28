@@ -197,7 +197,7 @@ if "vs" in user_input.lower():
             orientation="h",
             title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
             labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
-            color_discrete_sequence=["dodgerblue", "darkorange"]  # Customize color mapping
+            color_discrete_sequence=["Green", "Red"]  # Customize color mapping
         )
         
         # Reverse Y-axis (so highest is on top)
@@ -293,7 +293,7 @@ if "vs" in user_input.lower():
             color="playerteamName",
             title=f"Player {rating_type} (Per Minute)",
             labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
-            color_discrete_sequence=["Red", "Green"],
+            color_discrete_sequence=["Green", "Red"],
             hover_data=hover_cols
         )
         fig.update_layout(xaxis_tickangle=-45)
