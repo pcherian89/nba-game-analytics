@@ -100,13 +100,6 @@ if "vs" in user_input.lower():
         display_player_cards(away_players, away_team)
 
 
-        # st.subheader(f"📊 {home_team} Player Stats")
-        # st.dataframe(home_players[player_display_cols].reset_index(drop=True), use_container_width=True)
-
-       
-        # st.subheader(f"📊 {away_team} Player Stats")
-        # st.dataframe(away_players[player_display_cols].reset_index(drop=True), use_container_width=True)
-
         # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
         team_display_cols = [
@@ -333,93 +326,10 @@ if "vs" in user_input.lower():
                 st.markdown(f"**+/- Impact:** {row['plusMinusPoints']}")
 
         
-        # st.subheader("🏆 MVP Comparison Table – Top 3 Performers")
-
-        # Top 3 players by Offensive Rating
-        # top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3)
-            
-        # Define the stats you want to display
-        # stat_fields = [
-            # "points", "assists", "reboundsTotal", "turnovers",
-            # "OffensiveRating", "DefensiveRating", "plusMinusPoints"
-        # ]
-            
-        # Format player names as column headers
-        # comparison_df = top3[["fullName"] + stat_fields].set_index("fullName").T
-            
-        # Rename rows to be more readable
-        # comparison_df.index = [
-            # "Points", "Assists", "Total Rebounds", "Turnovers",
-            # "Offensive Rating", "Defensive Rating", "+/- Impact"
-        # ]
-            
-        # st.dataframe(comparison_df, use_container_width=True)
-
         import io
         from fpdf import FPDF
         import plotly.graph_objects as go
         
-        # === Scouting Card Snapshot ===
-        # st.subheader("📋 Scouting Card Snapshot")
-        
-        # selected_scout_player = st.selectbox("Select a player to view scouting card:", combined_players["fullName"].unique())
-        # scout_data = combined_players[combined_players["fullName"] == selected_scout_player].iloc[0]
-        
-        # === Formatter ===
-        # def format_value(val, style="int"):
-            # if pd.isna(val):
-                # return "-"
-            # if style == "int":
-                # return str(int(round(val)))
-            # elif style == "float":
-                # return f"{val:.2f}"
-            # elif style == "pct":
-                # return f"{val:.1%}"
-            # else:
-                #return str(val)
-        
-        # === Tables ===
-        # offense_df = pd.DataFrame({
-            # "Metric": ["Points", "Assists", "Turnovers", "FG%", "3P%", "FT%"],
-            # "Value": [
-                # format_value(scout_data["points"], "int"),
-                # format_value(scout_data["assists"], "int"),
-                # format_value(scout_data["turnovers"], "int"),
-                # format_value(scout_data["fieldGoalsPercentage"], "pct"),
-                # format_value(scout_data["threePointersPercentage"], "pct"),
-                # format_value(scout_data["freeThrowsPercentage"], "pct"),
-            #]
-        #})
-        
-        # defense_df = pd.DataFrame({
-            # "Metric": ["Rebounds", "Steals", "Blocks"],
-            # "Value": [
-                # format_value(scout_data["reboundsTotal"], "int"),
-                # format_value(scout_data["steals"], "int"),
-                # format_value(scout_data["blocks"], "int"),
-            #]
-        #})
-        
-        # summary_df = pd.DataFrame({
-            # "Metric": ["Minutes Played", "Plus/Minus", "Offensive Rating", "Defensive Rating"],
-            # "Value": [
-                # format_value(scout_data["numMinutes"], "float"),
-                # format_value(scout_data["plusMinusPoints"], "float"),
-                # format_value(scout_data["OffensiveRating"], "float"),
-                # format_value(scout_data["DefensiveRating"], "float"),
-            #]
-        #})
-        
-        # === Display Clean Tables ===
-        # st.markdown("#### 🔥 Offensive Summary")
-        # st.table(offense_df.set_index("Metric"))
-        
-        # st.markdown("#### 🧱 Defensive Summary")
-        # st.table(defense_df.set_index("Metric"))
-        
-        # st.markdown("#### 📈 Player Summary")
-        # st.table(summary_df.set_index("Metric"))
-
         import streamlit as st
         import pandas as pd
         
