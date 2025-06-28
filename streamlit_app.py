@@ -388,8 +388,8 @@ if "vs" in user_input.lower():
                 # format_value(scout_data["fieldGoalsPercentage"], "pct"),
                 # format_value(scout_data["threePointersPercentage"], "pct"),
                 # format_value(scout_data["freeThrowsPercentage"], "pct"),
-            ]
-        })
+            #]
+        #})
         
         # defense_df = pd.DataFrame({
             # "Metric": ["Rebounds", "Steals", "Blocks"],
@@ -397,8 +397,8 @@ if "vs" in user_input.lower():
                 # format_value(scout_data["reboundsTotal"], "int"),
                 # format_value(scout_data["steals"], "int"),
                 # format_value(scout_data["blocks"], "int"),
-            ]
-        })
+            #]
+        #})
         
         # summary_df = pd.DataFrame({
             # "Metric": ["Minutes Played", "Plus/Minus", "Offensive Rating", "Defensive Rating"],
@@ -407,8 +407,8 @@ if "vs" in user_input.lower():
                 # format_value(scout_data["plusMinusPoints"], "float"),
                 # format_value(scout_data["OffensiveRating"], "float"),
                 # format_value(scout_data["DefensiveRating"], "float"),
-            ]
-        })
+            #]
+        #})
         
         # === Display Clean Tables ===
         # st.markdown("#### 🔥 Offensive Summary")
