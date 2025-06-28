@@ -500,7 +500,78 @@ if "vs" in user_input.lower():
         # Display
         st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
 
+        import streamlit as st
+        import pandas as pd
         
+        # === Function to get NBA player headshot URL ===
+        def get_player_image_url(player_id):
+            return f"https://cdn.nba.com/headshots/nba/latest/260x190/{player_id}.png"
+        
+        # === Section Header ===
+        st.subheader("📊 Compare Any Two Players")
+        
+        # === Filter valid players ===
+        valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
+        player_names = valid_players["fullName"].unique().tolist()
+        
+        # === Player Selection Dropdowns ===
+        col1, col2 = st.columns(2)
+        with col1:
+            player1 = st.selectbox("Select Player 1", player_names, key="p1")
+        with col2:
+            player2 = st.selectbox("Select Player 2", player_names, key="p2")
+        
+        # === Extract Player Stats ===
+        p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
+        p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
+        
+        # === Show Headshots and Names ===
+        p1_image_url = get_player_image_url(p1_stats["personId"])
+        p2_image_url = get_player_image_url(p2_stats["personId"])
+        
+        img_col1, img_col2 = st.columns(2)
+        with img_col1:
+            st.image(p1_image_url, width=150)
+            st.markdown(f"<div style='text-align:center'><strong>{player1}</strong></div>", unsafe_allow_html=True)
+        with img_col2:
+            st.image(p2_image_url, width=150)
+            st.markdown(f"<div style='text-align:center'><strong>{player2}</strong></div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # === Stats to Compare ===
+        compare_fields = [
+            "numMinutes", "points", "assists", "reboundsOffensive", "reboundsDefensive",
+            "reboundsTotal", "steals", "blocks", "turnovers", "foulsPersonal",
+            "fieldGoalsMade", "fieldGoalsAttempted", "fieldGoalsPercentage",
+            "threePointersMade", "threePointersAttempted", "threePointersPercentage",
+            "freeThrowsMade", "freeThrowsAttempted", "freeThrowsPercentage",
+            "plusMinusPoints", "OffensiveRating", "DefensiveRating"
+        ]
+        
+        # === Create Comparison Table ===
+        comparison_table = pd.DataFrame({
+            "Stat": [field for field in compare_fields],
+            player1: [p1_stats[field] for field in compare_fields],
+            player2: [p2_stats[field] for field in compare_fields]
+        })
+        
+        # === Rename for readability ===
+        rename_map = {
+            "numMinutes": "Minutes Played", "points": "Points", "assists": "Assists",
+            "reboundsOffensive": "Offensive Rebounds", "reboundsDefensive": "Defensive Rebounds",
+            "reboundsTotal": "Total Rebounds", "steals": "Steals", "blocks": "Blocks",
+            "turnovers": "Turnovers", "foulsPersonal": "Fouls",
+            "fieldGoalsMade": "FG Made", "fieldGoalsAttempted": "FG Attempted", "fieldGoalsPercentage": "FG%",
+            "threePointersMade": "3P Made", "threePointersAttempted": "3P Attempted", "threePointersPercentage": "3P%",
+            "freeThrowsMade": "FT Made", "freeThrowsAttempted": "FT Attempted", "freeThrowsPercentage": "FT%",
+            "plusMinusPoints": "+/-", "OffensiveRating": "Offensive Rating", "DefensiveRating": "Defensive Rating"
+        }
+        comparison_table["Stat"] = comparison_table["Stat"].replace(rename_map)
+        
+        # === Display Comparison Table ===
+        st.dataframe(comparison_table.set_index("Stat"), use_container_width=True)
+  
         # === AI-Generated Game Summary with Session Persistence ===
         st.subheader("🧠 Game Summary")
         
