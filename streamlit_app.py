@@ -293,7 +293,7 @@ if "vs" in user_input.lower():
             color="playerteamName",
             title=f"Player {rating_type} (Per Minute)",
             labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
-            color_discrete_sequence=["dodgerblue", "darkorange"],
+            color_discrete_sequence=["Red", "Green"],
             hover_data=hover_cols
         )
         fig.update_layout(xaxis_tickangle=-45)
