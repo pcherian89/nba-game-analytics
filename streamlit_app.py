@@ -348,7 +348,7 @@ if "vs" in user_input.lower():
         player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
         
         # === Display headshot + name ===
-        st.markdown(f" 🧾 Scouting Card: {selected_player}")
+        st.markdown(f"###🧾 Scouting Card: {selected_player}")
         player_id = player_row["personId"]
         image_url = get_player_image_url(player_id)
         st.image(image_url, width=150)
