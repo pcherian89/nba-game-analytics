@@ -505,22 +505,23 @@ if "vs" in user_input.lower():
         summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
 
         # === Prepare input ===
-        player_name = scout_data["fullName"]
-        minutes = scout_data["numMinutes"]
+        player_name = player_row["fullName"]
+        minutes = player_row["numMinutes"]
         stats_text = f"""
-        Points: {scout_data['points']}
-        Assists: {scout_data['assists']}
-        Turnovers: {scout_data['turnovers']}
-        FG%: {scout_data['fieldGoalsPercentage']:.1%}
-        3P%: {scout_data['threePointersPercentage']:.1%}
-        FT%: {scout_data['freeThrowsPercentage']:.1%}
-        Rebounds: {scout_data['reboundsTotal']}
-        Steals: {scout_data['steals']}
-        Blocks: {scout_data['blocks']}
-        Plus/Minus: {scout_data['plusMinusPoints']}
-        Offensive Rating: {scout_data['OffensiveRating']:.2f}
-        Defensive Rating: {scout_data['DefensiveRating']:.2f}
+        Points: {player_row['points']}
+        Assists: {player_row['assists']}
+        Turnovers: {player_row['turnovers']}
+        FG%: {player_row['fieldGoalsPercentage']:.1%}
+        3P%: {player_row['threePointersPercentage']:.1%}
+        FT%: {player_row['freeThrowsPercentage']:.1%}
+        Rebounds: {player_row['reboundsTotal']}
+        Steals: {player_row['steals']}
+        Blocks: {player_row['blocks']}
+        Plus/Minus: {player_row['plusMinusPoints']}
+        Offensive Rating: {player_row['OffensiveRating']:.2f}
+        Defensive Rating: {player_row['DefensiveRating']:.2f}
         """
+
         
         # === Run the agent ===
         summary_output = summary_chain.run({
