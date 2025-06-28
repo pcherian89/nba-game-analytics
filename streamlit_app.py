@@ -332,7 +332,14 @@ if "vs" in user_input.lower():
         
         import streamlit as st
         import pandas as pd
-        
+
+        # === Custom CSS for spacing ===
+        st.markdown("""
+            <style>
+            .element-container { padding-bottom: 0rem !important; }
+            .stMarkdown p { margin-bottom: 0.3rem; }
+            </style>
+        """, unsafe_allow_html=True)
         # === Load player stats ===
         # Assuming combined_players DataFrame is already available
         
