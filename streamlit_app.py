@@ -353,44 +353,35 @@ if "vs" in user_input.lower():
         image_url = get_player_image_url(player_id)
         st.image(image_url, width=150)
         
-        st.markdown("### 🔥 Offensive Summary")
+        # === Player Image & Name Centered ===
+        st.markdown(f"## 🧾 Scouting Card: {selected_player}", unsafe_allow_html=True)
+        st.image(image_url, width=150)
+        
+        # === 3 Side-by-Side Stat Columns Below ===
         col1, col2, col3 = st.columns(3)
         
+        # === Column 1: Offensive Stats ===
         with col1:
+            st.markdown("### 🔥 Offensive")
             st.metric("Points", f"{player_row['points']}")
             st.metric("Assists", f"{player_row['assists']}")
-        
-        with col2:
             st.metric("Turnovers", f"{player_row['turnovers']}")
             st.metric("FG%", f"{player_row['fieldGoalsPercentage']*100:.1f}%")
-        
-        with col3:
             st.metric("3P%", f"{player_row['threePointersPercentage']*100:.1f}%")
             st.metric("FT%", f"{player_row['freeThrowsPercentage']*100:.1f}%")
-
-        st.markdown("### 🧱 Defensive Summary")
-        col1, col2, col3 = st.columns(3)
         
-        with col1:
+        # === Column 2: Defensive Stats ===
+        with col2:
+            st.markdown("### 🧱 Defensive")
             st.metric("Rebounds", f"{player_row['reboundsTotal']}")
-        
-        with col2:
             st.metric("Steals", f"{player_row['steals']}")
-        
-        with col3:
             st.metric("Blocks", f"{player_row['blocks']}")
-
         
-        st.markdown("### 📈 Player Summary")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Minutes Played", f"{round(player_row['numMinutes'], 2)}")
-        
-        with col2:
-            st.metric("Plus/Minus", f"{player_row['plusMinusPoints']}")
-        
+        # === Column 3: Summary Stats ===
         with col3:
+            st.markdown("### 📊 Summary")
+            st.metric("Minutes", f"{round(player_row['numMinutes'], 1)}")
+            st.metric("Plus/Minus", f"{player_row['plusMinusPoints']}")
             st.metric("Off Rating", f"{round(player_row['OffensiveRating'], 2)}")
             st.metric("Def Rating", f"{round(player_row['DefensiveRating'], 2)}")
 
