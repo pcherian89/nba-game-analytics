@@ -183,63 +183,26 @@ if "vs" in user_input.lower():
             )
         
         
-        import streamlit as st
-        import pandas as pd
-        import plotly.graph_objects as go
-        import requests
-        from PIL import Image
-        from io import BytesIO
-        
         # === User Selects Stat to View ===
-        st.markdown("### 📈 **View top players by:**")
-        stat_option = st.selectbox("", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
+        stat_option = st.selectbox("📈 View top players by:", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
         
         # === Filter Top 6 Players for the Selected Stat ===
         top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
         
-        # === Add Headshot URLs ===
-        top6["image_url"] = top6["personId"].apply(lambda pid: f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(pid)}.png")
-        
-        # === Build Custom Bar Chart with Images ===
-        fig = go.Figure()
-        
-        for idx, row in top6.iterrows():
-            fig.add_trace(go.Bar(
-                x=[row[stat_option]],
-                y=[f"<b>{row['fullName']}</b>"],
-                name=row["fullName"],
-                orientation='h',
-                marker=dict(color="green" if row["playerteamName"] in ["Warriors", "Knicks", "Lakers", "Celtics"] else "red"),
-                hovertext=f"{row['fullName']} ({row['playerteamName']})<br>{stat_option.title()}: {row[stat_option]}",
-                hoverinfo="text"
-            ))
-        
-        # === Reverse Y-axis ===
-        fig.update_layout(
+        # === Create Interactive Plotly Bar Chart ===
+        fig = px.bar(
+            top6,
+            x=stat_option,
+            y="fullName",
+            color="playerteamName",
+            orientation="h",
             title=f"Top 6 Players by {stat_option.replace('Points', ' Points').title()}",
-            yaxis=dict(autorange='reversed'),
-            xaxis_title=stat_option.title(),
-            yaxis_title="",
-            showlegend=False,
-            height=500,
+            labels={stat_option: stat_option.title(), "fullName": "Player", "playerteamName": "Team"},
+            color_discrete_sequence=["dodgerblue", "darkorange"]  # Customize color mapping
         )
         
-        # === Add Headshot Images on Chart (left of bars) ===
-        for idx, row in top6.iterrows():
-            fig.add_layout_image(
-                dict(
-                    source=row["image_url"],
-                    xref="x",
-                    yref="y",
-                    x=0,  # Adjust placement as needed
-                    y=f"<b>{row['fullName']}</b>",
-                    sizex=2,
-                    sizey=0.7,
-                    xanchor="right",
-                    yanchor="middle",
-                    layer="above"
-                )
-            )
+        # Reverse Y-axis (so highest is on top)
+        fig.update_layout(yaxis=dict(autorange="reversed"))
         
         # === Display Chart in Streamlit ===
         st.plotly_chart(fig, use_container_width=True)
