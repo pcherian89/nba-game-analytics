@@ -342,7 +342,9 @@ if "vs" in user_input.lower():
         
         # === Dropdown to select player ===
         player_names = combined_players["fullName"].unique()
-        selected_player = st.selectbox("Select a player to view scouting card:", player_names)
+        st.markdown("### **Select a player to view scouting card:**")
+        selected_player = st.selectbox("", player_names)
+
         
         # === Filter selected player's stats ===
         player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
