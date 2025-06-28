@@ -455,7 +455,7 @@ if "vs" in user_input.lower():
         # Ensure combined_players is already defined
         # e.g., combined_players = pd.read_csv("your_cleaned_player_data.csv")
         
-        st.subheader("📊 Compare Any Two Players")
+        st.subheader("📊 Stats Comparison")
         
         # Only players who recorded minutes
         valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
@@ -501,8 +501,6 @@ if "vs" in user_input.lower():
         with right:
             st.image(get_headshot_url(p2_stats["personId"]), width=180)
             st.markdown(f"### {player2}")
-        
-        st.markdown("## 🔄 Side-by-Side Stat Comparison")
         
         for label, field in compare_fields.items():
             p1_val = p1_stats.get(field, 0)
