@@ -57,6 +57,101 @@ if "vs" in user_input.lower():
         selected_game = matches[matches['label'] == selected_label].iloc[0]
         selected_gameId = selected_game['gameId']
 
+        # === Display Team Stats (Full View) ===
+        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
+        team_display_cols = [
+            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
+            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
+            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
+            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
+            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
+            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
+            'q1Points', 'q2Points', 'q3Points', 'q4Points',
+            'biggestLead', 'biggestScoringRun', 'leadChanges',
+            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
+        ]
+        
+        st.subheader("🏟️ Full Team Stats")
+        st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
+        
+        # === Team Logos and Names ===
+        st.markdown("### 🧢 Team Logos")
+        col1, col2 = st.columns(2)
+        
+        # Mapping from team name to abbreviation (same as logo filenames)
+        team_abbr = {
+            "Hawks": "atl", "Nets": "bkn", "Celtics": "bos", "Hornets": "cha", "Bulls": "chi",
+            "Cavaliers": "cle", "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw",
+            "Rockets": "hou", "Pacers": "ind", "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem",
+            "Heat": "mia", "Bucks": "mil", "Timberwolves": "min", "Pelicans": "nop", "Knicks": "nyk",
+            "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx", "Trail Blazers": "por",
+            "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
+        }
+        
+        # GitHub base URL where logos are stored
+        base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
+        
+        # Extract team rows
+        team1 = team_stats.iloc[0]
+        team2 = team_stats.iloc[1]
+        
+        with col1:
+            abbr1 = team_abbr.get(team1["teamName"], "").lower()
+            if abbr1:
+                st.image(f"{base_url}{abbr1}.png", width=80)
+            st.markdown(f"**{team1['teamName']}**")
+        
+        with col2:
+            abbr2 = team_abbr.get(team2["teamName"], "").lower()
+            if abbr2:
+                st.image(f"{base_url}{abbr2}.png", width=80)
+            st.markdown(f"**{team2['teamName']}**")
+        
+        # === Compute Offensive & Defensive Ratings ===
+        def estimate_possessions(row):
+            return (
+                row["fieldGoalsAttempted"] +
+                0.44 * row["freeThrowsAttempted"] -
+                row["reboundsOffensive"] +
+                row["turnovers"]
+            )
+        
+        team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
+        
+        # Update with ratings
+        team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
+        team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
+        team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
+        team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
+        
+        # === Visualize Ratings ===
+        ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
+        ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
+        
+        fig_ratings = px.bar(
+            ratings_melted,
+            x="teamName",
+            y="Value",
+            color="RatingType",
+            barmode="group",
+            title="Team Offensive vs Defensive Ratings",
+            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
+            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
+            width=700,
+            height=400
+        )
+        
+        fig_ratings.update_layout(
+            title_font=dict(size=20),
+            font=dict(size=14),
+            margin=dict(l=40, r=40, t=50, b=40),
+            plot_bgcolor="white",
+            legend_title_text=""
+        )
+        
+        st.plotly_chart(fig_ratings, use_container_width=False)
+
+        
         # === Filter player stats for that game ===
         game_players = player_df[player_df['gameId'] == selected_gameId].copy()
 
