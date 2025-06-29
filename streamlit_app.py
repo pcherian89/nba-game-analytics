@@ -274,14 +274,42 @@ if "vs" in user_input.lower():
         )
 
         
-        # === Step 3: Interactive Visualization ===
+        import streamlit as st
+        import plotly.express as px
+        
+        # === Section Header ===
         st.subheader("📊 Player Impact Ratings ")
         
+        # === Rating Selection ===
         rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
         
-        combined_sorted = combined_players.sort_values(by=rating_type, ascending=False)
+        # === Generate Image URLs if missing ===
+        if "playerImageURL" not in combined_players.columns:
+            combined_players["playerImageURL"] = combined_players["personId"].apply(
+                lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+            )
         
-        # Dynamic hover columns
+        # === Identify top 5 per team ===
+        top_per_team = (
+            combined_players.groupby("playerteamName", group_keys=False)
+            .apply(lambda df: df.sort_values(by=rating_type, ascending=False).head(5))
+        )
+        
+        # === Optional: Only keep 2 teams (if you expect just 2 teams in comparison) ===
+        if len(top_per_team["playerteamName"].unique()) > 2:
+            top2_teams = top_per_team["playerteamName"].value_counts().nlargest(2).index
+            top_per_team = top_per_team[top_per_team["playerteamName"].isin(top2_teams)]
+        
+        # === Headshots for top 10 (5 per team) ===
+        st.markdown("#### 👤 Top 5 Players per Team")
+        cols = st.columns(10)
+        for i, row in enumerate(top_per_team.itertuples()):
+            with cols[i]:
+                st.image(row.playerImageURL, width=80)
+                st.markdown(f"**{row.fullName}**", unsafe_allow_html=True)
+                st.markdown(f"<span style='font-size:15px;'>{rating_type}: {getattr(row, rating_type):.2f}</span>", unsafe_allow_html=True)
+        
+        # === Hover Settings ===
         if rating_type == "OffensiveRating":
             hover_cols = {
                 "numMinutes": True,
@@ -305,13 +333,13 @@ if "vs" in user_input.lower():
                 "fullName": False
             }
         
-        # Chart
+        # === Bar Chart for Top Players ===
         fig = px.bar(
-            combined_sorted,
+            top_per_team,
             x="fullName",
             y=rating_type,
             color="playerteamName",
-            title=f"Player {rating_type} (Per Minute)",
+            title=f"Top 5 Players per Team by {rating_type} (Per Minute)",
             labels={"fullName": "Player", "playerteamName": "Team", rating_type: "Rating"},
             color_discrete_sequence=["Green", "Red"],
             hover_data=hover_cols
