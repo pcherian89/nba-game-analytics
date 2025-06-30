@@ -175,81 +175,66 @@ if "vs" in user_input.lower():
         # === Header ===
         st.markdown("### 🏀 Team Performance Cards")
         
-        # === Get Teams ===
+        # === Display Team Cards with Side-by-Side Stats and Dynamic Comparisons ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
-        team1_name = team1["teamName"]
-        team2_name = team2["teamName"]
+        col1, col2 = st.columns(2)
         
-        # === Display Team Cards with Logos ===
-        cols = st.columns(2)
+        # === Display Logos and Team Names ===
         for i, team in enumerate([team1, team2]):
-            with cols[i]:
+            with [col1, col2][i]:
                 team_name = team["teamName"]
                 logo_filename = team_logo_map.get(team_name, "default.png")
                 logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{logo_filename}"
-                
                 st.image(logo_url, width=120)
                 st.markdown(f"### {team_name}")
-                st.markdown(f"**Off Rating:** {team['OffensiveRating']:.1f}")
-                st.markdown(f"**Def Rating:** {team['DefensiveRating']:.1f}")
-                st.markdown(f"**Score:** {int(team['teamScore'])}")
-                st.markdown(f"**Assists:** {int(team['assists'])}")
-                st.markdown(f"**Rebounds Total:** {int(team['reboundsTotal'])}")
-                st.markdown(f"**Steals:** {int(team['steals'])}")
-                st.markdown(f"**Blocks:** {int(team['blocks'])}")
-                st.markdown(f"**Fieldgoals %:** {team['fieldGoalsPercentage']:.1f}%")
-                st.markdown(f"**Threepointers %:** {team['threePointersPercentage']:.1f}%")
-                st.markdown(f"**Freethrows %:** {team['freeThrowsPercentage']:.1f}%")
-                st.markdown(f"**Turnovers:** {int(team['turnovers'])}")
-                st.markdown(f"**Plusminuspoints:** {int(team['plusMinusPoints'])}")
         
-        # === Stat-by-Stat Comparison ===
-        st.markdown("### 📊 Team Stat Comparison")
-        
-        compare_fields = {
+        # === Stat Fields to Compare ===
+        team_compare_fields = {
             "Offensive Rating": "OffensiveRating",
             "Defensive Rating": "DefensiveRating",
             "Score": "teamScore",
             "Assists": "assists",
-            "Rebounds": "reboundsTotal",
+            "Rebounds Total": "reboundsTotal",
             "Steals": "steals",
             "Blocks": "blocks",
-            "FG%": "fieldGoalsPercentage",
-            "3P%": "threePointersPercentage",
-            "FT%": "freeThrowsPercentage",
+            "Fieldgoals %": "fieldGoalsPercentage",
+            "Threepointers %": "threePointersPercentage",
+            "Freethrows %": "freeThrowsPercentage",
             "Turnovers": "turnovers",
-            "Plus/Minus": "plusMinusPoints"
+            "Plusminuspoints": "plusMinusPoints"
         }
         
-        for label, field in compare_fields.items():
-            val1 = team1[field]
-            val2 = team2[field]
-            max_val = max(abs(val1), abs(val2), 1)
+        # === Stat Comparison Section ===
+        st.markdown("### 📊 Team Stat Comparison")
         
-            col_title, _ = st.columns([1, 5])
-            with col_title:
+        for label, field in team_compare_fields.items():
+            t1_val = team1.get(field, 0)
+            t2_val = team2.get(field, 0)
+            max_val = max(t1_val, t2_val, 1)
+        
+            col_stat, col_bar = st.columns([1, 5])
+        
+            with col_stat:
                 st.markdown(f"**{label}**")
         
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown(f"{team1_name}: {round(val1, 2)}")
-                st.markdown(
-                    f"""
-                    <div style="background-color:#eee; height:10px; border-radius:5px;">
-                        <div style="width:{(abs(val1)/max_val)*100}%; background-color:green; height:10px; border-radius:5px;"></div>
-                    </div>
-                    """, unsafe_allow_html=True
-                )
+            col_left, col_right = st.columns(2)
         
-            with col2:
-                st.markdown(f"{team2_name}: {round(val2, 2)}")
-                st.markdown(
-                    f"""
-                    <div style="background-color:#eee; height:10px; border-radius:5px;">
-                        <div style="width:{(abs(val2)/max_val)*100}%; background-color:red; height:10px; border-radius:5px;"></div>
+            with col_left:
+                st.markdown(f"{team1['teamName']}: {round(t1_val, 2)}")
+                st.markdown(f"""
+                    <div style='background-color:#eee; height:10px; border-radius:5px;'>
+                        <div style='width:{(t1_val/max_val)*100}%; background-color:green; height:10px; border-radius:5px;'></div>
                     </div>
-                    """, unsafe_allow_html=True
-                )
+                """, unsafe_allow_html=True)
+        
+            with col_right:
+                st.markdown(f"{team2['teamName']}: {round(t2_val, 2)}")
+                st.markdown(f"""
+                    <div style='background-color:#eee; height:10px; border-radius:5px;'>
+                        <div style='width:{(t2_val/max_val)*100}%; background-color:red; height:10px; border-radius:5px;'></div>
+                    </div>
+                """, unsafe_allow_html=True)
+
 
 
 
