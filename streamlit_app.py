@@ -59,6 +59,7 @@ if "vs" in user_input.lower():
 
         # === Display Team Stats (Full View) ===
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
+        
         team_display_cols = [
             'teamName', 'teamScore', 'assists', 'blocks', 'steals',
             'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
@@ -74,40 +75,7 @@ if "vs" in user_input.lower():
         st.subheader("🏟️ Full Team Stats")
         st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
         
-        # === Team Logos and Names ===
-        st.markdown("### 🧢 Team Logos")
-        col1, col2 = st.columns(2)
-        
-        # Mapping from team name to abbreviation (same as logo filenames)
-        team_abbr = {
-            "Hawks": "atl", "Nets": "bkn", "Celtics": "bos", "Hornets": "cha", "Bulls": "chi",
-            "Cavaliers": "cle", "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw",
-            "Rockets": "hou", "Pacers": "ind", "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem",
-            "Heat": "mia", "Bucks": "mil", "Timberwolves": "min", "Pelicans": "nop", "Knicks": "nyk",
-            "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx", "Trail Blazers": "por",
-            "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
-        }
-        
-        # GitHub base URL where logos are stored
-        base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
-        
-        # Extract team rows
-        team1 = team_stats.iloc[0]
-        team2 = team_stats.iloc[1]
-        
-        with col1:
-            abbr1 = team_abbr.get(team1["teamName"], "").lower()
-            if abbr1:
-                st.image(f"{base_url}{abbr1}.png", width=80)
-            st.markdown(f"**{team1['teamName']}**")
-        
-        with col2:
-            abbr2 = team_abbr.get(team2["teamName"], "").lower()
-            if abbr2:
-                st.image(f"{base_url}{abbr2}.png", width=80)
-            st.markdown(f"**{team2['teamName']}**")
-        
-        # === Compute Offensive & Defensive Ratings ===
+        # === Estimate Possessions Function ===
         def estimate_possessions(row):
             return (
                 row["fieldGoalsAttempted"] +
@@ -116,26 +84,51 @@ if "vs" in user_input.lower():
                 row["turnovers"]
             )
         
+        # === Compute possessions ===
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # Update with ratings
-        team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
-        team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
-        team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
-        team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
+        # === Extract team rows AFTER possessions ===
+        team1 = team_stats.iloc[0]
+        team2 = team_stats.iloc[1]
         
-        # === Visualize Ratings ===
-        ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
-        ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
+        # === Compute Ratings ===
+        team_stats.at[team1.name, "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
+        team_stats.at[team1.name, "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
         
+        team_stats.at[team2.name, "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
+        team_stats.at[team2.name, "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
+        
+        # === Add team logo URLs ===
+        def get_team_abbreviation(name):
+            # Simple mapping for most common teams — update as needed
+            team_map = {
+                "Hawks": "atl", "Celtics": "bos", "Nets": "bkn", "Hornets": "cha", "Bulls": "chi",
+                "Cavaliers": "cle", "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw",
+                "Rockets": "hou", "Pacers": "ind", "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem",
+                "Heat": "mia", "Bucks": "mil", "Timberwolves": "min", "Pelicans": "nop", "Knicks": "nyk",
+                "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx", "Blazers": "por",
+                "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
+            }
+            return team_map.get(name, "")
+        
+        team_stats["teamAbbr"] = team_stats["teamName"].apply(get_team_abbreviation)
+        team_stats["logo_url"] = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/" + team_stats["teamAbbr"] + ".png"
+        team_stats["teamLabel"] = team_stats["teamName"]  # Default label
+        team_stats["teamLabel"] = team_stats.apply(lambda row: f"<img src='{row.logo_url}' width='30'> {row.teamName}", axis=1)
+        
+        # === Melt Ratings ===
+        ratings_df = team_stats[["teamLabel", "OffensiveRating", "DefensiveRating"]].copy()
+        ratings_melted = ratings_df.melt(id_vars="teamLabel", var_name="RatingType", value_name="Value")
+        
+        # === Team Ratings Bar Chart ===
         fig_ratings = px.bar(
             ratings_melted,
-            x="teamName",
+            x="teamLabel",
             y="Value",
             color="RatingType",
             barmode="group",
             title="Team Offensive vs Defensive Ratings",
-            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
+            labels={"teamLabel": "Team", "Value": "Rating", "RatingType": "Metric"},
             color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
             width=700,
             height=400
@@ -146,9 +139,13 @@ if "vs" in user_input.lower():
             font=dict(size=14),
             margin=dict(l=40, r=40, t=50, b=40),
             plot_bgcolor="white",
-            legend_title_text=""
+            legend_title_text="",
+            xaxis=dict(tickmode='array', tickvals=team_stats["teamLabel"])
         )
         
+        # Enable rendering of HTML in x-axis
+        fig_ratings.update_xaxes(tickfont=dict(size=12))
+        st.markdown("<br>", unsafe_allow_html=True)
         st.plotly_chart(fig_ratings, use_container_width=False)
 
         
