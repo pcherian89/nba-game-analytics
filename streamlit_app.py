@@ -175,20 +175,25 @@ if "vs" in user_input.lower():
         # === Header ===
         st.markdown("### 🏀 Team Performance Cards")
         
-        # === Fetch Teams ===
+        # === Fetch Team Data ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
         t1_name, t2_name = team1["teamName"], team2["teamName"]
         t1_logo = team_logo_map.get(t1_name, "default.png")
         t2_logo = team_logo_map.get(t2_name, "default.png")
         
-        # === Display Team Logos and Names Aligned ===
-        logo_col1, logo_col2 = st.columns(2)
-        
+        # === Show Logos Side by Side with Fixed Heights and No Team Names ===
+        logo_col1, logo_col2 = st.columns([1, 1])
         with logo_col1:
-            st.markdown(f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}' width='120'/><h3>{t1_name}</h3></div>", unsafe_allow_html=True)
-        
+            st.markdown(
+                f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}' style='height:140px; object-fit:contain;'/></div>",
+                unsafe_allow_html=True,
+            )
         with logo_col2:
-            st.markdown(f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}' width='120'/><h3>{t2_name}</h3></div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}' style='height:140px; object-fit:contain;'/></div>",
+                unsafe_allow_html=True,
+            )
+
         
         # === Stat Fields to Compare ===
         team_compare_fields = {
