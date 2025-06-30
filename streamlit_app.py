@@ -175,22 +175,20 @@ if "vs" in user_input.lower():
         # === Header ===
         st.markdown("### 🏀 Team Performance Cards")
         
-        # === Display Team Logos and Names Aligned ===
+        # === Fetch Teams ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
-        col1, col2 = st.columns(2)
+        t1_name, t2_name = team1["teamName"], team2["teamName"]
+        t1_logo = team_logo_map.get(t1_name, "default.png")
+        t2_logo = team_logo_map.get(t2_name, "default.png")
         
-        with col1:
-            t1_name = team1["teamName"]
-            t1_logo = team_logo_map.get(t1_name, "default.png")
-            st.image(f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}", width=140)
-            st.markdown(f"### {t1_name}", unsafe_allow_html=True)
+        # === Display Team Logos and Names Aligned ===
+        logo_col1, logo_col2 = st.columns(2)
         
-        with col2:
-            t2_name = team2["teamName"]
-            t2_logo = team_logo_map.get(t2_name, "default.png")
-            st.image(f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}", width=140)
-            st.markdown(f"### {t2_name}", unsafe_allow_html=True)
-
+        with logo_col1:
+            st.markdown(f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}' width='120'/><h3>{t1_name}</h3></div>", unsafe_allow_html=True)
+        
+        with logo_col2:
+            st.markdown(f"<div style='text-align:center;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}' width='120'/><h3>{t2_name}</h3></div>", unsafe_allow_html=True)
         
         # === Stat Fields to Compare ===
         team_compare_fields = {
@@ -216,31 +214,25 @@ if "vs" in user_input.lower():
             t2_val = team2.get(field, 0)
             max_val = max(t1_val, t2_val, 1)
         
-            col_stat, col_bar = st.columns([1, 5])
+            st.markdown(f"**{label}**")
         
-            with col_stat:
-                st.markdown(f"**{label}**")
+            bar_col1, bar_col2 = st.columns(2)
         
-            col_left, col_right = st.columns(2)
-        
-            with col_left:
-                st.markdown(f"{team1['teamName']}: {round(t1_val, 2)}")
+            with bar_col1:
+                st.markdown(f"{t1_name}: {round(t1_val, 2)}")
                 st.markdown(f"""
                     <div style='background-color:#eee; height:10px; border-radius:5px;'>
-                        <div style='width:{(t1_val/max_val)*100}%; background-color:green; height:10px; border-radius:5px;'></div>
+                        <div style='width:{(t1_val / max_val) * 100}%; background-color:green; height:10px; border-radius:5px;'></div>
                     </div>
                 """, unsafe_allow_html=True)
         
-            with col_right:
-                st.markdown(f"{team2['teamName']}: {round(t2_val, 2)}")
+            with bar_col2:
+                st.markdown(f"{t2_name}: {round(t2_val, 2)}")
                 st.markdown(f"""
                     <div style='background-color:#eee; height:10px; border-radius:5px;'>
-                        <div style='width:{(t2_val/max_val)*100}%; background-color:red; height:10px; border-radius:5px;'></div>
+                        <div style='width:{(t2_val / max_val) * 100}%; background-color:red; height:10px; border-radius:5px;'></div>
                     </div>
                 """, unsafe_allow_html=True)
-
-
-
 
 
         # === Combine Home & Away Players ===
