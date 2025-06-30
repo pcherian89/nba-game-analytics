@@ -107,10 +107,13 @@ if "vs" in user_input.lower():
         import pandas as pd
         import plotly.express as px
         
-        # Filter selected game's data
+        # === Full Team Stats with Cards + Ratings Chart ===
+        st.subheader("🏟️ Full Team Stats")
+        
+        # Filter data
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
         
-        # === Compute Possessions ===
+        # === Estimate possessions ===
         def estimate_possessions(row):
             return (
                 row["fieldGoalsAttempted"] +
@@ -121,41 +124,38 @@ if "vs" in user_input.lower():
         
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # Compute Offensive and Defensive Ratings
+        # Calculate ratings
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
-        
         team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
         team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
-        
         team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
         team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-        # === Display Team Cards with Logos and Key Stats ===
+        # === Display as Dynamic Cards with Logos ===
         st.subheader("🏀 Team Performance Cards")
         
-        # Define key stats to show in each card
         key_stats = [
             "teamScore", "assists", "reboundsTotal", "steals", "blocks",
             "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
             "turnovers", "plusMinusPoints"
         ]
         
-        # Display each team in a column
         cols = st.columns(len(team_stats))
-        for i, row in team_stats.iterrows():
+        
+        for col, (_, row) in zip(cols, team_stats.iterrows()):
             team_code = row["teamName"][:3].lower()
             logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{team_code}.png"
-            with cols[i]:
-                st.image(logo_url, width=100)
+            with col:
+                st.image(logo_url, width=90)
                 st.markdown(f"### {row['teamName']}")
                 st.markdown(f"**Off Rating**: `{row['OffensiveRating']:.1f}`")
                 st.markdown(f"**Def Rating**: `{row['DefensiveRating']:.1f}`")
                 for stat in key_stats:
-                    display_name = stat.replace("team", "").replace("Total", " Total").replace("Percentage", " %").title()
-                    value = f"{row[stat]:.1f}" if "Percentage" in stat else int(row[stat])
-                    st.markdown(f"**{display_name}**: `{value}`")
+                    label = stat.replace("team", "").replace("Total", " Total").replace("Percentage", " %").title()
+                    value = f"{row[stat]:.1%}" if "Percentage" in stat else int(row[stat])
+                    st.markdown(f"**{label}**: `{value}`")
         
-        # === Bar Chart: Offensive vs Defensive Ratings ===
+        # === Chart: Team Offensive vs Defensive Ratings ===
         ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
@@ -174,9 +174,10 @@ if "vs" in user_input.lower():
         
         fig_ratings.update_layout(
             title_font=dict(size=20),
-            font=dict(size=14),
+            font=dict(size=14, color='white'),
             margin=dict(l=40, r=40, t=50, b=40),
-            plot_bgcolor="white",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
             legend_title_text=""
         )
         
