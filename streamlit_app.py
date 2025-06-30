@@ -133,13 +133,55 @@ if "vs" in user_input.lower():
         team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
         team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
+        import streamlit as st
+
+        # === Team Logo Map ===
+        team_logo_map = {
+            "Hawks": "atl.png",
+            "Nets": "bkn.png",
+            "Celtics": "bos.png",
+            "Hornets": "cha.png",
+            "Bulls": "chi.png",
+            "Cavaliers": "cle.png",
+            "Mavericks": "dal.png",
+            "Nuggets": "den.png",
+            "Pistons": "det.png",
+            "Warriors": "gsw.png",
+            "Rockets": "hou.png",
+            "Pacers": "ind.png",
+            "Clippers": "lac.png",
+            "Lakers": "lal.png",
+            "Grizzlies": "mem.png",
+            "Heat": "mia.gif",
+            "Bucks": "mil.png",
+            "Timberwolves": "min.png",
+            "Pelicans": "nop.png",
+            "Knicks": "nyk.png",
+            "Thunder": "okc.png",
+            "Magic": "orl.png",
+            "76ers": "phl.png",
+            "Suns": "phx.png",
+            "Trail Blazers": "por.png",
+            "Kings": "sac.png",
+            "Spurs": "sas.png",
+            "Raptors": "tor.png",
+            "Jazz": "uth.png",
+            "Wizards": "was.png"
+        }
+        
+        # === Simulated team_stats dataframe (replace this with your real one) ===
+        # team_stats = pd.DataFrame([...])
+        
         # === Header ===
         st.markdown("### 🏀 Team Performance Cards")
         
-        # === Display Team Cards ===
+        # === Get Teams ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
-        cols = st.columns(2)
+        team1_name = team1["teamName"]
+        team2_name = team2["teamName"]
         
+        # === Display Team Cards with Logos ===
+        cols = st.columns(2)
         for i, team in enumerate([team1, team2]):
             with cols[i]:
                 team_name = team["teamName"]
@@ -161,34 +203,53 @@ if "vs" in user_input.lower():
                 st.markdown(f"**Turnovers:** {int(team['turnovers'])}")
                 st.markdown(f"**Plusminuspoints:** {int(team['plusMinusPoints'])}")
         
-        # === Ratings Bar Chart ===
-        ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
-        ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
+        # === Stat-by-Stat Comparison ===
+        st.markdown("### 📊 Team Stat Comparison")
         
-        fig_ratings = px.bar(
-            ratings_melted,
-            x="teamName",
-            y="Value",
-            color="RatingType",
-            barmode="group",
-            title="Team Offensive vs Defensive Ratings",
-            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
-            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
-            width=700,
-            height=400
-        )
+        compare_fields = {
+            "Offensive Rating": "OffensiveRating",
+            "Defensive Rating": "DefensiveRating",
+            "Score": "teamScore",
+            "Assists": "assists",
+            "Rebounds": "reboundsTotal",
+            "Steals": "steals",
+            "Blocks": "blocks",
+            "FG%": "fieldGoalsPercentage",
+            "3P%": "threePointersPercentage",
+            "FT%": "freeThrowsPercentage",
+            "Turnovers": "turnovers",
+            "Plus/Minus": "plusMinusPoints"
+        }
         
-        fig_ratings.update_layout(
-            title_font=dict(size=20),
-            font=dict(size=14),
-            margin=dict(l=40, r=40, t=50, b=40),
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            legend_title_text=""
-        )
+        for label, field in compare_fields.items():
+            val1 = team1[field]
+            val2 = team2[field]
+            max_val = max(abs(val1), abs(val2), 1)
         
-        st.plotly_chart(fig_ratings, use_container_width=False)
-
+            col_title, _ = st.columns([1, 5])
+            with col_title:
+                st.markdown(f"**{label}**")
+        
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"{team1_name}: {round(val1, 2)}")
+                st.markdown(
+                    f"""
+                    <div style="background-color:#eee; height:10px; border-radius:5px;">
+                        <div style="width:{(abs(val1)/max_val)*100}%; background-color:green; height:10px; border-radius:5px;"></div>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
+        
+            with col2:
+                st.markdown(f"{team2_name}: {round(val2, 2)}")
+                st.markdown(
+                    f"""
+                    <div style="background-color:#eee; height:10px; border-radius:5px;">
+                        <div style="width:{(abs(val2)/max_val)*100}%; background-color:red; height:10px; border-radius:5px;"></div>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
 
 
 
