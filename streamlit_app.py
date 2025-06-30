@@ -103,24 +103,14 @@ if "vs" in user_input.lower():
         display_player_cards(away_players, away_team)
 
 
-        # === Display Team Stats (Full View) ===
+        import streamlit as st
+        import pandas as pd
+        import plotly.express as px
+        
+        # Filter selected game's data
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
-        team_display_cols = [
-            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
-            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
-            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
-            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
-            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
-            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
-            'q1Points', 'q2Points', 'q3Points', 'q4Points',
-            'biggestLead', 'biggestScoringRun', 'leadChanges',
-            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
-        ]
-
-        st.subheader("🏟️ Full Team Stats")
-        st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
-
-        # === Compute Offensive & Defensive Ratings ===
+        
+        # === Compute Possessions ===
         def estimate_possessions(row):
             return (
                 row["fieldGoalsAttempted"] +
@@ -131,9 +121,8 @@ if "vs" in user_input.lower():
         
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # Match rows
-        team1 = team_stats.iloc[0]
-        team2 = team_stats.iloc[1]
+        # Compute Offensive and Defensive Ratings
+        team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
         
         team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
         team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
@@ -141,44 +130,56 @@ if "vs" in user_input.lower():
         team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
         team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-        # === Visualize Ratings ===
+        # === Display Team Cards with Logos and Key Stats ===
+        st.subheader("🏀 Team Performance Cards")
+        
+        # Define key stats to show in each card
+        key_stats = [
+            "teamScore", "assists", "reboundsTotal", "steals", "blocks",
+            "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
+            "turnovers", "plusMinusPoints"
+        ]
+        
+        # Display each team in a column
+        cols = st.columns(len(team_stats))
+        for i, row in team_stats.iterrows():
+            team_code = row["teamName"][:3].lower()
+            logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{team_code}.png"
+            with cols[i]:
+                st.image(logo_url, width=100)
+                st.markdown(f"### {row['teamName']}")
+                st.markdown(f"**Off Rating**: `{row['OffensiveRating']:.1f}`")
+                st.markdown(f"**Def Rating**: `{row['DefensiveRating']:.1f}`")
+                for stat in key_stats:
+                    display_name = stat.replace("team", "").replace("Total", " Total").replace("Percentage", " %").title()
+                    value = f"{row[stat]:.1f}" if "Percentage" in stat else int(row[stat])
+                    st.markdown(f"**{display_name}**: `{value}`")
+        
+        # === Bar Chart: Offensive vs Defensive Ratings ===
         ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
-        
-        # Dynamically embed logos using raw.githubusercontent image path
-        ratings_melted["teamNameWithLogo"] = ratings_melted["teamName"].apply(
-            lambda x: f"<img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{x.lower()[:3]}.png' width='30'>"
-        )
-        
-        # Create the bar chart with logos on X-axis
         fig_ratings = px.bar(
             ratings_melted,
-            x="teamNameWithLogo",
+            x="teamName",
             y="Value",
             color="RatingType",
             barmode="group",
             title="Team Offensive vs Defensive Ratings",
-            labels={"teamNameWithLogo": "Team", "Value": "Rating", "RatingType": "Metric"},
+            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
             color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
             width=700,
             height=400
         )
         
-        # Aesthetic tweaks: match dark theme
         fig_ratings.update_layout(
             title_font=dict(size=20),
-            font=dict(size=14, color='white'),
+            font=dict(size=14),
             margin=dict(l=40, r=40, t=50, b=40),
-            plot_bgcolor="rgba(0,0,0,0)",  # transparent for dark background
-            paper_bgcolor="rgba(0,0,0,0)",  # transparent for dark theme
+            plot_bgcolor="white",
             legend_title_text=""
         )
         
-        # Tell Plotly to render HTML in axis labels
-        fig_ratings.update_xaxes(tickfont=dict(size=14), tickvals=ratings_melted["teamNameWithLogo"].unique(), ticktext=ratings_melted["teamNameWithLogo"].unique())
-        
-        # Show chart (don't stretch full width)
         st.plotly_chart(fig_ratings, use_container_width=False)
 
 
