@@ -79,30 +79,6 @@ if "vs" in user_input.lower():
             'turnovers', 'foulsPersonal', 'plusMinusPoints'
         ]
 
-        def display_player_cards(players_df, team_label):
-            st.subheader(f"🏀 {team_label} Player Cards")
-        
-            rows = [players_df.iloc[i:i+6] for i in range(0, len(players_df), 6)]
-            for row_df in rows:
-                cols = st.columns(len(row_df))
-                for idx, player in enumerate(row_df.itertuples(index=False)):
-                    full_name = f"{player.firstName} {player.lastName}"
-                    player_id = int(player.personId)
-                    image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
-        
-                    with cols[idx]:
-                        st.image(image_url, width=100, caption=full_name)
-                        st.markdown(f"**Points:** {player.points}")
-                        st.markdown(f"**Assists:** {player.assists}")
-                        st.markdown(f"**Rebounds:** {player.reboundsTotal}")
-                        st.markdown(f"**Turnovers:** {player.turnovers}")
-                        st.markdown(f"**+/-:** {player.plusMinusPoints}")
-
-
-        display_player_cards(home_players, home_team)
-        display_player_cards(away_players, away_team)
-
-
         import streamlit as st
         import pandas as pd
         import plotly.express as px
@@ -239,6 +215,32 @@ if "vs" in user_input.lower():
                         <div style='width:{(t2_val / max_val) * 100}%; background-color:red; height:10px; border-radius:5px;'></div>
                     </div>
                 """, unsafe_allow_html=True)
+
+
+
+        
+        def display_player_cards(players_df, team_label):
+            st.subheader(f"🏀 {team_label} Player Cards")
+        
+            rows = [players_df.iloc[i:i+6] for i in range(0, len(players_df), 6)]
+            for row_df in rows:
+                cols = st.columns(len(row_df))
+                for idx, player in enumerate(row_df.itertuples(index=False)):
+                    full_name = f"{player.firstName} {player.lastName}"
+                    player_id = int(player.personId)
+                    image_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
+        
+                    with cols[idx]:
+                        st.image(image_url, width=100, caption=full_name)
+                        st.markdown(f"**Points:** {player.points}")
+                        st.markdown(f"**Assists:** {player.assists}")
+                        st.markdown(f"**Rebounds:** {player.reboundsTotal}")
+                        st.markdown(f"**Turnovers:** {player.turnovers}")
+                        st.markdown(f"**+/-:** {player.plusMinusPoints}")
+
+
+        display_player_cards(home_players, home_team)
+        display_player_cards(away_players, away_team)
 
 
         # === Combine Home & Away Players ===
