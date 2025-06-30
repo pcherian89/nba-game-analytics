@@ -189,7 +189,6 @@ if "vs" in user_input.lower():
         }
         
         # === Stat Comparison Section ===
-        st.markdown("### 📊 Team Stat Comparison")
         
         for label, field in team_compare_fields.items():
             t1_val = team1.get(field, 0)
