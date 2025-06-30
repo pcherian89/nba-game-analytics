@@ -157,18 +157,31 @@ if "vs" in user_input.lower():
         t1_logo = team_logo_map.get(t1_name, "default.png")
         t2_logo = team_logo_map.get(t2_name, "default.png")
         
-        # === Show Logos Side by Side (Left Aligned) ===
+        # === Show Logos Side by Side (Left Aligned, Larger + Spaced) ===
         logo_col1, logo_col2 = st.columns([1, 1])
+        
         with logo_col1:
             st.markdown(
-                f"<div style='text-align:left;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}' style='height:140px; object-fit:contain;'/></div>",
+                f"""
+                <div style='text-align:left; padding-bottom:20px;'>
+                    <img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}' 
+                         style='height:180px; object-fit:contain; margin-bottom:20px;'/>
+                </div>
+                """,
                 unsafe_allow_html=True
             )
+        
         with logo_col2:
             st.markdown(
-                f"<div style='text-align:left;'><img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}' style='height:140px; object-fit:contain;'/></div>",
+                f"""
+                <div style='text-align:left; padding-bottom:20px;'>
+                    <img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}' 
+                         style='height:180px; object-fit:contain; margin-bottom:20px;'/>
+                </div>
+                """,
                 unsafe_allow_html=True
             )
+
 
 
         
