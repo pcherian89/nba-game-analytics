@@ -108,7 +108,6 @@ if "vs" in user_input.lower():
         import plotly.express as px
         
         # === Full Team Stats with Cards + Ratings Chart ===
-        st.subheader("🏟️ Full Team Stats")
         
         # Filter data
         team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
@@ -131,9 +130,17 @@ if "vs" in user_input.lower():
         team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
         team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-        # === Display as Dynamic Cards with Logos ===
-        st.subheader("🏀 Team Performance Cards")
+        # === TEAM LOGO MAPPING ===
+        team_name_to_code = {
+            "Hawks": "atl", "Nets": "bkn", "Celtics": "bos", "Hornets": "cha", "Bulls": "chi", "Cavaliers": "cle",
+            "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw", "Rockets": "hou", "Pacers": "ind",
+            "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem", "Heat": "mia", "Bucks": "mil", "Timberwolves": "min",
+            "Pelicans": "nop", "Knicks": "nyk", "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx",
+            "Trail Blazers": "por", "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
+        }
         
+        # === Display Team Cards ===
+        st.subheader("🏀 Team Performance Cards")
         key_stats = [
             "teamScore", "assists", "reboundsTotal", "steals", "blocks",
             "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
@@ -143,19 +150,22 @@ if "vs" in user_input.lower():
         cols = st.columns(len(team_stats))
         
         for col, (_, row) in zip(cols, team_stats.iterrows()):
-            team_code = row["teamName"][:3].lower()
+            team_name = row["teamName"]
+            team_code = team_name_to_code.get(team_name, "nyk")  # fallback
             logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{team_code}.png"
+            
             with col:
-                st.image(logo_url, width=90)
-                st.markdown(f"### {row['teamName']}")
-                st.markdown(f"**Off Rating**: `{row['OffensiveRating']:.1f}`")
-                st.markdown(f"**Def Rating**: `{row['DefensiveRating']:.1f}`")
+                st.image(logo_url, width=100)
+                st.markdown(f"<h4 style='text-align: center; margin-top: -10px'>{team_name}</h4>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: center; font-size: 15px'><b>Off Rating:</b> {row['OffensiveRating']:.1f}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: center; font-size: 15px'><b>Def Rating:</b> {row['DefensiveRating']:.1f}</div>", unsafe_allow_html=True)
+                
                 for stat in key_stats:
-                    label = stat.replace("team", "").replace("Total", " Total").replace("Percentage", " %").title()
-                    value = f"{row[stat]:.1%}" if "Percentage" in stat else int(row[stat])
-                    st.markdown(f"**{label}**: `{value}`")
+                    label = stat.replace("Percentage", " %").replace("Total", " Total").replace("team", "").title()
+                    val = f"{row[stat]*100:.1f}%" if "Percentage" in stat else int(row[stat])
+                    st.markdown(f"<div style='text-align: center; font-size: 14px'>{label}: <b>{val}</b></div>", unsafe_allow_html=True)
         
-        # === Chart: Team Offensive vs Defensive Ratings ===
+        # === Offensive vs Defensive Rating Chart ===
         ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
@@ -182,6 +192,7 @@ if "vs" in user_input.lower():
         )
         
         st.plotly_chart(fig_ratings, use_container_width=False)
+
 
 
 
