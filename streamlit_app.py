@@ -57,29 +57,15 @@ if "vs" in user_input.lower():
         selected_game = matches[matches['label'] == selected_label].iloc[0]
         selected_gameId = selected_game['gameId']
 
+        import streamlit as st
         import pandas as pd
         import plotly.graph_objects as go
-        import streamlit as st
-
-        # === Display Team Stats (Full View) ===
-        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
-        team_display_cols = [
-            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
-            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
-            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
-            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
-            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
-            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
-            'q1Points', 'q2Points', 'q3Points', 'q4Points',
-            'biggestLead', 'biggestScoringRun', 'leadChanges',
-            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
-        ]
         
-        # === Your filtered dataframe per game
-        # Make sure this is set correctly before this block
-        # Example: team_stats = team_df[team_df["gameId"] == selected_gameId].copy()
+        # Your filtered dataframe (already created earlier in your app)
+        # Example:
+        # team_stats = team_df[team_df["gameId"] == selected_game_id].copy()
         
-        # Estimate possessions per team
+        # === Step 1: Define possessions estimation function BEFORE using it
         def estimate_possessions(row):
             return (
                 row["fieldGoalsAttempted"]
@@ -88,9 +74,10 @@ if "vs" in user_input.lower():
                 + row["turnovers"]
             )
         
+        # === Step 2: Apply possessions
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # Compute Offensive and Defensive Ratings
+        # === Step 3: Calculate Off/Def Ratings
         if len(team_stats) == 2:
             team1 = team_stats.iloc[0]
             team2 = team_stats.iloc[1]
@@ -101,7 +88,7 @@ if "vs" in user_input.lower():
             team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
             team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-            # Start chart
+            # === Step 4: Plot chart with dynamic team logos
             fig = go.Figure()
         
             fig.add_trace(go.Bar(
@@ -118,9 +105,9 @@ if "vs" in user_input.lower():
                 marker_color="red"
             ))
         
-            # === Dynamically add logos from GitHub using teamAbbreviation
+            # Add logos using teamAbbreviation column (must be lowercase & match filenames)
             for i, row in team_stats.iterrows():
-                abbr = row["teamAbbreviation"].lower()  # ensure lowercase
+                abbr = row["teamAbbreviation"].lower()
                 logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{abbr}.png"
         
                 fig.add_layout_image(
@@ -138,7 +125,7 @@ if "vs" in user_input.lower():
                     )
                 )
         
-            # Layout settings for dark theme
+            # === Step 5: Layout - dark theme
             fig.update_layout(
                 barmode="group",
                 title="Team Offensive vs Defensive Ratings",
@@ -159,6 +146,7 @@ if "vs" in user_input.lower():
         
         else:
             st.warning("Team stats not found or incomplete for this game.")
+
 
         
         # === Filter player stats for that game ===
