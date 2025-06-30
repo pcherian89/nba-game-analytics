@@ -146,31 +146,41 @@ if "vs" in user_input.lower():
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
         
-        # Create the bar chart
+        # Dynamically embed logos using raw.githubusercontent image path
+        ratings_melted["teamNameWithLogo"] = ratings_melted["teamName"].apply(
+            lambda x: f"<img src='https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{x.lower()[:3]}.png' width='30'>"
+        )
+        
+        # Create the bar chart with logos on X-axis
         fig_ratings = px.bar(
             ratings_melted,
-            x="teamName",
+            x="teamNameWithLogo",
             y="Value",
             color="RatingType",
             barmode="group",
             title="Team Offensive vs Defensive Ratings",
-            labels={"teamName": "Team", "Value": "Rating", "RatingType": "Metric"},
+            labels={"teamNameWithLogo": "Team", "Value": "Rating", "RatingType": "Metric"},
             color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
-            width=700,   # ✅ Narrow chart
+            width=700,
             height=400
         )
         
-        # Optional: aesthetic layout tweaks
+        # Aesthetic tweaks: match dark theme
         fig_ratings.update_layout(
             title_font=dict(size=20),
-            font=dict(size=14),
+            font=dict(size=14, color='white'),
             margin=dict(l=40, r=40, t=50, b=40),
-            plot_bgcolor="white",
+            plot_bgcolor="rgba(0,0,0,0)",  # transparent for dark background
+            paper_bgcolor="rgba(0,0,0,0)",  # transparent for dark theme
             legend_title_text=""
         )
         
-        # Show it directly (left-aligned)
-        st.plotly_chart(fig_ratings, use_container_width=False)  # ✅ Don't stretch full width
+        # Tell Plotly to render HTML in axis labels
+        fig_ratings.update_xaxes(tickfont=dict(size=14), tickvals=ratings_melted["teamNameWithLogo"].unique(), ticktext=ratings_melted["teamNameWithLogo"].unique())
+        
+        # Show chart (don't stretch full width)
+        st.plotly_chart(fig_ratings, use_container_width=False)
+
 
 
         # === Combine Home & Away Players ===
