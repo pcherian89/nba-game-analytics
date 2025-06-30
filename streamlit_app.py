@@ -57,96 +57,94 @@ if "vs" in user_input.lower():
         selected_game = matches[matches['label'] == selected_label].iloc[0]
         selected_gameId = selected_game['gameId']
 
-        # === Display Team Stats (Full View) ===
-        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
+        import pandas as pd
+        import plotly.graph_objects as go
+        import streamlit as st
         
-        team_display_cols = [
-            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
-            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
-            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
-            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
-            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
-            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
-            'q1Points', 'q2Points', 'q3Points', 'q4Points',
-            'biggestLead', 'biggestScoringRun', 'leadChanges',
-            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
-        ]
+        # === Your filtered dataframe per game
+        # Make sure this is set correctly before this block
+        # Example: team_stats = team_df[team_df["gameId"] == selected_gameId].copy()
         
-        st.subheader("🏟️ Full Team Stats")
-        st.dataframe(team_stats[team_display_cols].reset_index(drop=True))
-        
-        # === Estimate Possessions Function ===
+        # Estimate possessions per team
         def estimate_possessions(row):
             return (
-                row["fieldGoalsAttempted"] +
-                0.44 * row["freeThrowsAttempted"] -
-                row["reboundsOffensive"] +
-                row["turnovers"]
+                row["fieldGoalsAttempted"]
+                + 0.44 * row["freeThrowsAttempted"]
+                - row["reboundsOffensive"]
+                + row["turnovers"]
             )
         
-        # === Compute possessions ===
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # === Extract team rows AFTER possessions ===
-        team1 = team_stats.iloc[0]
-        team2 = team_stats.iloc[1]
+        # Compute Offensive and Defensive Ratings
+        if len(team_stats) == 2:
+            team1 = team_stats.iloc[0]
+            team2 = team_stats.iloc[1]
         
-        # === Compute Ratings ===
-        team_stats.at[team1.name, "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
-        team_stats.at[team1.name, "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
+            team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
+            team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
         
-        team_stats.at[team2.name, "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
-        team_stats.at[team2.name, "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
+            team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
+            team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-        # === Add team logo URLs ===
-        def get_team_abbreviation(name):
-            # Simple mapping for most common teams — update as needed
-            team_map = {
-                "Hawks": "atl", "Celtics": "bos", "Nets": "bkn", "Hornets": "cha", "Bulls": "chi",
-                "Cavaliers": "cle", "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw",
-                "Rockets": "hou", "Pacers": "ind", "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem",
-                "Heat": "mia", "Bucks": "mil", "Timberwolves": "min", "Pelicans": "nop", "Knicks": "nyk",
-                "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx", "Blazers": "por",
-                "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
-            }
-            return team_map.get(name, "")
+            # Start chart
+            fig = go.Figure()
         
-        team_stats["teamAbbr"] = team_stats["teamName"].apply(get_team_abbreviation)
-        team_stats["logo_url"] = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/" + team_stats["teamAbbr"] + ".png"
-        team_stats["teamLabel"] = team_stats["teamName"]  # Default label
-        team_stats["teamLabel"] = team_stats.apply(lambda row: f"<img src='{row.logo_url}' width='30'> {row.teamName}", axis=1)
+            fig.add_trace(go.Bar(
+                x=team_stats["teamName"],
+                y=team_stats["OffensiveRating"],
+                name="OffensiveRating",
+                marker_color="green"
+            ))
         
-        # === Melt Ratings ===
-        ratings_df = team_stats[["teamLabel", "OffensiveRating", "DefensiveRating"]].copy()
-        ratings_melted = ratings_df.melt(id_vars="teamLabel", var_name="RatingType", value_name="Value")
+            fig.add_trace(go.Bar(
+                x=team_stats["teamName"],
+                y=team_stats["DefensiveRating"],
+                name="DefensiveRating",
+                marker_color="red"
+            ))
         
-        # === Team Ratings Bar Chart ===
-        fig_ratings = px.bar(
-            ratings_melted,
-            x="teamLabel",
-            y="Value",
-            color="RatingType",
-            barmode="group",
-            title="Team Offensive vs Defensive Ratings",
-            labels={"teamLabel": "Team", "Value": "Rating", "RatingType": "Metric"},
-            color_discrete_map={"OffensiveRating": "green", "DefensiveRating": "red"},
-            width=700,
-            height=400
-        )
+            # === Dynamically add logos from GitHub using teamAbbreviation
+            for i, row in team_stats.iterrows():
+                abbr = row["teamAbbreviation"].lower()  # ensure lowercase
+                logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{abbr}.png"
         
-        fig_ratings.update_layout(
-            title_font=dict(size=20),
-            font=dict(size=14),
-            margin=dict(l=40, r=40, t=50, b=40),
-            plot_bgcolor="white",
-            legend_title_text="",
-            xaxis=dict(tickmode='array', tickvals=team_stats["teamLabel"])
-        )
+                fig.add_layout_image(
+                    dict(
+                        source=logo_url,
+                        x=row["teamName"],
+                        y=0,
+                        xref="x",
+                        yref="y",
+                        sizex=0.2,
+                        sizey=10,
+                        xanchor="center",
+                        yanchor="bottom",
+                        layer="above"
+                    )
+                )
         
-        # Enable rendering of HTML in x-axis
-        fig_ratings.update_xaxes(tickfont=dict(size=12))
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.plotly_chart(fig_ratings, use_container_width=False)
+            # Layout settings for dark theme
+            fig.update_layout(
+                barmode="group",
+                title="Team Offensive vs Defensive Ratings",
+                title_font=dict(size=20, color="white"),
+                font=dict(size=14, color="white"),
+                plot_bgcolor="#0E1117",
+                paper_bgcolor="#0E1117",
+                xaxis=dict(title="Team", color="white"),
+                yaxis=dict(title="Rating", color="white"),
+                legend=dict(title="", bgcolor="#0E1117"),
+                width=800,
+                height=450,
+                margin=dict(l=40, r=40, t=50, b=40),
+            )
+        
+            st.subheader("📊 Team Offensive vs Defensive Ratings")
+            st.plotly_chart(fig, use_container_width=True)
+        
+        else:
+            st.warning("Team stats not found or incomplete for this game.")
 
         
         # === Filter player stats for that game ===
