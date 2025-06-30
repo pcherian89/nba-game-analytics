@@ -175,18 +175,22 @@ if "vs" in user_input.lower():
         # === Header ===
         st.markdown("### 🏀 Team Performance Cards")
         
-        # === Display Team Cards with Side-by-Side Stats and Dynamic Comparisons ===
+        # === Display Team Logos and Names Aligned ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
         col1, col2 = st.columns(2)
         
-        # === Display Logos and Team Names ===
-        for i, team in enumerate([team1, team2]):
-            with [col1, col2][i]:
-                team_name = team["teamName"]
-                logo_filename = team_logo_map.get(team_name, "default.png")
-                logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{logo_filename}"
-                st.image(logo_url, width=120)
-                st.markdown(f"### {team_name}")
+        with col1:
+            t1_name = team1["teamName"]
+            t1_logo = team_logo_map.get(t1_name, "default.png")
+            st.image(f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t1_logo}", width=140)
+            st.markdown(f"### {t1_name}", unsafe_allow_html=True)
+        
+        with col2:
+            t2_name = team2["teamName"]
+            t2_logo = team_logo_map.get(t2_name, "default.png")
+            st.image(f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{t2_logo}", width=140)
+            st.markdown(f"### {t2_name}", unsafe_allow_html=True)
+
         
         # === Stat Fields to Compare ===
         team_compare_fields = {
