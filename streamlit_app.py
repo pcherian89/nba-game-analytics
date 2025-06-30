@@ -107,65 +107,61 @@ if "vs" in user_input.lower():
         import pandas as pd
         import plotly.express as px
         
-        # === Full Team Stats with Cards + Ratings Chart ===
+        # === TEAM LOGO MAP (must match filenames exactly) ===
+        team_logo_map = {
+            "Hawks": "atl.png", "Nets": "bkn.png", "Celtics": "bos.png", "Hornets": "cha.png", "Bulls": "chi.png",
+            "Cavaliers": "cle.png", "Mavericks": "dal.png", "Nuggets": "den.png", "Pistons": "det.png", "Warriors": "gsw.png",
+            "Rockets": "hou.png", "Pacers": "ind.png", "Clippers": "lac.png", "Lakers": "lal.png", "Grizzlies": "mem.png",
+            "Heat": "mia.gif", "Bucks": "mil.png", "Timberwolves": "min.png", "Pelicans": "nop.png", "Knicks": "nyk.png",
+            "Thunder": "okc.png", "Magic": "orl.png", "76ers": "phl.png", "Suns": "phx.png", "Trail Blazers": "por.png",
+            "Kings": "sac.png", "Spurs": "sas.png", "Raptors": "tor.png", "Jazz": "uth.png", "Wizards": "was.png"
+        }
         
-        # Filter data
-        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
+        # === Filter 2 teams for selected game ===
+        team_stats = team_df[team_df["gameId"] == selected_gameId].copy()
         
-        # === Estimate possessions ===
+        # === Compute Possessions & Ratings ===
         def estimate_possessions(row):
-            return (
-                row["fieldGoalsAttempted"] +
-                0.44 * row["freeThrowsAttempted"] -
-                row["reboundsOffensive"] +
-                row["turnovers"]
-            )
+            return row["fieldGoalsAttempted"] + 0.44 * row["freeThrowsAttempted"] - row["reboundsOffensive"] + row["turnovers"]
         
         team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
         
-        # Calculate ratings
+        # Assign ratings
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
         team_stats.loc[team_stats.index[0], "OffensiveRating"] = 100 * team1["teamScore"] / team1["possessions"]
         team_stats.loc[team_stats.index[0], "DefensiveRating"] = 100 * team2["teamScore"] / team1["possessions"]
         team_stats.loc[team_stats.index[1], "OffensiveRating"] = 100 * team2["teamScore"] / team2["possessions"]
         team_stats.loc[team_stats.index[1], "DefensiveRating"] = 100 * team1["teamScore"] / team2["possessions"]
         
-        # === TEAM LOGO MAPPING ===
-        team_name_to_code = {
-            "Hawks": "atl", "Nets": "bkn", "Celtics": "bos", "Hornets": "cha", "Bulls": "chi", "Cavaliers": "cle",
-            "Mavericks": "dal", "Nuggets": "den", "Pistons": "det", "Warriors": "gsw", "Rockets": "hou", "Pacers": "ind",
-            "Clippers": "lac", "Lakers": "lal", "Grizzlies": "mem", "Heat": "mia", "Bucks": "mil", "Timberwolves": "min",
-            "Pelicans": "nop", "Knicks": "nyk", "Thunder": "okc", "Magic": "orl", "76ers": "phl", "Suns": "phx",
-            "Trail Blazers": "por", "Kings": "sac", "Spurs": "sas", "Raptors": "tor", "Jazz": "uth", "Wizards": "was"
-        }
+        # === Header ===
+        st.markdown("### 🏀 Team Performance Cards")
         
         # === Display Team Cards ===
-        st.subheader("🏀 Team Performance Cards")
-        key_stats = [
-            "teamScore", "assists", "reboundsTotal", "steals", "blocks",
-            "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
-            "turnovers", "plusMinusPoints"
-        ]
+        team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
+        cols = st.columns(2)
         
-        cols = st.columns(len(team_stats))
-        
-        for col, (_, row) in zip(cols, team_stats.iterrows()):
-            team_name = row["teamName"]
-            team_code = team_name_to_code.get(team_name, "nyk")  # fallback
-            logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{team_code}.png"
-            
-            with col:
-                st.image(logo_url, width=100)
-                st.markdown(f"<h4 style='text-align: center; margin-top: -10px'>{team_name}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<div style='text-align: center; font-size: 15px'><b>Off Rating:</b> {row['OffensiveRating']:.1f}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='text-align: center; font-size: 15px'><b>Def Rating:</b> {row['DefensiveRating']:.1f}</div>", unsafe_allow_html=True)
+        for i, team in enumerate([team1, team2]):
+            with cols[i]:
+                team_name = team["teamName"]
+                logo_filename = team_logo_map.get(team_name, "default.png")
+                logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{logo_filename}"
                 
-                for stat in key_stats:
-                    label = stat.replace("Percentage", " %").replace("Total", " Total").replace("team", "").title()
-                    val = f"{row[stat]*100:.1f}%" if "Percentage" in stat else int(row[stat])
-                    st.markdown(f"<div style='text-align: center; font-size: 14px'>{label}: <b>{val}</b></div>", unsafe_allow_html=True)
+                st.image(logo_url, width=120)
+                st.markdown(f"### {team_name}")
+                st.markdown(f"**Off Rating:** {team['OffensiveRating']:.1f}")
+                st.markdown(f"**Def Rating:** {team['DefensiveRating']:.1f}")
+                st.markdown(f"**Score:** {int(team['teamScore'])}")
+                st.markdown(f"**Assists:** {int(team['assists'])}")
+                st.markdown(f"**Rebounds Total:** {int(team['reboundsTotal'])}")
+                st.markdown(f"**Steals:** {int(team['steals'])}")
+                st.markdown(f"**Blocks:** {int(team['blocks'])}")
+                st.markdown(f"**Fieldgoals %:** {team['fieldGoalsPercentage']:.1f}%")
+                st.markdown(f"**Threepointers %:** {team['threePointersPercentage']:.1f}%")
+                st.markdown(f"**Freethrows %:** {team['freeThrowsPercentage']:.1f}%")
+                st.markdown(f"**Turnovers:** {int(team['turnovers'])}")
+                st.markdown(f"**Plusminuspoints:** {int(team['plusMinusPoints'])}")
         
-        # === Offensive vs Defensive Rating Chart ===
+        # === Ratings Bar Chart ===
         ratings_df = team_stats[["teamName", "OffensiveRating", "DefensiveRating"]].copy()
         ratings_melted = ratings_df.melt(id_vars="teamName", var_name="RatingType", value_name="Value")
         
@@ -184,7 +180,7 @@ if "vs" in user_input.lower():
         
         fig_ratings.update_layout(
             title_font=dict(size=20),
-            font=dict(size=14, color='white'),
+            font=dict(size=14),
             margin=dict(l=40, r=40, t=50, b=40),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
@@ -192,6 +188,7 @@ if "vs" in user_input.lower():
         )
         
         st.plotly_chart(fig_ratings, use_container_width=False)
+
 
 
 
