@@ -60,6 +60,20 @@ if "vs" in user_input.lower():
         import pandas as pd
         import plotly.graph_objects as go
         import streamlit as st
+
+        # === Display Team Stats (Full View) ===
+        team_stats = team_df[team_df['gameId'] == selected_gameId].copy()
+        team_display_cols = [
+            'teamName', 'teamScore', 'assists', 'blocks', 'steals',
+            'fieldGoalsMade', 'fieldGoalsAttempted', 'fieldGoalsPercentage',
+            'threePointersMade', 'threePointersAttempted', 'threePointersPercentage',
+            'freeThrowsMade', 'freeThrowsAttempted', 'freeThrowsPercentage',
+            'reboundsOffensive', 'reboundsDefensive', 'reboundsTotal',
+            'turnovers', 'foulsPersonal', 'plusMinusPoints', 'benchPoints',
+            'q1Points', 'q2Points', 'q3Points', 'q4Points',
+            'biggestLead', 'biggestScoringRun', 'leadChanges',
+            'pointsFastBreak', 'pointsFromTurnovers', 'pointsInThePaint', 'pointsSecondChance'
+        ]
         
         # === Your filtered dataframe per game
         # Make sure this is set correctly before this block
