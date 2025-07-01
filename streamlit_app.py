@@ -353,8 +353,8 @@ if "vs" in user_input.lower():
         for col in ["OffensiveRating", "DefensiveRating"]:
             combined_players[col] = combined_players[col].replace([np.inf, -np.inf], np.nan)
         
-        # Filter: Played at least 10 minutes
-        combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 10].dropna(
+        # Filter: Played at least 15 minutes
+        combined_players = combined_players[combined_players["numMinutes"].fillna(0) >= 15].dropna(
             subset=["OffensiveRating", "DefensiveRating"]
         )
 
