@@ -33,7 +33,7 @@ def load_data():
 games_df, player_df, team_df = load_data()
 
 # === UI: Matchup Input ===
-st.title("🏀 ThynkBall")
+st.title("🏀 BallThynkr")
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
 if "vs" in user_input.lower():
