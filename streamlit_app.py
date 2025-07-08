@@ -36,7 +36,7 @@ games_df, player_df, team_df = load_data()
 st.title("🏀 ThynkBall")
 
 # === Top Players by Stat Section ===
-st.markdown("## 🏆 Top Players by Stat")
+st.markdown("### 🏆 Top Players by Stat")
 
 # Add playerImageURL using dynamic personId logic
 player_df["playerImageURL"] = player_df["personId"].apply(
@@ -44,19 +44,27 @@ player_df["playerImageURL"] = player_df["personId"].apply(
 )
 
 # Calculate stat-wise averages
-def calculate_player_averages(player_df):
+def calculate_player_averages(players_df):
     stats_to_avg = [
-        "points", "reboundsTotal", "assists", "blocks", "steals",
-        "turnovers", "fieldGoalsPercentage", "threePointersPercentage",
-        "freeThrowsPercentage", "plusMinusPoints"
+        "points", "assists", "reboundsTotal", "steals", "blocks",
+        "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
+        "turnovers", "plusMinusPoints"
     ]
     
-    avg_df = (
-        player_df.groupby(["playerName", "personId"])[stats_to_avg]
+    # Group by firstName, lastName, and personId (based on your working sample)
+    avg_players = (
+        players_df.groupby(["firstName", "lastName", "personId"])[stats_to_avg]
         .mean()
         .reset_index()
     )
-    return avg_df
+    
+    # Add image URL
+    avg_players["playerImageURL"] = avg_players["personId"].apply(
+        lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+    )
+    
+    return avg_players
+
 
 avg_players = calculate_player_averages(player_df)
 
