@@ -111,10 +111,22 @@ for label, stat_col in top_stat_fields.items():
     cols = st.columns(5)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
-        with cols[idx]:
-            st.image(row.playerImageURL, width=100)
-            st.markdown(f"**{row.firstName} {row.lastName}**")
-            st.markdown(f"{round(getattr(row, stat_col) * 100 if 'Percentage' in stat_col else getattr(row, stat_col), 2)}" + ("%" if "Percentage" in stat_col else ""))
+            stat_val = getattr(row, stat_col)
+            stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
+            max_value = top_players[stat_col].max()
+        
+            with cols[idx]:
+                st.image(row.playerImageURL, width=100)
+                st.markdown(f"**{row.firstName} {row.lastName}**")
+                st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
+        
+                # Visual stat indicator bar
+                bar_width = (stat_val / max_value) * 100
+                st.markdown(f"""
+                <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
+                    <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
+                </div>
+                """, unsafe_allow_html=True)
 
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
