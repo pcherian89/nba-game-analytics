@@ -105,7 +105,7 @@ for label, stat_col in top_stat_fields.items():
     if stat_col in percentage_made_attempted:
         _, att_col = percentage_made_attempted[stat_col]
         filtered_players = avg_players[
-            (avg_players["numMinutes"] > 10) & (avg_players[att_col] >= 100)
+            (avg_players["numMinutes"] > 15) & (avg_players[att_col] >= 100)
         ]
     else:
         filtered_players = avg_players
