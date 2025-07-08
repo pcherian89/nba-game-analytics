@@ -34,6 +34,59 @@ games_df, player_df, team_df = load_data()
 
 # === UI: Matchup Input ===
 st.title("🏀 ThynkBall")
+
+# === Top Players by Stat Section ===
+st.markdown("## 🏆 Top Players by Stat")
+
+# Add playerImageURL using dynamic personId logic
+player_df["playerImageURL"] = player_df["personId"].apply(
+    lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+)
+
+# Calculate stat-wise averages
+def calculate_player_averages(player_df):
+    stats_to_avg = [
+        "points", "reboundsTotal", "assists", "blocks", "steals",
+        "turnovers", "fieldGoalsPercentage", "threePointersPercentage",
+        "freeThrowsPercentage", "plusMinusPoints"
+    ]
+    
+    avg_df = (
+        player_df.groupby(["playerName", "personId"])[stats_to_avg]
+        .mean()
+        .reset_index()
+    )
+    return avg_df
+
+avg_players = calculate_player_averages(player_df)
+
+# Define which stats to display
+top_stat_fields = {
+    "Points Per Game (PPG)": "points",
+    "Rebounds Per Game (RPG)": "reboundsTotal",
+    "Assists Per Game (APG)": "assists",
+    "Steals Per Game": "steals",
+    "Blocks Per Game": "blocks",
+    "Turnovers Per Game": "turnovers",
+    "Field Goal %": "fieldGoalsPercentage",
+    "Three Point %": "threePointersPercentage",
+    "Free Throw %": "freeThrowsPercentage",
+    "Plus Minus": "plusMinusPoints"
+}
+
+# Display top 5 for each stat
+for label, stat_col in top_stat_fields.items():
+    st.markdown(f"### 🔹 {label}")
+    top_players = avg_players.sort_values(stat_col, ascending=False).head(5)
+
+    cols = st.columns(5)
+    for idx, row in top_players.iterrows():
+        with cols[idx % 5]:
+            st.image(f"https://cdn.nba.com/headshots/nba/latest/260x190/{int(row['personId'])}.png", width=100)
+            st.markdown(f"**{row['playerName']}**")
+            st.markdown(f"{round(row[stat_col], 1)}")
+
+
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
 if "vs" in user_input.lower():
