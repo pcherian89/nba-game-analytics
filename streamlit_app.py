@@ -38,35 +38,52 @@ st.title("🏀 ThynkBall")
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
 
-# --- Add player headshot image URLs dynamically ---
+# Add headshot URLs
 player_df["playerImageURL"] = player_df["personId"].apply(
     lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
 )
 
-# --- Function to calculate stat-wise player averages ---
-def calculate_player_averages(players_df):
-    stats_to_avg = [
-        "points", "assists", "reboundsTotal", "steals", "blocks",
-        "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
-        "turnovers", "plusMinusPoints", "numMinutes"
+# --- Stat Categories ---
+basic_stats = [
+    "points", "assists", "reboundsTotal", "steals", "blocks",
+    "turnovers", "plusMinusPoints", "numMinutes"
+]
+
+percentage_made_attempted = {
+    "fieldGoalsPercentage": ("fieldGoalsMade", "fieldGoalsAttempted"),
+    "threePointersPercentage": ("threePointersMade", "threePointersAttempted"),
+    "freeThrowsPercentage": ("freeThrowsMade", "freeThrowsAttempted")
+}
+
+# --- Compute Averages & Sums ---
+# Basic stats: mean
+avg_stats = (
+    player_df.groupby(["firstName", "lastName", "personId"])[basic_stats]
+    .mean()
+    .reset_index()
+)
+
+# Shooting stats: sum
+sum_stats = (
+    player_df.groupby(["firstName", "lastName", "personId"])[
+        [v for pair in percentage_made_attempted.values() for v in pair]
     ]
+    .sum()
+    .reset_index()
+)
 
-    avg_players = (
-        players_df.groupby(["firstName", "lastName", "personId"])[stats_to_avg]
-        .mean()
-        .reset_index()
-    )
+# Merge both
+avg_players = pd.merge(avg_stats, sum_stats, on=["firstName", "lastName", "personId"])
+avg_players["playerImageURL"] = avg_players["personId"].apply(
+    lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+)
 
-    avg_players["playerImageURL"] = avg_players["personId"].apply(
-        lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
-    )
+# Compute Percentages Manually
+for new_col, (made, att) in percentage_made_attempted.items():
+    avg_players[new_col] = avg_players[made] / avg_players[att]
+    avg_players = avg_players[avg_players[att] > 0]  # remove players with 0 attempts
 
-    return avg_players
-
-# --- Compute Averages ---
-avg_players = calculate_player_averages(player_df)
-
-# --- Stat Fields and Corresponding Column Names ---
+# Final Stat Labels
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
     "Rebounds Per Game (RPG)": "reboundsTotal",
@@ -80,12 +97,12 @@ top_stat_fields = {
     "Plus Minus": "plusMinusPoints"
 }
 
-# --- Display Top 5 Players per Stat ---
+# --- Display Section ---
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # Filter by minutes only for percentage-based stats
-    if stat_col in ["fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage"]:
+    # Filter only for real players (>15 min avg) for percentages
+    if stat_col in percentage_made_attempted.keys():
         filtered_players = avg_players[avg_players["numMinutes"] > 15]
     else:
         filtered_players = avg_players
@@ -97,8 +114,7 @@ for label, stat_col in top_stat_fields.items():
         with cols[idx]:
             st.image(row.playerImageURL, width=100)
             st.markdown(f"**{row.firstName} {row.lastName}**")
-            st.markdown(f"{round(getattr(row, stat_col), 2)}")
-
+            st.markdown(f"{round(getattr(row, stat_col) * 100 if 'Percentage' in stat_col else getattr(row, stat_col), 2)}" + ("%" if "Percentage" in stat_col else ""))
 
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
