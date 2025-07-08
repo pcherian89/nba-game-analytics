@@ -55,15 +55,15 @@ percentage_made_attempted = {
     "freeThrowsPercentage": ("freeThrowsMade", "freeThrowsAttempted")
 }
 
-# --- Compute Averages & Sums ---
-# Basic stats: mean
+# --- Compute Averages & Totals ---
+# Basic stats: mean per game
 avg_stats = (
     player_df.groupby(["firstName", "lastName", "personId"])[basic_stats]
     .mean()
     .reset_index()
 )
 
-# Shooting stats: sum
+# Shooting stats: sum total made and attempted
 sum_stats = (
     player_df.groupby(["firstName", "lastName", "personId"])[
         [v for pair in percentage_made_attempted.values() for v in pair]
@@ -72,18 +72,18 @@ sum_stats = (
     .reset_index()
 )
 
-# Merge both
+# Merge stats
 avg_players = pd.merge(avg_stats, sum_stats, on=["firstName", "lastName", "personId"])
 avg_players["playerImageURL"] = avg_players["personId"].apply(
     lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
 )
 
-# Compute Percentages Manually
-for new_col, (made, att) in percentage_made_attempted.items():
-    avg_players[new_col] = avg_players[made] / avg_players[att]
-    avg_players = avg_players[avg_players[att] > 0]  # remove players with 0 attempts
+# --- Compute Percentages ---
+for new_col, (made_col, att_col) in percentage_made_attempted.items():
+    avg_players = avg_players[avg_players[att_col] > 0]  # prevent divide by zero
+    avg_players[new_col] = avg_players[made_col] / avg_players[att_col]
 
-# Final Stat Labels
+# --- Stat Display Labels ---
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
     "Rebounds Per Game (RPG)": "reboundsTotal",
@@ -101,9 +101,12 @@ top_stat_fields = {
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # Filter only for real players (>15 min avg) for percentages
-    if stat_col in percentage_made_attempted.keys():
-        filtered_players = avg_players[avg_players["numMinutes"] > 15]
+    # Filter: only players >15 min/game AND >50 attempts for percentage stats
+    if stat_col in percentage_made_attempted:
+        _, att_col = percentage_made_attempted[stat_col]
+        filtered_players = avg_players[
+            (avg_players["numMinutes"] > 15) & (avg_players[att_col] >= 50)
+        ]
     else:
         filtered_players = avg_players
 
@@ -111,22 +114,23 @@ for label, stat_col in top_stat_fields.items():
     cols = st.columns(5)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
-            stat_val = getattr(row, stat_col)
-            stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
-            max_value = top_players[stat_col].max()
-        
-            with cols[idx]:
-                st.image(row.playerImageURL, width=100)
-                st.markdown(f"**{row.firstName} {row.lastName}**")
-                st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
-        
-                # Visual stat indicator bar
-                bar_width = (stat_val / max_value) * 100
-                st.markdown(f"""
-                <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
-                    <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
-                </div>
-                """, unsafe_allow_html=True)
+        stat_val = getattr(row, stat_col)
+        stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
+        max_value = top_players[stat_col].max()
+
+        with cols[idx]:
+            st.image(row.playerImageURL, width=100)
+            st.markdown(f"**{row.firstName} {row.lastName}**")
+            st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
+
+            # Visual stat indicator
+            bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
+            st.markdown(f"""
+            <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
+                <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
+            </div>
+            """, unsafe_allow_html=True)
+
 
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
