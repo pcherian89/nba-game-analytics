@@ -145,8 +145,6 @@ st.markdown("""
 
 user_input = st.text_input(" ", "")  # Hidden label for cleaner UI
 
-# user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
-
 if "vs" in user_input.lower():
     team1, team2 = [t.strip().lower() for t in user_input.split("vs")]
 
@@ -895,5 +893,6 @@ if "vs" in user_input.lower():
             
     else:
         st.warning("❌ No games found for that matchup.")
-else:
-    st.info("Type a matchup using the format: `Team1 vs Team2`")
+        
+elif user_input.strip() != "":
+    st.info("⚠️ Please use the format: `Team1 vs Team2` (e.g., `Heat vs Knicks`)")
