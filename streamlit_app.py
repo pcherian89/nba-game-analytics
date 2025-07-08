@@ -131,8 +131,21 @@ for label, stat_col in top_stat_fields.items():
             </div>
             """, unsafe_allow_html=True)
 
+# === Chat Section ===
+st.markdown("---")
+st.markdown("### 💬 Game Matchup Analyzer")
+st.markdown("Ask about a game like `'Lakers vs Nuggets'`, `'Celtics vs Heat'`, etc.")
 
-user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
+st.markdown("""
+<div style='background-color:#f0f8ff; padding: 15px; border-radius: 10px; margin-bottom: 10px;'>
+<h4 style='margin-bottom:10px;'>🔍 Type a matchup below:</h4>
+<i>Use the format: <b>Team1 vs Team2</b></i>
+</div>
+""", unsafe_allow_html=True)
+
+user_input = st.text_input(" ", "")  # Hidden label for cleaner UI
+
+# user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
 if "vs" in user_input.lower():
     team1, team2 = [t.strip().lower() for t in user_input.split("vs")]
