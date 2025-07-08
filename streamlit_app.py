@@ -48,7 +48,7 @@ def calculate_player_averages(players_df):
     stats_to_avg = [
         "points", "assists", "reboundsTotal", "steals", "blocks",
         "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage",
-        "turnovers", "plusMinusPoints"
+        "turnovers", "plusMinusPoints", "numMinutes"
     ]
 
     avg_players = (
@@ -57,7 +57,6 @@ def calculate_player_averages(players_df):
         .reset_index()
     )
 
-    # Include player image URL in averaged DataFrame
     avg_players["playerImageURL"] = avg_players["personId"].apply(
         lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
     )
@@ -67,7 +66,7 @@ def calculate_player_averages(players_df):
 # --- Compute Averages ---
 avg_players = calculate_player_averages(player_df)
 
-# --- Define stat labels and their corresponding column names ---
+# --- Stat Fields and Corresponding Column Names ---
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
     "Rebounds Per Game (RPG)": "reboundsTotal",
@@ -84,14 +83,22 @@ top_stat_fields = {
 # --- Display Top 5 Players per Stat ---
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
-    top_players = avg_players.sort_values(stat_col, ascending=False).head(5)
 
+    # Filter by minutes only for percentage-based stats
+    if stat_col in ["fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage"]:
+        filtered_players = avg_players[avg_players["numMinutes"] > 15]
+    else:
+        filtered_players = avg_players
+
+    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
     cols = st.columns(5)
+
     for idx, row in enumerate(top_players.itertuples(index=False)):
         with cols[idx]:
             st.image(row.playerImageURL, width=100)
             st.markdown(f"**{row.firstName} {row.lastName}**")
-            st.markdown(f"{round(getattr(row, stat_col), 1)}")
+            st.markdown(f"{round(getattr(row, stat_col), 2)}")
+
 
 user_input = st.text_input("What game do you want to check? (e.g., 'Warriors vs Celtics')", "")
 
