@@ -84,14 +84,14 @@ top_stat_fields = {
 
 # Display top 5 for each stat
 for label, stat_col in top_stat_fields.items():
-    st.markdown(f"### 🔹 {label}")
+    st.markdown(f"#### 🔹 {label}")
     top_players = avg_players.sort_values(stat_col, ascending=False).head(5)
 
     cols = st.columns(5)
     for idx, row in top_players.iterrows():
         with cols[idx % 5]:
             st.image(f"https://cdn.nba.com/headshots/nba/latest/260x190/{int(row['personId'])}.png", width=100)
-            st.markdown(f"**{row['playerName']}**")
+            st.markdown(f"**{row['firstName']} {row['lastName']}**")
             st.markdown(f"{round(row[stat_col], 1)}")
 
 
