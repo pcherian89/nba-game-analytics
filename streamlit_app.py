@@ -57,6 +57,9 @@ avg_players = (
     .reset_index()
 )
 
+# --- Filter: Only players with average minutes >= 15 ---
+avg_players = avg_players[avg_players["numMinutes"] >= 15]
+
 # --- Stat Display Labels ---
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
@@ -75,10 +78,8 @@ top_stat_fields = {
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # Filter players with at least 15 minutes per game
-    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
-
-    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
+    # Sort and pick top 5 players
+    top_players = avg_players.sort_values(stat_col, ascending=False).head(5)
     cols = st.columns(5)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
@@ -91,14 +92,13 @@ for label, stat_col in top_stat_fields.items():
             st.markdown(f"**{row.firstName} {row.lastName}**")
             st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
 
-            # Visual stat indicator
+            # Visual stat indicator bar
             bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
             st.markdown(f"""
-            <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
-                <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
-            </div>
+                <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
+                    <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
+                </div>
             """, unsafe_allow_html=True)
-
 
 # === Chat Section ===
 st.markdown("---")
