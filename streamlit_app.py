@@ -46,42 +46,16 @@ player_df["playerImageURL"] = player_df["personId"].apply(
 # --- Stat Categories ---
 basic_stats = [
     "points", "assists", "reboundsTotal", "steals", "blocks",
-    "turnovers", "plusMinusPoints", "numMinutes"
+    "turnovers", "plusMinusPoints", "numMinutes",
+    "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage"
 ]
 
-percentage_made_attempted = {
-    "fieldGoalsPercentage": ("fieldGoalsMade", "fieldGoalsAttempted"),
-    "threePointersPercentage": ("threePointersMade", "threePointersAttempted"),
-    "freeThrowsPercentage": ("freeThrowsMade", "freeThrowsAttempted")
-}
-
-# --- Compute Averages & Totals ---
-# Basic stats: mean per game
-avg_stats = (
-    player_df.groupby(["firstName", "lastName", "personId"])[basic_stats]
+# --- Compute Averages ---
+avg_players = (
+    player_df.groupby(["firstName", "lastName", "personId", "playerImageURL"])[basic_stats]
     .mean()
     .reset_index()
 )
-
-# Shooting stats: sum total made and attempted
-sum_stats = (
-    player_df.groupby(["firstName", "lastName", "personId"])[
-        [v for pair in percentage_made_attempted.values() for v in pair]
-    ]
-    .sum()
-    .reset_index()
-)
-
-# Merge stats
-avg_players = pd.merge(avg_stats, sum_stats, on=["firstName", "lastName", "personId"])
-avg_players["playerImageURL"] = avg_players["personId"].apply(
-    lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
-)
-
-# --- Compute Percentages ---
-for new_col, (made_col, att_col) in percentage_made_attempted.items():
-    avg_players = avg_players[avg_players[att_col] > 0]  # prevent divide by zero
-    avg_players[new_col] = avg_players[made_col] / avg_players[att_col]
 
 # --- Stat Display Labels ---
 top_stat_fields = {
@@ -101,14 +75,8 @@ top_stat_fields = {
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # Filter: only players >15 min/game AND >50 attempts for percentage stats
-    if stat_col in percentage_made_attempted:
-        _, att_col = percentage_made_attempted[stat_col]
-        filtered_players = avg_players[
-            (avg_players["numMinutes"] >= 15) & (avg_players[att_col] >= 100)
-        ]
-    else:
-        filtered_players = avg_players
+    # Filter players with at least 15 minutes per game
+    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
 
     top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
     cols = st.columns(5)
@@ -130,6 +98,7 @@ for label, stat_col in top_stat_fields.items():
                 <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
             </div>
             """, unsafe_allow_html=True)
+
 
 # === Chat Section ===
 st.markdown("---")
