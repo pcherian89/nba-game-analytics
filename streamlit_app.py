@@ -50,6 +50,9 @@ basic_stats = [
     "fieldGoalsPercentage", "threePointersPercentage", "freeThrowsPercentage"
 ]
 
+# These are the totals we want to track (for display)
+totals_to_add = ["threePointersMade", "freeThrowsMade"]
+
 # --- Compute Averages ---
 avg_players = (
     player_df.groupby(["firstName", "lastName", "personId", "playerImageURL"])[basic_stats]
@@ -57,8 +60,15 @@ avg_players = (
     .reset_index()
 )
 
-# --- Filter: Only players with average minutes >= 15 ---
-avg_players = avg_players[avg_players["numMinutes"] >= 15]
+# --- Add Totals (e.g., total FT made, total 3P made) ---
+totals = (
+    player_df.groupby(["firstName", "lastName", "personId"])[totals_to_add]
+    .sum()
+    .reset_index()
+)
+
+# --- Merge both average + total tables ---
+avg_players = pd.merge(avg_players, totals, on=["firstName", "lastName", "personId"], how="left")
 
 # --- Stat Display Labels ---
 top_stat_fields = {
@@ -71,15 +81,19 @@ top_stat_fields = {
     "Field Goal %": "fieldGoalsPercentage",
     "Three Point %": "threePointersPercentage",
     "Free Throw %": "freeThrowsPercentage",
-    "Plus Minus": "plusMinusPoints"
+    "Plus Minus": "plusMinusPoints",
+    "Total 3-Pointers Made": "threePointersMade",
+    "Total Free Throws Made": "freeThrowsMade"
 }
 
 # --- Display Section ---
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # Sort and pick top 5 players
-    top_players = avg_players.sort_values(stat_col, ascending=False).head(5)
+    # Filter players with at least 15 minutes per game
+    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
+
+    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
     cols = st.columns(5)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
@@ -92,13 +106,14 @@ for label, stat_col in top_stat_fields.items():
             st.markdown(f"**{row.firstName} {row.lastName}**")
             st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
 
-            # Visual stat indicator bar
+            # Visual stat indicator
             bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
             st.markdown(f"""
-                <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
-                    <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
-                </div>
+            <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
+                <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
+            </div>
             """, unsafe_allow_html=True)
+
 
 # === Chat Section ===
 st.markdown("---")
