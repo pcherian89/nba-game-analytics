@@ -9,6 +9,9 @@ from langchain_openai import ChatOpenAI
 import numpy as np
 from nba_api.stats.endpoints import leaguestandings
 
+standings = leaguestandings.LeagueStandings(timeout=15)  # 15 seconds timeout
+standings_df = standings.get_data_frames()[0]
+
 from openai import OpenAI  # ✅ new SDK
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamlit Cloud-ready
