@@ -7,10 +7,8 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 import numpy as np
+import time
 from nba_api.stats.endpoints import leaguestandings
-
-standings = leaguestandings.LeagueStandings(timeout=15)  # 15 seconds timeout
-standings_df = standings.get_data_frames()[0]
 
 from openai import OpenAI  # ✅ new SDK
 
@@ -38,38 +36,35 @@ games_df, player_df, team_df = load_data()
 # === UI: Matchup Input ===
 st.title("🏀 ThynkBall")
 
-st.markdown("### 📊 Current NBA Standings")
+# === League Standings ===
+st.markdown("## 🥇 Current Standings (NBA 2024–25)")
 
-# Get standings data
-standings_df = leaguestandings.LeagueStandings().get_data_frames()[0]
+try:
+    # Retry up to 2 times if timeout happens
+    for attempt in range(2):
+        try:
+            standings = leaguestandings.LeagueStandings(timeout=15)
+            standings_df = standings.get_data_frames()[0]
+            break
+        except Exception as e:
+            if attempt == 1:
+                raise e
+            time.sleep(2)  # wait before retrying
 
-# Format and sort standings by conference
-east = (
-    standings_df[standings_df["Conference"] == "East"]
-    [["TeamName", "WINS", "LOSSES", "WinPCT"]]
-    .sort_values("WinPCT", ascending=False)
-    .reset_index(drop=True)
-)
-east.columns = ["Team", "W", "L", "Win%"]
+    # Split East and West
+    east_df = standings_df[standings_df['Conference'] == 'East'][['TeamName', 'WinLossRecord']]
+    west_df = standings_df[standings_df['Conference'] == 'West'][['TeamName', 'WinLossRecord']]
 
-west = (
-    standings_df[standings_df["Conference"] == "West"]
-    [["TeamName", "WINS", "LOSSES", "WinPCT"]]
-    .sort_values("WinPCT", ascending=False)
-    .reset_index(drop=True)
-)
-west.columns = ["Team", "W", "L", "Win%"]
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### Eastern Conference")
+        st.dataframe(east_df.reset_index(drop=True))
+    with col2:
+        st.markdown("### Western Conference")
+        st.dataframe(west_df.reset_index(drop=True))
 
-# Display in two columns
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("#### 🏆 Eastern Conference")
-    st.dataframe(east.style.format({"Win%": "{:.3f}"}), use_container_width=True)
-
-with col2:
-    st.markdown("#### 🏆 Western Conference")
-    st.dataframe(west.style.format({"Win%": "{:.3f}"}), use_container_width=True)
+except Exception as e:
+    st.warning("⚠️ Could not load NBA standings (API timeout). Try refreshing.")
 
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
