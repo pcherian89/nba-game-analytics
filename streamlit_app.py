@@ -44,44 +44,44 @@ player_df["playerImageURL"] = player_df["personId"].apply(
 )
 
 # --- Stat Categories ---
-basic_stats = [
+avg_stats = [
     "points", "assists", "reboundsTotal", "steals", "blocks",
     "turnovers", "plusMinusPoints", "numMinutes"
 ]
 
-shooting_totals = [
+# Totals for shooting calculations
+totals_to_sum = [
     "fieldGoalsMade", "fieldGoalsAttempted",
     "threePointersMade", "threePointersAttempted",
     "freeThrowsMade", "freeThrowsAttempted"
 ]
 
-# --- Compute Averages (for basic stats) ---
-avg_stats = (
-    player_df.groupby(["firstName", "lastName", "personId", "playerImageURL"])[basic_stats]
+# Additional totals to display
+extra_totals = ["threePointersMade", "freeThrowsMade"]
+
+# === Compute Averages ===
+avg_players = (
+    player_df.groupby(["firstName", "lastName", "personId", "playerImageURL"])[avg_stats]
     .mean()
     .reset_index()
 )
 
-# --- Compute Totals (for all shooting stats) ---
-total_stats = (
-    player_df.groupby(["firstName", "lastName", "personId"])[shooting_totals]
+# === Compute Totals ===
+totals = (
+    player_df.groupby(["firstName", "lastName", "personId"])[totals_to_sum]
     .sum()
     .reset_index()
 )
 
-# Merge averages + totals
-avg_players = pd.merge(avg_stats, total_stats, on=["firstName", "lastName", "personId"])
+# === Merge avg + totals ===
+avg_players = pd.merge(avg_players, totals, on=["firstName", "lastName", "personId"], how="left")
 
-# ✅ Compute Shooting Percentages using totals (correct NBA method)
+# === Compute shooting percentages based on totals ===
 avg_players["fieldGoalsPercentage"] = avg_players["fieldGoalsMade"] / avg_players["fieldGoalsAttempted"]
 avg_players["threePointersPercentage"] = avg_players["threePointersMade"] / avg_players["threePointersAttempted"]
 avg_players["freeThrowsPercentage"] = avg_players["freeThrowsMade"] / avg_players["freeThrowsAttempted"]
 
-# Avoid NaNs or divide-by-zero
-avg_players.replace([float('inf'), -float('inf')], 0, inplace=True)
-avg_players.fillna(0, inplace=True)
-
-# --- Stat Display Labels ---
+# === Display Labels ===
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
     "Rebounds Per Game (RPG)": "reboundsTotal",
@@ -89,49 +89,42 @@ top_stat_fields = {
     "Steals Per Game": "steals",
     "Blocks Per Game": "blocks",
     "Turnovers Per Game": "turnovers",
+    "Plus Minus": "plusMinusPoints",
     "Field Goal %": "fieldGoalsPercentage",
     "Three Point %": "threePointersPercentage",
     "Free Throw %": "freeThrowsPercentage",
-    "Plus Minus": "plusMinusPoints",
     "Total 3-Pointers Made": "threePointersMade",
     "Total Free Throws Made": "freeThrowsMade"
 }
 
-# --- Display Section ---
+# === Display Section ===
 for label, stat_col in top_stat_fields.items():
     st.markdown(f"#### 🔹 {label}")
 
-    # ✅ Filter real rotation players
-    filtered_players = avg_players[
-        (avg_players["numMinutes"] >= 15) &  # avg mins >= 15
-        ((avg_players["threePointersAttempted"] >= 10) if stat_col == "threePointersPercentage" else True) &
-        ((avg_players["fieldGoalsAttempted"] >= 20) if stat_col == "fieldGoalsPercentage" else True) &
-        ((avg_players["freeThrowsAttempted"] >= 10) if stat_col == "freeThrowsPercentage" else True)
-    ]
+    # Filter: at least 15 minutes per game
+    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
 
-    # Sort & display top 5
     top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
     cols = st.columns(5)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
         stat_val = getattr(row, stat_col)
-        stat_display = (
-            f"{round(stat_val * 100, 2)}%" if "Percentage" in stat_col else round(stat_val, 2)
-        )
+        stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
         max_value = top_players[stat_col].max()
 
         with cols[idx]:
             st.image(row.playerImageURL, width=100)
             st.markdown(f"**{row.firstName} {row.lastName}**")
-            st.markdown(stat_display)
+            st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
 
-            # Visual stat indicator bar
+            # Visual stat indicator
             bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
             st.markdown(f"""
             <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
                 <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
             </div>
             """, unsafe_allow_html=True)
+
 
 
 # === Chat Section ===
