@@ -25,15 +25,16 @@ def load_data():
     games = pd.read_csv(base_url + "Games_filtered.csv", low_memory=False)
     players = pd.read_csv(base_url + "PlayerStatistics_filtered.csv", low_memory=False)
     teams = pd.read_csv(base_url + "TeamStatistics_filtered.csv", low_memory=False)
-    standings = pd.read_csv(base_url + "nba_standings.csv")  # updated file with Team + Conference
+    standings = pd.read_csv(base_url + "nba_standings.csv")
 
     games['gameDate'] = pd.to_datetime(games['gameDate'], errors='coerce')
     players['gameDate'] = pd.to_datetime(players['gameDate'], errors='coerce')
     teams['gameDate'] = pd.to_datetime(teams['gameDate'], errors='coerce')
 
+    # ✨ Clean up team names in standings to avoid ** or whitespace mismatches
+    standings['Team'] = standings['Team'].str.replace("*", "", regex=False).str.strip()
+    
     return games, players, teams, standings
-
-games_df, player_df, team_df, standings_df = load_data()
 
 # === Add Team Logos ===
 logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
@@ -66,14 +67,14 @@ def display_standings(df):
 
         for _, row in conf_df.iterrows():
             team = row["Team"]
-            logo_abbrev = team_abbrev_map.get(team, "default")  # fallback
-            logo_url = f"https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/{logo_abbrev}.png"
+            logo_abbrev = team_abbrev_map.get(team, "bos")  # fallback to Boston if unknown
+            logo_url = f"{logo_base_url}{logo_abbrev}.png"
 
             st.markdown(
                 f"""
                 <div style='display: flex; align-items: center; margin-bottom: 5px;'>
                     <img src="{logo_url}" width="40" style="margin-right: 10px;">
-                    <strong>{team}</strong>
+                    <span style='font-weight: bold;'>{team}</span>
                     <span style='margin-left: 20px;'>W: {row['W']} &nbsp; L: {row['L']} &nbsp; 
                     Win %: {row['W/L%']} &nbsp; GB: {row['GB']} &nbsp; PS/G: {row['PS/G']}</span>
                 </div>
