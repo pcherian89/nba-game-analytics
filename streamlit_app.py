@@ -18,7 +18,6 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamli
 st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
-# === Load filtered data from GitHub ===
 @st.cache_data
 def load_data():
     base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
@@ -26,7 +25,7 @@ def load_data():
     games = pd.read_csv(base_url + "Games_filtered.csv", low_memory=False)
     players = pd.read_csv(base_url + "PlayerStatistics_filtered.csv", low_memory=False)
     teams = pd.read_csv(base_url + "TeamStatistics_filtered.csv", low_memory=False)
-    standings = pd.read_csv(base_url + "nba_standings_fixed.csv")  # updated file with Team + Conference
+    standings = pd.read_csv(base_url + "nba_standings.csv")  # updated file with Team + Conference
 
     games['gameDate'] = pd.to_datetime(games['gameDate'], errors='coerce')
     players['gameDate'] = pd.to_datetime(players['gameDate'], errors='coerce')
