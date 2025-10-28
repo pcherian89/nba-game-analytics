@@ -119,8 +119,7 @@ def display_standings_table(df, conference_title):
 
     table_html += "</tbody></table>"
 
-    # 👇 THIS IS THE FIX
-    st.components.v1.html(table_html, height=600, scrolling=True)
+    st.components.v1.html(table_html, height=400, scrolling=True)
 
 # === Display Both Conferences ===
 display_standings_table(standings_df, "Eastern Conference")
