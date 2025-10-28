@@ -51,35 +51,35 @@ team_abbrev_map = {
     "Utah Jazz": "uta", "Washington Wizards": "was"
 }
 
-# === Title ===
+# === Streamlit Title ===
 st.title("🏀 ThynkBall")
 
-# === Standings Display Function ===
+# === Display Standings Table ===
 def display_standings_table(df, conference_title):
     st.markdown(f"## {conference_title}")
 
-    # Filter conference
-    df['Team'] = df['Team'].str.replace("*", "", regex=False).str.strip()
     conf_df = df[df["Conference"] == conference_title].copy()
+    conf_df["Team"] = conf_df["Team"].str.strip()
     conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
 
-    # Add Abbreviation + Logo
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
 
-    # HTML Table
     table_html = """
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
+            margin-bottom: 20px;
         }
         th {
             background-color: #f0f2f6;
+            padding: 8px;
+            text-align: center;
+        }
+        td {
+            padding: 8px;
+            text-align: center;
         }
         td.team-name {
             font-weight: bold;
@@ -102,23 +102,24 @@ def display_standings_table(df, conference_title):
     """
 
     for _, row in conf_df.iterrows():
-        logo_img = f"<img src='{row['Logo URL']}' width='40'>" if row['Logo URL'] else ""
         table_html += f"""
-            <tr>
-                <td>{logo_img}</td>
-                <td class='team-name'>{row['Team']}</td>
-                <td>{row['W']}</td>
-                <td>{row['L']}</td>
-                <td>{row['W/L%']}</td>
-                <td>{row['GB']}</td>
-                <td>{row['PS/G']}</td>
-            </tr>
+        <tr>
+            <td><img src='{row["Logo URL"]}' width='40'></td>
+            <td class='team-name'>{row["Team"]}</td>
+            <td>{row["W"]}</td>
+            <td>{row["L"]}</td>
+            <td>{row["W/L%"]}</td>
+            <td>{row["GB"]}</td>
+            <td>{row["PS/G"]}</td>
+        </tr>
         """
 
     table_html += "</tbody></table>"
+
     st.markdown(table_html, unsafe_allow_html=True)
 
-# === Display Standings Tables ===
+
+# === Display Both Conferences ===
 display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
 
