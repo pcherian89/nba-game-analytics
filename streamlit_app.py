@@ -57,7 +57,7 @@ team_abbrev_map = {
 
 # === Standings Display ===
 def display_standings(df):
-    st.markdown("## 🏀 NBA Standings")
+    st.markdown("## NBA Standings")
 
     for conf in ["Eastern Conference", "Western Conference"]:
         st.markdown(f"### {conf}")
