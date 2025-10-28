@@ -46,7 +46,7 @@ team_abbrev_map = {
     "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
     "Los Angeles Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
     "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop", "New York Knicks": "nyk",
-    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phl", "Phoenix Suns": "phx",
+    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia": "phl", "Phoenix Suns": "phx",
     "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas", "Toronto Raptors": "tor",
     "Utah Jazz": "uta", "Washington Wizards": "was"
 }
