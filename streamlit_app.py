@@ -57,7 +57,7 @@ st.title("🏀 ThynkBall")
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
     # Left-align the conference title and add spacing before it
-    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; margin-top: 40px;'>{conference_title}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; margin-top: 30px;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
