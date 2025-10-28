@@ -56,8 +56,7 @@ st.title("🏀 ThynkBall")
 
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
-    # Left-align the conference title and add spacing before it
-    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; margin-top: 20px;'>{conference_title}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; padding-top: 20px;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
@@ -72,24 +71,27 @@ def display_standings_table(df, conference_title):
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 40px;  /* Adds space below the table */
+            margin-bottom: 40px;
             font-family: Inter, sans-serif;
         }
-        th {
+        thead th {
             background-color: #f0f2f6;
             padding: 10px;
-            text-align: left;  /* Ensures 'Team' header aligns properly */
             font-size: 16px;
+            text-align: center;
         }
         td {
             padding: 12px;
-            text-align: center;
             font-size: 15px;
+            text-align: center;
         }
         td.team-name {
             font-weight: 600;
             text-align: left;
             padding-left: 10px;
+        }
+        td.logo {
+            text-align: center;
         }
         img {
             vertical-align: middle;
@@ -98,8 +100,8 @@ def display_standings_table(df, conference_title):
     <table>
         <thead>
             <tr>
-                <th style="text-align: center;">Logo</th>
-                <th>Team</th>
+                <th>Logo</th>
+                <th style='text-align: left;'>Team</th>
                 <th>W</th>
                 <th>L</th>
                 <th>W/L %</th>
@@ -116,7 +118,7 @@ def display_standings_table(df, conference_title):
         logo_img = f"<img src='{row['Logo URL']}' width='40'>" if row["Logo URL"] else ""
         table_html += f"""
         <tr>
-            <td>{logo_img}</td>
+            <td class='logo'>{logo_img}</td>
             <td class='team-name'>{row["Team"]}</td>
             <td>{row["W"]}</td>
             <td>{row["L"]}</td>
@@ -130,6 +132,7 @@ def display_standings_table(df, conference_title):
 
     table_html += "</tbody></table>"
 
+    # Inject table into Streamlit
     st.components.v1.html(table_html, height=600, scrolling=True)
 
 
