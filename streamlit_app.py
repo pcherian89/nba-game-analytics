@@ -56,14 +56,16 @@ st.title("🏀 ThynkBall")
 
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
-    st.markdown(f"### {conference_title}")
+    st.markdown(f"<h2 style='text-align: center;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
     conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
 
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
-    conf_df["Logo URL"] = conf_df["Abbrev"].apply(lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
+    conf_df["Logo URL"] = conf_df["Abbrev"].apply(
+        lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else ""
+    )
 
     table_html = """
     <style>
@@ -71,18 +73,15 @@ def display_standings_table(df, conference_title):
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            font-family: Arial, sans-serif;
         }
-        th {
+        thead th {
             background-color: #f0f2f6;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
-            font-size: 16px;
         }
-        td {
-            padding: 10px;
+        tbody td {
+            padding: 8px;
             text-align: center;
-            font-size: 15px;
         }
         td.team-name {
             font-weight: bold;
@@ -94,11 +93,13 @@ def display_standings_table(df, conference_title):
             <tr>
                 <th>Logo</th>
                 <th>Team</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Win %</th>
-                <th>Games Behind</th>
-                <th>Points/Game</th>
+                <th>W</th>
+                <th>L</th>
+                <th>W/L%</th>
+                <th>GB</th>
+                <th>PS/G</th>
+                <th>PA/G</th>
+                <th>SRS</th>
             </tr>
         </thead>
         <tbody>
@@ -114,16 +115,19 @@ def display_standings_table(df, conference_title):
             <td>{row["W/L%"]}</td>
             <td>{row["GB"]}</td>
             <td>{row["PS/G"]}</td>
+            <td>{row["PA/G"]}</td>
+            <td>{row["SRS"]}</td>
         </tr>
         """
 
     table_html += "</tbody></table>"
+    st.markdown(table_html, unsafe_allow_html=True)
 
-    st.components.v1.html(table_html, height=800, scrolling=True)
 
 # === Display Both Conferences ===
 display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
+
 
 
 # === Top Players by Stat Section ===
