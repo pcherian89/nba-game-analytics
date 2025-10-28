@@ -19,18 +19,20 @@ st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
 @st.cache_data
+
 def load_data():
     base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
+    
     games = pd.read_csv(base_url + "Games_filtered.csv", low_memory=False)
     players = pd.read_csv(base_url + "PlayerStatistics_filtered.csv", low_memory=False)
     teams = pd.read_csv(base_url + "TeamStatistics_filtered.csv", low_memory=False)
-    standings = pd.read_csv(base_url + "team_standings.csv", low_memory=False)
-    
+    standings = pd.read_csv(base_url + "team_standings.csv")  # your uploaded file name
+
     games['gameDate'] = pd.to_datetime(games['gameDate'], errors='coerce')
     players['gameDate'] = pd.to_datetime(players['gameDate'], errors='coerce')
     teams['gameDate'] = pd.to_datetime(teams['gameDate'], errors='coerce')
 
-    return games, players, teams
+    return games, players, teams, standings
 
 games_df, player_df, team_df, standings_df = load_data()
 
