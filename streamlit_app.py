@@ -71,15 +71,18 @@ def display_standings_table(df, conference_title):
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-family: Arial, sans-serif;
         }
         th {
             background-color: #f0f2f6;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
+            font-size: 16px;
         }
         td {
-            padding: 8px;
+            padding: 10px;
             text-align: center;
+            font-size: 15px;
         }
         td.team-name {
             font-weight: bold;
@@ -101,35 +104,25 @@ def display_standings_table(df, conference_title):
         <tbody>
     """
 
-    # Add each row
     for _, row in conf_df.iterrows():
-        logo = row["Logo URL"] or ""
-        team = row["Team"] or ""
-        wins = row["W"] or ""
-        losses = row["L"] or ""
-        win_pct = row["W/L%"] or ""
-        gb = row["GB"] if pd.notnull(row["GB"]) else "—"
-        ppg = row["PS/G"] or ""
-
         table_html += f"""
         <tr>
-            <td><img src='{logo}' width='40'></td>
-            <td class='team-name'>{team}</td>
-            <td>{wins}</td>
-            <td>{losses}</td>
-            <td>{win_pct}</td>
-            <td>{gb}</td>
-            <td>{ppg}</td>
+            <td><img src='{row["Logo URL"]}' width='40'></td>
+            <td class='team-name'>{row["Team"]}</td>
+            <td>{row["W"]}</td>
+            <td>{row["L"]}</td>
+            <td>{row["W/L%"]}</td>
+            <td>{row["GB"]}</td>
+            <td>{row["PS/G"]}</td>
         </tr>
         """
 
     table_html += "</tbody></table>"
 
-    # Display HTML table
-    st.markdown(table_html, unsafe_allow_html=True)
+    # 👇 THIS IS THE FIX
+    st.components.v1.html(table_html, height=600, scrolling=True)
 
-# === Call for Both Conferences ===
-# Make sure `standings_df` is already loaded above this
+# === Display Both Conferences ===
 display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
 
