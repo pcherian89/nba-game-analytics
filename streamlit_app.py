@@ -48,7 +48,7 @@ team_abbrev_map = {
     "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop", "New York Knicks": "nyk",
     "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia": "phl", "Phoenix Suns": "phx",
     "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas", "Toronto Raptors": "tor",
-    "Utah Jazz": "uta", "Washington Wizards": "was"
+    "Utah Jazz": "uth", "Washington Wizards": "was"
 }
 
 # === Streamlit Title ===
