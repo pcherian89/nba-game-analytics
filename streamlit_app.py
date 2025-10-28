@@ -56,7 +56,7 @@ st.title("🏀 ThynkBall")
 
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
-    st.markdown(f"## {conference_title}")
+    st.markdown(f"### {conference_title}")
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
