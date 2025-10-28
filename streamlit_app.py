@@ -56,7 +56,8 @@ st.title("🏀 ThynkBall")
 
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
-    st.markdown(f"<h2 style='text-align: center; font-family: Inter, sans-serif;'>{conference_title}</h2>", unsafe_allow_html=True)
+    # Left-align the conference title and add spacing before it
+    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; margin-top: 40px;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
@@ -71,13 +72,13 @@ def display_standings_table(df, conference_title):
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 40px;  /* Adds space below the table */
             font-family: Inter, sans-serif;
         }
         th {
             background-color: #f0f2f6;
             padding: 10px;
-            text-align: center;
+            text-align: left;  /* Ensures 'Team' header aligns properly */
             font-size: 16px;
         }
         td {
@@ -97,7 +98,7 @@ def display_standings_table(df, conference_title):
     <table>
         <thead>
             <tr>
-                <th>Logo</th>
+                <th style="text-align: center;">Logo</th>
                 <th>Team</th>
                 <th>W</th>
                 <th>L</th>
@@ -128,13 +129,17 @@ def display_standings_table(df, conference_title):
         """
 
     table_html += "</tbody></table>"
- 
+
     st.components.v1.html(table_html, height=600, scrolling=True)
 
 
 # === Display Both Conferences ===
 display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
+
+# === Add spacing after both standings tables ===
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 
 
 
