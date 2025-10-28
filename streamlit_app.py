@@ -141,9 +141,7 @@ display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
 
 # === Add spacing after both standings tables ===
-st.markdown("<br><br>", unsafe_allow_html=True)
-
-
+st.markdown("<br>", unsafe_allow_html=True)
 
 
 # === Top Players by Stat Section ===
