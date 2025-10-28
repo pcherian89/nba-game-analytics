@@ -54,31 +54,62 @@ team_abbrev_map = {
 # === Streamlit Title ===
 st.title("🏀 ThynkBall")
 
-# === Display Standings as Table ===
-def display_standings_table(df):
-    st.markdown("## 🏆 League Standings (Table View)")
+def display_standings_table(df, conference_title):
+    st.markdown(f"## {conference_title}")
 
-    for conf in ["Eastern Conference", "Western Conference"]:
-        st.markdown(f"### {conf}")
+    # Clean team names
+    df['Team'] = df['Team'].str.replace("*", "", regex=False).str.strip()
 
-        conf_df = df[df['Conference'] == conf].copy()
-        conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
-        
-        # Map logos
-        conf_df["Logo"] = conf_df["Team"].map(
-            lambda team: f"![]({logo_base_url}{team_abbrev_map.get(team, 'default')}.png)"
-        )
-        
-        conf_table = conf_df[["Logo", "Team", "W", "L", "W/L%", "GB", "PS/G"]]
-        conf_table = conf_table.rename(columns={
-            "W": "Wins", "L": "Losses", "W/L%": "Win %", "GB": "Games Behind", "PS/G": "Points/Game"
-        })
+    # Filter conference
+    conf_df = df[df["Conference"] == conference_title].copy()
+    conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
 
-        # Display markdown for images and text using st.markdown table workaround
-        st.markdown(conf_table.to_markdown(index=False), unsafe_allow_html=True)
+    # Map logo URLs using team_abbrev_map
+    conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
+    conf_df["Logo URL"] = conf_df["Abbrev"].apply(lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
+
+    # Build HTML rows
+    table_html = """
+    <table style='width:100%; border-collapse: collapse;'>
+        <thead>
+            <tr style='background-color: #f0f2f6;'>
+                <th style='padding: 8px;'>Logo</th>
+                <th style='padding: 8px;'>Team</th>
+                <th style='padding: 8px;'>Wins</th>
+                <th style='padding: 8px;'>Losses</th>
+                <th style='padding: 8px;'>Win %</th>
+                <th style='padding: 8px;'>Games Behind</th>
+                <th style='padding: 8px;'>Points/Game</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for _, row in conf_df.iterrows():
+        table_html += f"""
+        <tr>
+            <td style='padding: 8px; text-align: center;'>
+                <img src="{row['Logo URL']}" width="40">
+            </td>
+            <td style='padding: 8px; font-weight: bold;'>{row['Team']}</td>
+            <td style='padding: 8px; text-align: center;'>{row['W']}</td>
+            <td style='padding: 8px; text-align: center;'>{row['L']}</td>
+            <td style='padding: 8px; text-align: center;'>{row['W/L%']}</td>
+            <td style='padding: 8px; text-align: center;'>{row['GB']}</td>
+            <td style='padding: 8px; text-align: center;'>{row['PS/G']}</td>
+        </tr>
+        """
+
+    table_html += "</tbody></table>"
+
+    # Display
+    st.markdown(table_html, unsafe_allow_html=True)
+
 
 # Call standings display function
-display_standings_table(standings_df)
+display_standings_table(standings, "Eastern Conference")
+display_standings_table(standings, "Western Conference")
+
 
 
 # === Top Players by Stat Section ===
