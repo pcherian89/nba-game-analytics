@@ -56,7 +56,7 @@ st.title("🏀 ThynkBall")
 
 # === Display Standings Table ===
 def display_standings_table(df, conference_title):
-    st.markdown(f"<h2 style='text-align: center;'>{conference_title}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: center; font-family: Inter, sans-serif;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
@@ -64,8 +64,7 @@ def display_standings_table(df, conference_title):
 
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(
-        lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else ""
-    )
+        lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
 
     table_html = """
     <style>
@@ -73,19 +72,26 @@ def display_standings_table(df, conference_title):
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-family: Inter, sans-serif;
         }
-        thead th {
+        th {
             background-color: #f0f2f6;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
+            font-size: 16px;
         }
-        tbody td {
-            padding: 8px;
+        td {
+            padding: 12px;
             text-align: center;
+            font-size: 15px;
         }
         td.team-name {
-            font-weight: bold;
+            font-weight: 600;
             text-align: left;
+            padding-left: 10px;
+        }
+        img {
+            vertical-align: middle;
         }
     </style>
     <table>
@@ -95,7 +101,7 @@ def display_standings_table(df, conference_title):
                 <th>Team</th>
                 <th>W</th>
                 <th>L</th>
-                <th>W/L%</th>
+                <th>W/L %</th>
                 <th>GB</th>
                 <th>PS/G</th>
                 <th>PA/G</th>
@@ -106,9 +112,10 @@ def display_standings_table(df, conference_title):
     """
 
     for _, row in conf_df.iterrows():
+        logo_img = f"<img src='{row['Logo URL']}' width='40'>" if row["Logo URL"] else ""
         table_html += f"""
         <tr>
-            <td><img src='{row["Logo URL"]}' width='40'></td>
+            <td>{logo_img}</td>
             <td class='team-name'>{row["Team"]}</td>
             <td>{row["W"]}</td>
             <td>{row["L"]}</td>
@@ -121,7 +128,7 @@ def display_standings_table(df, conference_title):
         """
 
     table_html += "</tbody></table>"
-    
+ 
     st.components.v1.html(table_html, height=600, scrolling=True)
 
 
