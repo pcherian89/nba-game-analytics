@@ -19,7 +19,6 @@ st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
 @st.cache_data
-
 def load_data():
     base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
     
@@ -32,23 +31,19 @@ def load_data():
     players['gameDate'] = pd.to_datetime(players['gameDate'], errors='coerce')
     teams['gameDate'] = pd.to_datetime(teams['gameDate'], errors='coerce')
 
-    # ✨ Clean up team names in standings to avoid ** or whitespace mismatches
+    # ✨ Clean up team names to remove ** or trailing spaces
     standings['Team'] = standings['Team'].str.replace("*", "", regex=False).str.strip()
-    
+
     return games, players, teams, standings
 
-# Load the data here BEFORE using it
+# === Load everything ===
 games_df, player_df, team_df, standings_df = load_data()
 
-# === Add Team Logos ===
-logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
-
-
-# === UI: Matchup Input ===
+# === UI Title ===
 st.title("🏀 ThynkBall")
 
-
-# 👇 Mapping from full team name to your GitHub logo file (use lowercase abbreviations)
+# === Team Logo Mapping ===
+logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
 team_abbrev_map = {
     "Atlanta Hawks": "atl", "Boston Celtics": "bos", "Brooklyn Nets": "bkn", "Charlotte Hornets": "cha",
     "Chicago Bulls": "chi", "Cleveland Cavaliers": "cle", "Dallas Mavericks": "dal", "Denver Nuggets": "den",
@@ -60,31 +55,33 @@ team_abbrev_map = {
     "Utah Jazz": "uta", "Washington Wizards": "was"
 }
 
+# === Standings Display ===
 def display_standings(df):
     st.markdown("## 🏀 NBA Standings")
 
     for conf in ["Eastern Conference", "Western Conference"]:
         st.markdown(f"### {conf}")
-
         conf_df = df[df['Conference'] == conf].copy()
         conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
 
         for _, row in conf_df.iterrows():
             team = row["Team"]
-            logo_abbrev = team_abbrev_map.get(team, "bos")  # fallback to Boston if unknown
+            logo_abbrev = team_abbrev_map.get(team, "bos")  # fallback to Boston
             logo_url = f"{logo_base_url}{logo_abbrev}.png"
 
             st.markdown(
                 f"""
-                <div style='display: flex; align-items: center; margin-bottom: 5px;'>
+                <div style='display: flex; align-items: center; margin-bottom: 6px;'>
                     <img src="{logo_url}" width="40" style="margin-right: 10px;">
-                    <span style='font-weight: bold;'>{team}</span>
+                    <span style='font-weight: bold; font-size: 16px;'>{team}</span>
                     <span style='margin-left: 20px;'>W: {row['W']} &nbsp; L: {row['L']} &nbsp; 
                     Win %: {row['W/L%']} &nbsp; GB: {row['GB']} &nbsp; PS/G: {row['PS/G']}</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+
+display_standings(standings_df)
 
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
