@@ -121,7 +121,8 @@ def display_standings_table(df, conference_title):
         """
 
     table_html += "</tbody></table>"
-    st.markdown(table_html, unsafe_allow_html=True)
+    
+    st.components.v1.html(table_html, height=600, scrolling=True)
 
 
 # === Display Both Conferences ===
