@@ -19,6 +19,7 @@ st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
 @st.cache_data
+
 def load_data():
     base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
     
@@ -35,6 +36,9 @@ def load_data():
     standings['Team'] = standings['Team'].str.replace("*", "", regex=False).str.strip()
     
     return games, players, teams, standings
+
+# Load the data here BEFORE using it
+games_df, player_df, team_df, standings_df = load_data()
 
 # === Add Team Logos ===
 logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
