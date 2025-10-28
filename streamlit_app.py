@@ -51,6 +51,10 @@ team_abbr = {
 
 standings_df["Logo"] = standings_df["Team"].map(lambda x: f"{logo_base_url}{team_abbr.get(x, 'bos')}.png")
 
+
+# === UI: Matchup Input ===
+st.title("🏀 ThynkBall")
+
 # === Display Standings by Conference ===
 st.markdown("### 🧭 NBA Standings")
 
@@ -75,53 +79,6 @@ for conf in ["Eastern Conference", "Western Conference"]:
             st.markdown(f"PS/G: {row['PS/G']}")
         with cols[7]:
             st.markdown(f"PA/G: {row['PA/G']}")
-
-
-# === UI: Matchup Input ===
-st.title("🏀 ThynkBall")
-
-# === Show Team Standings ===
-st.markdown("### 🧭 NBA Standings")
-
-logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"  # Your repo!
-
-team_abbr = {
-    "Atlanta Hawks": "atl", "Brooklyn Nets": "bkn", "Boston Celtics": "bos", "Charlotte Hornets": "cha",
-    "Chicago Bulls": "chi", "Cleveland Cavaliers": "cle", "Dallas Mavericks": "dal", "Denver Nuggets": "den",
-    "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
-    "LA Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
-    "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop",
-    "New York Knicks": "nyk", "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phl",
-    "Phoenix Suns": "phx", "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas",
-    "Toronto Raptors": "tor", "Utah Jazz": "uta", "Washington Wizards": "was"
-}
-
-standings_df["Logo"] = standings_df["Team"].map(lambda x: f"{logo_base_url}{team_abbr.get(x, 'bos')}.png")
-
-# Display by conference
-for conf in ["Eastern Conference", "Western Conference"]:
-    st.markdown(f"### {conf}")
-    conf_df = standings_df[standings_df["Conference"] == conf.replace(" Conference", "")]
-    for _, row in conf_df.iterrows():
-        cols = st.columns([1, 3, 1, 1, 1, 1, 1, 1])
-        with cols[0]:
-            st.image(row["Logo"], width=40)
-        with cols[1]:
-            st.markdown(f"**{row['Team']}**")
-        with cols[2]:
-            st.markdown(f"W: {row['W']}")
-        with cols[3]:
-            st.markdown(f"L: {row['L']}")
-        with cols[4]:
-            st.markdown(f"Win %: {round(row['W/L%'], 3)}")
-        with cols[5]:
-            st.markdown(f"GB: {row['GB']}")
-        with cols[6]:
-            st.markdown(f"PS/G: {row['PS/G']}")
-        with cols[7]:
-            st.markdown(f"PA/G: {row['PA/G']}")
-
-
 
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
