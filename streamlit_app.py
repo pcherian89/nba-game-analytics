@@ -68,7 +68,7 @@ def display_standings_table(df, conference_title):
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
 
-    # Build HTML rows
+    # Build HTML table
     table_html = """
     <table style='width:100%; border-collapse: collapse;'>
         <thead>
@@ -101,14 +101,11 @@ def display_standings_table(df, conference_title):
         """
 
     table_html += "</tbody></table>"
-
-    # Display
     st.markdown(table_html, unsafe_allow_html=True)
 
-
-# Call standings display function
 display_standings_table(standings, "Eastern Conference")
 display_standings_table(standings, "Western Conference")
+
 
 
 
