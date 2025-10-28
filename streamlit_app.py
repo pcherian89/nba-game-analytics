@@ -18,15 +18,15 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamli
 st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
 # === Load filtered data from GitHub ===
+# === Load filtered data from GitHub ===
 @st.cache_data
-
 def load_data():
     base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
     
     games = pd.read_csv(base_url + "Games_filtered.csv", low_memory=False)
     players = pd.read_csv(base_url + "PlayerStatistics_filtered.csv", low_memory=False)
     teams = pd.read_csv(base_url + "TeamStatistics_filtered.csv", low_memory=False)
-    standings = pd.read_csv(base_url + "team_standings.csv")  # your uploaded file name
+    standings = pd.read_csv(base_url + "nba_standings_fixed.csv")  # updated file with Team + Conference
 
     games['gameDate'] = pd.to_datetime(games['gameDate'], errors='coerce')
     players['gameDate'] = pd.to_datetime(players['gameDate'], errors='coerce')
@@ -35,6 +35,48 @@ def load_data():
     return games, players, teams, standings
 
 games_df, player_df, team_df, standings_df = load_data()
+
+# === Add Team Logos ===
+logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
+
+team_abbr = {
+    "Atlanta Hawks": "atl", "Brooklyn Nets": "bkn", "Boston Celtics": "bos", "Charlotte Hornets": "cha",
+    "Chicago Bulls": "chi", "Cleveland Cavaliers": "cle", "Dallas Mavericks": "dal", "Denver Nuggets": "den",
+    "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
+    "LA Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
+    "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop",
+    "New York Knicks": "nyk", "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phl",
+    "Phoenix Suns": "phx", "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas",
+    "Toronto Raptors": "tor", "Utah Jazz": "uta", "Washington Wizards": "was"
+}
+
+standings_df["Logo"] = standings_df["Team"].map(lambda x: f"{logo_base_url}{team_abbr.get(x, 'bos')}.png")
+
+# === Display Standings by Conference ===
+st.markdown("### 🧭 NBA Standings")
+
+for conf in ["Eastern Conference", "Western Conference"]:
+    st.markdown(f"#### {conf}")
+    conf_df = standings_df[standings_df["Conference"] == conf]
+    for _, row in conf_df.iterrows():
+        cols = st.columns([1, 3, 1, 1, 1, 1, 1, 1])
+        with cols[0]:
+            st.image(row["Logo"], width=40)
+        with cols[1]:
+            st.markdown(f"**{row['Team']}**")
+        with cols[2]:
+            st.markdown(f"W: {row['W']}")
+        with cols[3]:
+            st.markdown(f"L: {row['L']}")
+        with cols[4]:
+            st.markdown(f"Win %: {row['W/L%']}")
+        with cols[5]:
+            st.markdown(f"GB: {row['GB']}")
+        with cols[6]:
+            st.markdown(f"PS/G: {row['PS/G']}")
+        with cols[7]:
+            st.markdown(f"PA/G: {row['PA/G']}")
+
 
 # === UI: Matchup Input ===
 st.title("🏀 ThynkBall")
