@@ -51,62 +51,76 @@ team_abbrev_map = {
     "Utah Jazz": "uta", "Washington Wizards": "was"
 }
 
-# === Streamlit Title ===
+# === Title ===
 st.title("🏀 ThynkBall")
 
+# === Standings Display Function ===
 def display_standings_table(df, conference_title):
     st.markdown(f"## {conference_title}")
 
-    # Clean team names
-    df['Team'] = df['Team'].str.replace("*", "", regex=False).str.strip()
-
     # Filter conference
+    df['Team'] = df['Team'].str.replace("*", "", regex=False).str.strip()
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
 
-    # Map logo URLs using team_abbrev_map
+    # Add Abbreviation + Logo
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(lambda abbr: f"{logo_base_url}{abbr}.png" if pd.notnull(abbr) else "")
 
-    # Build HTML table
+    # HTML Table
     table_html = """
-    <table style='width:100%; border-collapse: collapse;'>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f2f6;
+        }
+        td.team-name {
+            font-weight: bold;
+            text-align: left;
+        }
+    </style>
+    <table>
         <thead>
-            <tr style='background-color: #f0f2f6;'>
-                <th style='padding: 8px;'>Logo</th>
-                <th style='padding: 8px;'>Team</th>
-                <th style='padding: 8px;'>Wins</th>
-                <th style='padding: 8px;'>Losses</th>
-                <th style='padding: 8px;'>Win %</th>
-                <th style='padding: 8px;'>Games Behind</th>
-                <th style='padding: 8px;'>Points/Game</th>
+            <tr>
+                <th>Logo</th>
+                <th>Team</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Win %</th>
+                <th>Games Behind</th>
+                <th>Points/Game</th>
             </tr>
         </thead>
         <tbody>
     """
 
     for _, row in conf_df.iterrows():
+        logo_img = f"<img src='{row['Logo URL']}' width='40'>" if row['Logo URL'] else ""
         table_html += f"""
-        <tr>
-            <td style='padding: 8px; text-align: center;'>
-                <img src="{row['Logo URL']}" width="40">
-            </td>
-            <td style='padding: 8px; font-weight: bold;'>{row['Team']}</td>
-            <td style='padding: 8px; text-align: center;'>{row['W']}</td>
-            <td style='padding: 8px; text-align: center;'>{row['L']}</td>
-            <td style='padding: 8px; text-align: center;'>{row['W/L%']}</td>
-            <td style='padding: 8px; text-align: center;'>{row['GB']}</td>
-            <td style='padding: 8px; text-align: center;'>{row['PS/G']}</td>
-        </tr>
+            <tr>
+                <td>{logo_img}</td>
+                <td class='team-name'>{row['Team']}</td>
+                <td>{row['W']}</td>
+                <td>{row['L']}</td>
+                <td>{row['W/L%']}</td>
+                <td>{row['GB']}</td>
+                <td>{row['PS/G']}</td>
+            </tr>
         """
 
     table_html += "</tbody></table>"
     st.markdown(table_html, unsafe_allow_html=True)
 
-display_standings_table(standings, "Eastern Conference")
-display_standings_table(standings, "Western Conference")
-
-
+# === Display Standings Tables ===
+display_standings_table(standings_df, "Eastern Conference")
+display_standings_table(standings_df, "Western Conference")
 
 
 # === Top Players by Stat Section ===
