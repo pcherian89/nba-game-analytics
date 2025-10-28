@@ -101,25 +101,35 @@ def display_standings_table(df, conference_title):
         <tbody>
     """
 
+    # Add each row
     for _, row in conf_df.iterrows():
+        logo = row["Logo URL"] or ""
+        team = row["Team"] or ""
+        wins = row["W"] or ""
+        losses = row["L"] or ""
+        win_pct = row["W/L%"] or ""
+        gb = row["GB"] if pd.notnull(row["GB"]) else "—"
+        ppg = row["PS/G"] or ""
+
         table_html += f"""
         <tr>
-            <td><img src='{row["Logo URL"]}' width='40'></td>
-            <td class='team-name'>{row["Team"]}</td>
-            <td>{row["W"]}</td>
-            <td>{row["L"]}</td>
-            <td>{row["W/L%"]}</td>
-            <td>{row["GB"]}</td>
-            <td>{row["PS/G"]}</td>
+            <td><img src='{logo}' width='40'></td>
+            <td class='team-name'>{team}</td>
+            <td>{wins}</td>
+            <td>{losses}</td>
+            <td>{win_pct}</td>
+            <td>{gb}</td>
+            <td>{ppg}</td>
         </tr>
         """
 
     table_html += "</tbody></table>"
 
+    # Display HTML table
     st.markdown(table_html, unsafe_allow_html=True)
 
-
-# === Display Both Conferences ===
+# === Call for Both Conferences ===
+# Make sure `standings_df` is already loaded above this
 display_standings_table(standings_df, "Eastern Conference")
 display_standings_table(standings_df, "Western Conference")
 
