@@ -83,6 +83,8 @@ def display_standings(df):
 
 display_standings(standings_df)
 
+
+
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
 
