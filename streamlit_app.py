@@ -302,7 +302,7 @@ if "vs" in user_input.lower():
             "Hawks": "atl.png", "Nets": "bkn.png", "Celtics": "bos.png", "Hornets": "cha.png", "Bulls": "chi.png",
             "Cavaliers": "cle.png", "Mavericks": "dal.png", "Nuggets": "den.png", "Pistons": "det.png", "Warriors": "gsw.png",
             "Rockets": "hou.png", "Pacers": "ind.png", "Clippers": "lac.png", "Lakers": "lal.png", "Grizzlies": "mem.png",
-            "Heat": "mia.gif", "Bucks": "mil.png", "Timberwolves": "min.png", "Pelicans": "nop.png", "Knicks": "nyk.png",
+            "Heat": "mia.png", "Bucks": "mil.png", "Timberwolves": "min.png", "Pelicans": "nop.png", "Knicks": "nyk.png",
             "Thunder": "okc.png", "Magic": "orl.png", "76ers": "phl.png", "Suns": "phx.png", "Trail Blazers": "por.png",
             "Kings": "sac.png", "Spurs": "sas.png", "Raptors": "tor.png", "Jazz": "uth.png", "Wizards": "was.png"
         }
@@ -342,7 +342,7 @@ if "vs" in user_input.lower():
             "Clippers": "lac.png",
             "Lakers": "lal.png",
             "Grizzlies": "mem.png",
-            "Heat": "mia.gif",
+            "Heat": "mia.png",
             "Bucks": "mil.png",
             "Timberwolves": "min.png",
             "Pelicans": "nop.png",
