@@ -146,7 +146,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 # === Top Players by Stat Section ===
-st.markdown("### 🏆 Top Players by Stat")
 
 # Add headshot URLs
 player_df["playerImageURL"] = player_df["personId"].apply(
@@ -208,7 +207,7 @@ top_stat_fields = {
 }
 
 # === MVP Leaderboard ===
-st.markdown("### 🥇 MVP Leaderboard (Fantasy Score)")
+st.markdown("### MVP Leaderboard (Fantasy Score)")
 
 # --- Compute MVP score for each player ---
 avg_players["mvp_score"] = (
@@ -301,7 +300,7 @@ st.components.v1.html(mvp_html, height=600, scrolling=True)
 
 # === Display Section ===
 for label, stat_col in top_stat_fields.items():
-    st.markdown(f"#### 🔹 {label}")
+    st.markdown(f"####  {label}")
 
     # Filter: at least 15 minutes per game
     filtered_players = avg_players[avg_players["numMinutes"] >= 15]
@@ -456,7 +455,7 @@ if "vs" in user_input.lower():
         # team_stats = pd.DataFrame([...])
         
         # === Header ===
-        st.markdown("### 🏀 Team Performance Cards")
+        st.markdown("###  Team Performance Cards")
         
         # === Fetch Team Info ===
         team1, team2 = team_stats.iloc[0], team_stats.iloc[1]
@@ -539,7 +538,7 @@ if "vs" in user_input.lower():
 
         
         def display_player_cards(players_df, team_label):
-            st.subheader(f"🏀 {team_label} Player Cards")
+            st.subheader(f" {team_label} Player Cards")
         
             rows = [players_df.iloc[i:i+6] for i in range(0, len(players_df), 6)]
             for row_df in rows:
@@ -591,7 +590,7 @@ if "vs" in user_input.lower():
         top6 = combined_players.sort_values(by=stat_option, ascending=False).head(6)
         
         # === Display Top 6 Headshots with Stat Value ===
-        st.markdown("#### 👤 Top Player Cards")
+        st.markdown("####  Top Player Cards")
         cols = st.columns(6)
         
         for i, row in enumerate(top6.itertuples()):
@@ -670,7 +669,7 @@ if "vs" in user_input.lower():
         import plotly.express as px
         
         # === Section Header ===
-        st.subheader("📊 Player Impact Ratings ")
+        st.subheader(" Player Impact Ratings ")
         
         # === Rating Selection ===
         rating_type = st.radio("Select rating type to display:", ["OffensiveRating", "DefensiveRating"])
@@ -693,7 +692,7 @@ if "vs" in user_input.lower():
             top_per_team = top_per_team[top_per_team["playerteamName"].isin(top2_teams)]
         
         # === Headshots for top 10 (5 per team) ===
-        st.markdown("#### 👤 Top 5 Players per Team")
+        st.markdown("####  Top 5 Players per Team")
         cols = st.columns(10)
         for i, row in enumerate(top_per_team.itertuples()):
             with cols[i]:
@@ -741,7 +740,7 @@ if "vs" in user_input.lower():
         st.plotly_chart(fig, use_container_width=True)
 
         # === MVP Comparison Cards with Dynamic Player Images ===
-        st.subheader("🏆 MVP Comparison – Player Cards")
+        st.subheader(" MVP Comparison – Player Cards")
         
         # Get top 3 players by Offensive Rating
         top3 = combined_players.sort_values(by="OffensiveRating", ascending=False).head(3).reset_index(drop=True)
@@ -797,7 +796,7 @@ if "vs" in user_input.lower():
         player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
         
         # === Display headshot + name ===
-        st.markdown(f"### 🧾 Scouting Card: {selected_player}")
+        st.markdown(f"###  Scouting Card: {selected_player}")
         player_id = player_row["personId"]
         image_url = get_player_image_url(player_id)
         st.image(image_url, width=150)
@@ -807,7 +806,7 @@ if "vs" in user_input.lower():
         
         # === Column 1: Offensive Stats ===
         with col1:
-            st.markdown("### 🔥 Offensive")
+            st.markdown("###  Offensive")
             st.markdown(f"**Points:** {player_row['points']}")
             st.markdown(f"**Assists:** {player_row['assists']}")
             st.markdown(f"**Turnovers:** {player_row['turnovers']}")
@@ -817,14 +816,14 @@ if "vs" in user_input.lower():
         
         # === Column 2: Defensive Stats ===
         with col2:
-            st.markdown("### 🧱 Defensive")
+            st.markdown("###  Defensive")
             st.markdown(f"**Rebounds:** {player_row['reboundsTotal']}")
             st.markdown(f"**Steals:** {player_row['steals']}")
             st.markdown(f"**Blocks:** {player_row['blocks']}")
         
         # === Column 3: Summary Stats ===
         with col3:
-            st.markdown("### 📊 Summary")
+            st.markdown("###  Summary")
             st.markdown(f"**Minutes Played:** {round(player_row['numMinutes'], 1)}")
             st.markdown(f"**Plus/Minus:** {player_row['plusMinusPoints']}")
             st.markdown(f"**Off Rating:** {round(player_row['OffensiveRating'], 2)}")
@@ -886,7 +885,7 @@ if "vs" in user_input.lower():
         })
         
         # === Display the scouting summary ===
-        st.markdown("### 🧠 Scouting Summary Report")
+        st.markdown("###  Scouting Summary Report")
         st.markdown(summary_output)
 
         import streamlit as st
@@ -895,7 +894,7 @@ if "vs" in user_input.lower():
         # Ensure combined_players is already defined
         # e.g., combined_players = pd.read_csv("your_cleaned_player_data.csv")
         
-        st.subheader("📊 Stats Comparison")
+        st.subheader(" Stats Comparison")
         
         # Only players who recorded minutes
         valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
@@ -975,7 +974,7 @@ if "vs" in user_input.lower():
 
   
         # === AI-Generated Game Summary with Session Persistence ===
-        st.subheader("🧠 Game Summary")
+        st.subheader(" Game Summary")
         
         # Check if summary already exists for current game
         if "ai_summary" not in st.session_state or st.session_state.get("summary_game_id") != selected_gameId:
@@ -1009,7 +1008,7 @@ if "vs" in user_input.lower():
             """
         
             # Generate + store summary
-            with st.spinner("🧠 Generating game summary..."):
+            with st.spinner(" Generating game summary..."):
                 response = client.chat.completions.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": prompt}],
@@ -1021,7 +1020,7 @@ if "vs" in user_input.lower():
                 st.session_state.summary_game_id = selected_gameId
         
         # Display stored summary
-        # st.markdown("#### 📝 Game Summary")
+        # st.markdown("####  Game Summary")
         st.write(st.session_state.ai_summary)
 
 
@@ -1069,7 +1068,7 @@ if "vs" in user_input.lower():
         user_question = st.chat_input("Ask your basketball question...")
         
         if user_question:
-            with st.spinner("🧠 Analyzing game data..."):
+            with st.spinner(" Analyzing game data..."):
                 response = chain.run({"context": context, "question": user_question})
                 st.session_state.chat_history.append(("You", user_question))
                 st.session_state.chat_history.append(("Bot", response))
