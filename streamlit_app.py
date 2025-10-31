@@ -207,7 +207,7 @@ top_stat_fields = {
 }
 
 # === MVP Leaderboard ===
-st.markdown("### MVP Leaderboard (Fantasy Score)")
+st.markdown("### 🥇 MVP Leaderboard (Fantasy Score)")
 
 # --- Compute MVP score for each player ---
 avg_players["mvp_score"] = (
@@ -227,6 +227,13 @@ top_mvp_players = filtered_mvp.sort_values("mvp_score", ascending=False).head(10
 # --- Add proper MVP rank ---
 top_mvp_players = top_mvp_players.reset_index(drop=True)
 top_mvp_players["Rank"] = top_mvp_players.index + 1
+
+# --- Row color for top 3 ---
+row_colors = {
+    1: "#FFD700",  # Gold
+    2: "#C0C0C0",  # Silver
+    3: "#CD7F32",  # Bronze
+}
 
 # --- Build MVP leaderboard table ---
 mvp_html = """
@@ -252,6 +259,9 @@ mvp_html = """
         font-weight: 600;
         text-align: left;
     }
+    tr.gold { background-color: #FFF8DC; }   /* Subtle gold */
+    tr.silver { background-color: #F8F8F8; } /* Light silver */
+    tr.bronze { background-color: #FAF0E6; } /* Light bronze */
     img {
         width: 60px;
         border-radius: 8px;
@@ -262,7 +272,7 @@ mvp_html = """
     <thead>
         <tr>
             <th>Rank</th>
-            <th></th> <!-- Removed "Photo" heading -->
+            <th></th>
             <th>Player</th>
             <th>PTS</th>
             <th>AST</th>
@@ -278,9 +288,18 @@ mvp_html = """
 """
 
 for _, row in top_mvp_players.iterrows():
+    rank = row['Rank']
+    row_class = ""
+    if rank == 1:
+        row_class = "gold"
+    elif rank == 2:
+        row_class = "silver"
+    elif rank == 3:
+        row_class = "bronze"
+
     mvp_html += f"""
-        <tr>
-            <td>{row['Rank']}</td>
+        <tr class='{row_class}'>
+            <td>{rank}</td>
             <td><img src="{row['playerImageURL']}"></td>
             <td class='name'>{row['firstName']} {row['lastName']}</td>
             <td>{round(row['points'], 1)}</td>
@@ -296,6 +315,7 @@ for _, row in top_mvp_players.iterrows():
 
 mvp_html += "</tbody></table>"
 st.components.v1.html(mvp_html, height=600, scrolling=True)
+
 
 
 # === Display Section ===
