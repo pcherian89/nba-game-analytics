@@ -143,6 +143,102 @@ display_standings_table(standings_df, "Western Conference")
 # === Add spacing after both standings tables ===
 st.markdown("<br>", unsafe_allow_html=True)
 
+# === Fantasy MVP Leaderboard ===
+st.markdown("<h3 style='margin-top: 40px; font-family: Inter, sans-serif;'>🏆 Top 10 MVP Fantasy Standings</h3>", unsafe_allow_html=True)
+
+# Calculate MVP Score
+player_df["MVP_Score"] = (
+    player_df["points"] * 1 +
+    player_df["assists"] * 1.5 +
+    player_df["reboundstotal"] * 1.2 +
+    player_df["steals"] * 3 +
+    player_df["blocks"] * 3 -
+    player_df["turnovers"] * 2 +
+    player_df["fieldgoalspercentage"] * 10 +
+    player_df["true_shooting_percentage"] * 5
+)
+
+# Get top 10 players
+top_10_df = player_df.sort_values(by="MVP_Score", ascending=False).head(10).copy()
+top_10_df["Rank"] = range(1, 11)
+
+# Ensure headshot URLs
+top_10_df["playerImageURL"] = top_10_df["personId"].apply(
+    lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+)
+
+# Format table HTML
+mvp_table_html = """
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Inter, sans-serif;
+        margin-top: 20px;
+    }
+    th {
+        background-color: #f0f2f6;
+        padding: 10px;
+        text-align: center;
+        font-size: 15px;
+    }
+    td {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+    }
+    td.name-col {
+        text-align: left;
+        font-weight: 600;
+    }
+    td.img-col {
+        text-align: center;
+    }
+</style>
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Photo</th>
+            <th>Team</th>
+            <th>PTS</th>
+            <th>AST</th>
+            <th>REB</th>
+            <th>STL</th>
+            <th>BLK</th>
+            <th>TO</th>
+            <th>FG%</th>
+            <th>TS%</th>
+            <th>MVP Score</th>
+        </tr>
+    </thead>
+    <tbody>
+"""
+
+for _, row in top_10_df.iterrows():
+    mvp_table_html += f"""
+    <tr>
+        <td>{row["Rank"]}</td>
+        <td class='name-col'>{row["playername"]}</td>
+        <td class='img-col'><img src="{row["playerImageURL"]}" width="50"></td>
+        <td>{row["team"]}</td>
+        <td>{row["points"]:.1f}</td>
+        <td>{row["assists"]:.1f}</td>
+        <td>{row["reboundstotal"]:.1f}</td>
+        <td>{row["steals"]:.1f}</td>
+        <td>{row["blocks"]:.1f}</td>
+        <td>{row["turnovers"]:.1f}</td>
+        <td>{row["fieldgoalspercentage"]:.2f}</td>
+        <td>{row["true_shooting_percentage"]:.2f}</td>
+        <td><b>{row["MVP_Score"]:.1f}</b></td>
+    </tr>
+    """
+
+mvp_table_html += "</tbody></table>"
+
+st.components.v1.html(mvp_table_html, height=600, scrolling=True)
+
 
 # === Top Players by Stat Section ===
 st.markdown("### 🏆 Top Players by Stat")
