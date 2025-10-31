@@ -212,18 +212,22 @@ st.markdown("### 🥇 MVP Leaderboard (Fantasy Score)")
 
 # --- Compute MVP score for each player ---
 avg_players["mvp_score"] = (
-    avg_players["points"] +
-    avg_players["assists"] * 1.5 +
-    avg_players["reboundsTotal"] * 1.2 +
-    avg_players["steals"] * 3 +
-    avg_players["blocks"] * 3 +
-    avg_players["plusMinusPoints"] * 0.5 -
-    avg_players["turnovers"] * 1.5
+    avg_players["points"]
+    + avg_players["assists"] * 1.5
+    + avg_players["reboundsTotal"] * 1.2
+    + avg_players["steals"] * 3
+    + avg_players["blocks"] * 3
+    + avg_players["plusMinusPoints"] * 0.5
+    - avg_players["turnovers"] * 1.5
 )
 
-# --- Filter: at least 15 min per game ---
+# --- Filter: at least 15 minutes per game ---
 filtered_mvp = avg_players[avg_players["numMinutes"] >= 15].copy()
 top_mvp_players = filtered_mvp.sort_values("mvp_score", ascending=False).head(10)
+
+# --- Add proper MVP rank ---
+top_mvp_players = top_mvp_players.reset_index(drop=True)
+top_mvp_players["Rank"] = top_mvp_players.index + 1
 
 # --- Build MVP leaderboard table ---
 mvp_html = """
@@ -232,7 +236,7 @@ mvp_html = """
         width: 100%;
         border-collapse: collapse;
         font-family: Inter, sans-serif;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
     th {
         background-color: #f0f2f6;
@@ -252,13 +256,14 @@ mvp_html = """
     img {
         width: 60px;
         border-radius: 8px;
+        vertical-align: middle;
     }
 </style>
 <table>
     <thead>
         <tr>
             <th>Rank</th>
-            <th>Photo</th>
+            <th></th> <!-- Removed "Photo" heading -->
             <th>Player</th>
             <th>PTS</th>
             <th>AST</th>
@@ -273,10 +278,10 @@ mvp_html = """
     <tbody>
 """
 
-for idx, row in top_mvp_players.iterrows():
+for _, row in top_mvp_players.iterrows():
     mvp_html += f"""
         <tr>
-            <td>{idx + 1}</td>
+            <td>{row['Rank']}</td>
             <td><img src="{row['playerImageURL']}"></td>
             <td class='name'>{row['firstName']} {row['lastName']}</td>
             <td>{round(row['points'], 1)}</td>
@@ -292,6 +297,7 @@ for idx, row in top_mvp_players.iterrows():
 
 mvp_html += "</tbody></table>"
 st.components.v1.html(mvp_html, height=600, scrolling=True)
+
 
 # === Display Section ===
 for label, stat_col in top_stat_fields.items():
