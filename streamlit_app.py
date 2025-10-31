@@ -146,38 +146,47 @@ st.markdown("<br>", unsafe_allow_html=True)
 # === MVP Leaderboard (Fantasy Scoring) ===
 st.markdown("<h3 style='margin-top: 60px;'>🏆 MVP Leaderboard (Top 10 Players)</h3>", unsafe_allow_html=True)
 
-# Fantasy-style score calculation
+# --- 1️⃣  Safe column access helper ---
+def safe_get(df, col, default=0):
+    return df[col] if col in df.columns else default
+
+# --- 2️⃣  Fantasy scoring formula ---
 player_df["fantasy_score"] = (
-    player_df["points"] +
-    player_df["assists"] * 1.5 +
-    player_df["reboundsTotal"] * 1.2 +
-    player_df["steals"] * 3 +
-    player_df["blocks"] * 3 +
-    player_df["plusMinusPoints"] * 0.5 -
-    player_df["turnovers"] * 1.5
+    safe_get(player_df, "points", 0) +
+    safe_get(player_df, "assists", 0) * 1.5 +
+    safe_get(player_df, "reboundsTotal", 0) * 1.2 +
+    safe_get(player_df, "steals", 0) * 3 +
+    safe_get(player_df, "blocks", 0) * 3 +
+    safe_get(player_df, "plusMinusPoints", 0) * 0.5 -
+    safe_get(player_df, "turnovers", 0) * 1.5
 )
 
-# Add headshot URLs
-player_df["playerImageURL"] = player_df["personId"].apply(
-    lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
-)
+# --- 3️⃣  Determine correct column names dynamically ---
+player_name_col = "playerName" if "playerName" in player_df.columns else "playername"
+team_name_col   = "teamName"   if "teamName"   in player_df.columns else (
+                  "team" if "team" in player_df.columns else None)
 
-# Group by player and sum their stats
-leaderboard_df = player_df.groupby(["playerName", "teamName", "playerImageURL"], as_index=False).agg({
-    "points": "sum",
-    "assists": "sum",
-    "reboundsTotal": "sum",
-    "steals": "sum",
-    "blocks": "sum",
-    "turnovers": "sum",
-    "plusMinusPoints": "sum",
-    "fantasy_score": "sum"
-})
+# --- 4️⃣  Add headshot URLs (if personId exists) ---
+if "personId" in player_df.columns:
+    player_df["playerImageURL"] = player_df["personId"].apply(
+        lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
+    )
+else:
+    player_df["playerImageURL"] = ""
 
-# Sort by score and get top 10
+# --- 5️⃣  Group safely (only by columns that exist) ---
+group_cols = [col for col in [player_name_col, team_name_col, "playerImageURL"] if col]
+agg_dict = {
+    "points": "sum", "assists": "sum", "reboundsTotal": "sum",
+    "steals": "sum", "blocks": "sum", "turnovers": "sum",
+    "plusMinusPoints": "sum", "fantasy_score": "sum"
+}
+leaderboard_df = player_df.groupby(group_cols, as_index=False).agg(agg_dict)
+
+# --- 6️⃣  Sort and select top 10 ---
 leaderboard_df = leaderboard_df.sort_values("fantasy_score", ascending=False).head(10).reset_index(drop=True)
 
-# === HTML Table for MVP Leaderboard ===
+# --- 7️⃣  Build HTML table ---
 mvp_html = """
 <style>
     table {
@@ -190,6 +199,7 @@ mvp_html = """
         background-color: #f0f2f6;
         padding: 10px;
         font-size: 16px;
+        text-align: center;
     }
     td {
         padding: 12px;
@@ -228,26 +238,23 @@ mvp_html = """
 for idx, row in leaderboard_df.iterrows():
     mvp_html += f"""
         <tr>
-            <td>{idx+1}</td>
-            <td><img src="{row['playerImageURL']}"></td>
-            <td class='name'>{row['playerName']}</td>
-            <td>{row['teamName']}</td>
-            <td>{int(row['points'])}</td>
-            <td>{int(row['assists'])}</td>
-            <td>{int(row['reboundsTotal'])}</td>
-            <td>{int(row['steals'])}</td>
-            <td>{int(row['blocks'])}</td>
-            <td>{int(row['turnovers'])}</td>
-            <td>{int(row['plusMinusPoints'])}</td>
-            <td><strong>{round(row['fantasy_score'], 1)}</strong></td>
+            <td>{idx + 1}</td>
+            <td><img src="{row.get('playerImageURL', '')}"></td>
+            <td class='name'>{row.get(player_name_col, 'N/A')}</td>
+            <td>{row.get(team_name_col, '—')}</td>
+            <td>{int(row.get('points', 0))}</td>
+            <td>{int(row.get('assists', 0))}</td>
+            <td>{int(row.get('reboundsTotal', 0))}</td>
+            <td>{int(row.get('steals', 0))}</td>
+            <td>{int(row.get('blocks', 0))}</td>
+            <td>{int(row.get('turnovers', 0))}</td>
+            <td>{int(row.get('plusMinusPoints', 0))}</td>
+            <td><strong>{round(row.get('fantasy_score', 0), 1)}</strong></td>
         </tr>
     """
 
 mvp_html += "</tbody></table>"
-
-# Display MVP Table
 st.components.v1.html(mvp_html, height=600, scrolling=True)
-
 
 
 # === Top Players by Stat Section ===
