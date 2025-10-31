@@ -207,7 +207,7 @@ top_stat_fields = {
 }
 
 # === MVP Leaderboard ===
-st.markdown("### 🥇 MVP Leaderboard (Fantasy Score)")
+st.markdown("###  MVP Leaderboard (Fantasy Score)")
 
 # --- Compute MVP score for each player ---
 avg_players["mvp_score"] = (
