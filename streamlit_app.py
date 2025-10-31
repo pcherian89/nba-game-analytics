@@ -578,7 +578,7 @@ if "vs" in user_input.lower():
         import plotly.express as px
         
         # === User Selects Stat to View ===
-        st.markdown("### 📈 **View top players by:**")
+        st.markdown("###  **View top players by:**")
         stat_option = st.selectbox("", ["points", "assists", "reboundsTotal", "turnovers", "plusMinusPoints"])
         
         # === Generate headshot URLs ===
