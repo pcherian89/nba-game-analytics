@@ -17,6 +17,9 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # ✅ secure and Streamli
 
 st.set_page_config(page_title="NBA Game Analyzer", layout="wide")
 
+import streamlit as st
+import pandas as pd
+
 # === Load filtered data from GitHub ===
 @st.cache_data
 def load_data():
@@ -46,20 +49,22 @@ team_abbrev_map = {
     "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
     "Los Angeles Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
     "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop", "New York Knicks": "nyk",
-    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia": "phl", "Phoenix Suns": "phx",
+    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phi", "Phoenix Suns": "phx",
     "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas", "Toronto Raptors": "tor",
-    "Utah Jazz": "uth", "Washington Wizards": "was"
+    "Utah Jazz": "uta", "Washington Wizards": "was"
 }
 
 # === Streamlit Title ===
 st.title("🏀 ThynkBall")
 
-def display_standings_table(df, conference_title):
-    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; padding-top: 20px;'>{conference_title}</h2>", unsafe_allow_html=True)
+# === Standings Table Function ===
+def display_standings_table(df, conference_code):
+    display_name = "Eastern Conference" if conference_code == "East" else "Western Conference"
+    st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; padding-top: 20px;'>{display_name}</h2>", unsafe_allow_html=True)
 
-    conf_df = df[df["Conference"] == conference_title].copy()
+    conf_df = df[df["Conference"] == conference_code].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
-    conf_df = conf_df.sort_values(by=["Wins", "Win%"], ascending=[False, False])
+    conf_df = conf_df.sort_values(by=["Rank"]).reset_index(drop=True)
 
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(
@@ -134,11 +139,9 @@ def display_standings_table(df, conference_title):
     table_html += "</tbody></table>"
     st.components.v1.html(table_html, height=600, scrolling=True)
 
-
-
-# === Display Both Conferences ===
-display_standings_table(standings_df, "Eastern Conference")
-display_standings_table(standings_df, "Western Conference")
+# === Display Standings ===
+display_standings_table(standings_df, "East")
+display_standings_table(standings_df, "West")
 
 # === Add spacing after both standings tables ===
 st.markdown("<br>", unsafe_allow_html=True)
