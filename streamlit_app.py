@@ -54,13 +54,12 @@ team_abbrev_map = {
 # === Streamlit Title ===
 st.title("🏀 ThynkBall")
 
-# === Display Standings Table ===
 def display_standings_table(df, conference_title):
     st.markdown(f"<h2 style='text-align: left; font-family: Inter, sans-serif; padding-top: 20px;'>{conference_title}</h2>", unsafe_allow_html=True)
 
     conf_df = df[df["Conference"] == conference_title].copy()
     conf_df["Team"] = conf_df["Team"].str.strip()
-    conf_df = conf_df.sort_values(by=["W", "W/L%"], ascending=[False, False])
+    conf_df = conf_df.sort_values(by=["Wins", "Win%"], ascending=[False, False])
 
     conf_df["Abbrev"] = conf_df["Team"].map(team_abbrev_map)
     conf_df["Logo URL"] = conf_df["Abbrev"].apply(
@@ -102,13 +101,14 @@ def display_standings_table(df, conference_title):
             <tr>
                 <th>Logo</th>
                 <th style='text-align: left;'>Team</th>
-                <th>W</th>
-                <th>L</th>
-                <th>W/L %</th>
-                <th>GB</th>
-                <th>PS/G</th>
-                <th>PA/G</th>
-                <th>SRS</th>
+                <th>Rank</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Win%</th>
+                <th>Streak</th>
+                <th>Home</th>
+                <th>Road</th>
+                <th>Point Diff</th>
             </tr>
         </thead>
         <tbody>
@@ -120,20 +120,20 @@ def display_standings_table(df, conference_title):
         <tr>
             <td class='logo'>{logo_img}</td>
             <td class='team-name'>{row["Team"]}</td>
-            <td>{row["W"]}</td>
-            <td>{row["L"]}</td>
-            <td>{row["W/L%"]}</td>
-            <td>{row["GB"]}</td>
-            <td>{row["PS/G"]}</td>
-            <td>{row["PA/G"]}</td>
-            <td>{row["SRS"]}</td>
+            <td>{row["Rank"]}</td>
+            <td>{row["Wins"]}</td>
+            <td>{row["Losses"]}</td>
+            <td>{row["Win%"]:.3f}</td>
+            <td>{row["Streak"]}</td>
+            <td>{row["Home"]}</td>
+            <td>{row["Road"]}</td>
+            <td>{row["PointDiff"]}</td>
         </tr>
         """
 
     table_html += "</tbody></table>"
-
-    # Inject table into Streamlit
     st.components.v1.html(table_html, height=600, scrolling=True)
+
 
 
 # === Display Both Conferences ===
