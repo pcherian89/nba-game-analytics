@@ -1,29 +1,21 @@
-import os
-import pandas as pd
-import zipfile
-import subprocess
-from nba_api.stats.endpoints import leaguestandings
-
-# ========== STEP 0: Install Requirements ==========
-# You can remove this section if already installing in workflow
-try:
-    import kaggle
-except ImportError:
-    subprocess.check_call(["pip", "install", "kaggle"])
-
+# =============================
+# 0. Install dependencies (if running in Colab)
+# =============================
 try:
     import nba_api
 except ImportError:
-    subprocess.check_call(["pip", "install", "nba_api"])
+    import subprocess
+    subprocess.run(["pip", "install", "nba_api", "kaggle", "pandas"])
 
-# ========== STEP 1: Fetch NBA Standings (2025–26) ==========
+import os
+import pandas as pd
+from nba_api.stats.endpoints import leaguestandings
+import zipfile
+
+# =============================
+# 1. Get NBA Standings
+# =============================
 print("📊 Fetching current NBA standings (2025–26)...")
-
-def save_empty_standings():
-    pd.DataFrame(columns=[
-        "Team", "Conference", "Rank", "Wins", "Losses", "Win%", "Streak", "Home", "Road", "PointDiff"
-    ]).to_csv("nba_standings.csv", index=False)
-    print("⚠️ Empty nba_standings.csv created as fallback.")
 
 try:
     standings = leaguestandings.LeagueStandings(season='2025-26')
@@ -45,49 +37,40 @@ try:
 
     df = df[list(cols_to_keep.keys())].rename(columns=cols_to_keep)
     df["Team"] = df["City"] + " " + df["TeamName"]
+
     final_df = df[["Team", "Conference", "Rank", "Wins", "Losses", "Win%", "Streak", "Home", "Road", "PointDiff"]]
     final_df = final_df.sort_values(["Conference", "Rank"]).reset_index(drop=True)
-
     final_df.to_csv("nba_standings.csv", index=False)
-    final_df.to_csv("nba_standings_backup.csv", index=False)
     print("✅ nba_standings.csv saved!")
 
 except Exception as e:
     print(f"⚠️ Could not fetch standings due to: {e}")
-    if os.path.exists("nba_standings_backup.csv"):
-        backup_df = pd.read_csv("nba_standings_backup.csv")
-        backup_df.to_csv("nba_standings.csv", index=False)
-        print("♻️ Restored nba_standings.csv from backup.")
-    else:
-        save_empty_standings()
+    pd.DataFrame().to_csv("nba_standings.csv", index=False)
+    print("⚠️ Empty nba_standings.csv created as fallback.")
 
-# ========== STEP 2: Download Kaggle Dataset ==========
+# =============================
+# 2. Download & Extract Kaggle Dataset
+# =============================
 print("📥 Downloading dataset from Kaggle...")
 
-dataset_name = "eoinamoore/historical-nba-data-and-player-box-scores"
-zip_file = "historical-nba-data-and-player-box-scores.zip"
-extract_dir = "nba_data"
+# Assumes kaggle.json is already authenticated in the environment
+os.system("kaggle datasets download -d eoinamoore/historical-nba-data-and-player-box-scores")
 
-# Download
-subprocess.run(["kaggle", "datasets", "download", "-d", dataset_name], check=True)
-
-# Extract
-with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-    zip_ref.extractall(extract_dir)
+with zipfile.ZipFile("historical-nba-data-and-player-box-scores.zip", 'r') as zip_ref:
+    zip_ref.extractall("nba_data")
 
 print("✅ Extraction complete!")
 
-# ========== STEP 3: Filter Data for 2025–26 ==========
+# =============================
+# 3. Filter to 2025–26 Season
+# =============================
 print("🔎 Filtering data for 2025–26...")
 
-games_df = pd.read_csv(f"{extract_dir}/Games.csv", low_memory=False)
-player_stats_df = pd.read_csv(f"{extract_dir}/PlayerStatistics.csv", low_memory=False)
-team_stats_df = pd.read_csv(f"{extract_dir}/TeamStatistics.csv", low_memory=False)
+games_df = pd.read_csv("nba_data/Games.csv", low_memory=False)
+player_stats_df = pd.read_csv("nba_data/PlayerStatistics.csv", low_memory=False)
+team_stats_df = pd.read_csv("nba_data/TeamStatistics.csv", low_memory=False)
 
-# Parse dates
 games_df["gameDate"] = pd.to_datetime(games_df["gameDate"], errors="coerce", utc=True)
-
-# Filter from start of 2025–26 season
 start_date = pd.Timestamp("2025-10-21", tz="UTC")
 current_season_games = games_df[games_df["gameDate"] >= start_date].copy()
 
@@ -98,7 +81,9 @@ team_stats_df["gameId"] = team_stats_df["gameId"].astype(str)
 current_season_players = player_stats_df[player_stats_df["gameId"].isin(keep_ids)].copy()
 current_season_teams = team_stats_df[team_stats_df["gameId"].isin(keep_ids)].copy()
 
-# ========== STEP 4: Save Filtered Files ==========
+# =============================
+# 4. Save only filtered data to ROOT folder
+# =============================
 print("💾 Saving filtered datasets...")
 
 current_season_games.to_csv("Games_filtered.csv", index=False)
@@ -109,3 +94,14 @@ print(f"✅ Saved {len(current_season_games)} games")
 print(f"✅ Saved {len(current_season_players)} player stats")
 print(f"✅ Saved {len(current_season_teams)} team stats")
 
+# =============================
+# 5. Cleanup large files to avoid GitHub limit errors
+# =============================
+print("🧹 Cleaning up unneeded large files...")
+
+os.remove("historical-nba-data-and-player-box-scores.zip")
+os.remove("nba_data/Games.csv")
+os.remove("nba_data/PlayerStatistics.csv")
+os.remove("nba_data/TeamStatistics.csv")
+
+print("✅ Cleanup complete!")
