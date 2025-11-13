@@ -684,10 +684,10 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500015,2026-01-19T09:30:00.000000-0500,1610612739,1610612760,Cleveland,Cavaliers,Oklahoma City,Thunder,Mon,Rocket Arena,Cleveland,OH,"","","","",14
 22500608,2026-01-19T10:00:00.000000-0500,1610612764,1610612746,Washington,Wizards,LA,Clippers,Mon,Capital One Arena,Washington,DC,"","","","",14
 22500016,2026-01-19T12:00:00.000000-0500,1610612752,1610612742,New York,Knicks,Dallas,Mavericks,Mon,Madison Square Garden,New York,NY,"","","","",14
+22500611,2026-01-19T12:00:00.000000-0500,1610612759,1610612762,San Antonio,Spurs,Utah,Jazz,Mon,Frost Bank Center,San Antonio,TX,"","","","",14
 22500609,2026-01-19T14:00:00.000000-0500,1610612755,1610612754,Philadelphia,76ers,Indiana,Pacers,Mon,Xfinity Mobile Arena,Philadelphia,PA,"","","","",14
 22500610,2026-01-19T14:30:00.000000-0500,1610612751,1610612756,Brooklyn,Nets,Phoenix,Suns,Mon,Barclays Center,Brooklyn,NY,"","","","",14
 22500017,2026-01-19T15:00:00.000000-0500,1610612765,1610612738,Detroit,Pistons,Boston,Celtics,Mon,Little Caesars Arena,Detroit,MI,"","","","",14
-22500611,2026-01-19T15:00:00.000000-0500,1610612759,1610612762,San Antonio,Spurs,Utah,Jazz,Mon,Frost Bank Center,San Antonio,TX,"","","","",14
 22500612,2026-01-19T17:00:00.000000-0500,1610612744,1610612748,Golden State,Warriors,Miami,Heat,Mon,Chase Center,San Francisco,CA,"","","","",14
 22500613,2026-01-20T14:00:00.000000-0500,1610612755,1610612756,Philadelphia,76ers,Phoenix,Suns,Tue,Xfinity Mobile Arena,Philadelphia,PA,"","","","",14
 22500614,2026-01-20T15:00:00.000000-0500,1610612741,1610612746,Chicago,Bulls,LA,Clippers,Tue,United Center,Chicago,IL,"","","","",14
