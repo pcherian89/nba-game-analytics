@@ -184,11 +184,11 @@ for _, row in todays_games.iterrows():
     col1, col2 = st.columns([1, 1])
     with col1:
         st.image(f"{logo_base_url}{home_abbr}.png", width=120)
-        st.markdown(f"### {home}")
+        # Removed: st.markdown(f"### {home}")
 
     with col2:
         st.image(f"{logo_base_url}{away_abbr}.png", width=120)
-        st.markdown(f"### {away}")
+        # Removed: st.markdown(f"### {away}")
 
     # Filter team data
     home_df = team_stats[team_stats["teamName"] == home]
@@ -199,7 +199,7 @@ for _, row in todays_games.iterrows():
         st.warning(f"🚫 Stats not available for matchup: {home} vs {away}")
         continue
 
-    # Compute means
+    # Compute means from numeric columns
     home_stats = home_df.mean(numeric_only=True)
     away_stats = away_df.mean(numeric_only=True)
 
@@ -207,7 +207,7 @@ for _, row in todays_games.iterrows():
     for label, field in stat_fields.items():
         col1, col2 = st.columns([1, 1])
 
-        # Support lambdas for derived metrics
+        # Handle lambda fields (e.g., Score Differential)
         if callable(field):
             home_val = field(home_df).mean()
             away_val = field(away_df).mean()
@@ -219,11 +219,11 @@ for _, row in todays_games.iterrows():
                       away_val if not pd.isna(away_val) else 0, 1e-6)
 
         with col1:
-            st.markdown(f"**{label}**<br>{home}: {home_val:.2f}", unsafe_allow_html=True)
+            st.markdown(f"**{label}**<br>{home_val:.2f}", unsafe_allow_html=True)
             st.progress(normalize(home_val, max_val), text="")
 
         with col2:
-            st.markdown(f"<br>{away}: {away_val:.2f}", unsafe_allow_html=True)
+            st.markdown(f"<br>{away_val:.2f}", unsafe_allow_html=True)
             st.progress(normalize(away_val, max_val), text="")
 
     st.markdown("---")
