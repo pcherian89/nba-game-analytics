@@ -193,7 +193,7 @@ def split_city_name(full_name):
     return None, None
 
 # === Streamlit Header ===
-st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
+st.markdown("## Today's NBA Matchups with Key Stats")
 
 # === Create Matchups in Pairs (2 per row) ===
 matchups = list(todays_games.iterrows())
