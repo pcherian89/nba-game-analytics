@@ -208,7 +208,7 @@ top_stat_fields = {
     "Plus Minus": "plusMinusPoints",
     "Field Goal %": "fieldGoalsPercentage",
     "Three Point %": "threePointersPercentage",
-    "Free Throw %": "freeThrowsPercentage",
+    # "Free Throw %": "freeThrowsPercentage",
     "Total 3-Pointers Made": "threePointersMade",
     "Total Free Throws Made": "freeThrowsMade"
 }
