@@ -155,7 +155,7 @@ todays_games = pd.read_csv("todays_games.csv")
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
 
-# === Key Stats to Show ===
+# === Stat Fields and Labels ===
 stat_fields = {
     "Score Differential": lambda df: (df["teamScore"] - df["opponentScore"]).mean(),
     "Rebounds Total": lambda df: df["reboundsTotal"].mean(),
@@ -166,21 +166,16 @@ stat_fields = {
     "Turnovers": lambda df: df["turnovers"].mean()
 }
 
-# === Normalization Function ===
+# === Normalize Function (for progress bars if needed) ===
 def normalize(val, min_val, max_val):
     if pd.isna(val) or max_val - min_val == 0:
         return 0.5
     return (val - min_val) / (max_val - min_val)
 
-# === Fix for naming issue like Los Angeles Clippers → LA Clippers ===
-def fix_team_name(name):
-    if name == "Los Angeles Clippers":
-        return "LA Clippers"
-    return name
-
-# === Robust Parsing for teamCity and teamName ===
+# === Parse Name Robustly ===
 def split_city_name(full_name):
-    full_name = fix_team_name(full_name)
+    if full_name == "Los Angeles Clippers":
+        return "LA", "Clippers"
     parts = full_name.split(" ")
     for i in range(1, len(parts)):
         city = " ".join(parts[:i])
@@ -192,61 +187,70 @@ def split_city_name(full_name):
             return city, name
     return None, None
 
+# === Pre-calculate League Ranks ===
+league_ranks = {}
+for stat_label, func in stat_fields.items():
+    values = []
+    for team in team_stats.groupby(["teamCity", "teamName"]):
+        val = func(team[1])
+        values.append({
+            "team": f"{team[0][0]} {team[0][1]}",
+            "value": val
+        })
+    rank_df = pd.DataFrame(values)
+    rank_df["rank"] = rank_df["value"].rank(ascending=False, method="min").astype(int)
+    rank_map = dict(zip(rank_df["team"], zip(rank_df["value"], rank_df["rank"])))
+    league_ranks[stat_label] = rank_map
+
 # === Streamlit Header ===
-st.markdown("## Today's NBA Matchups with Key Stats")
+st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
 
-# === Create Matchups in Pairs (2 per row) ===
-matchups = list(todays_games.iterrows())
-for i in range(0, len(matchups), 2):
-    cols = st.columns(2)
-    for idx in range(2):
-        if i + idx >= len(matchups):
-            continue
+# === Show Matchups with "vs" and Ranking ===
+for _, row in todays_games.iterrows():
+    home_team = row["Home_Team"]
+    away_team = row["Away_Team"]
 
-        row = matchups[i + idx][1]
-        home_full = fix_team_name(row["Home_Team"])
-        away_full = fix_team_name(row["Away_Team"])
+    home_city, home_name = split_city_name(home_team)
+    away_city, away_name = split_city_name(away_team)
 
-        home_city, home_name = split_city_name(home_full)
-        away_city, away_name = split_city_name(away_full)
+    if not home_city or not away_city:
+        st.warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
+        continue
 
-        if not home_city or not away_city:
-            cols[idx].warning(f"🚫 Stats not available for matchup: {home_full} vs {away_full}")
-            continue
+    home_df = team_stats[(team_stats["teamCity"] == home_city) & (team_stats["teamName"] == home_name)]
+    away_df = team_stats[(team_stats["teamCity"] == away_city) & (team_stats["teamName"] == away_name)]
 
-        home_df = team_stats[
-            (team_stats["teamCity"] == home_city) & (team_stats["teamName"] == home_name)
-        ]
-        away_df = team_stats[
-            (team_stats["teamCity"] == away_city) & (team_stats["teamName"] == away_name)
-        ]
+    if home_df.empty or away_df.empty:
+        st.warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
+        continue
 
-        if home_df.empty or away_df.empty:
-            cols[idx].warning(f"🚫 Stats not available for matchup: {home_full} vs {away_full}")
-            continue
+    home_full = f"{home_city} {home_name}"
+    away_full = f"{away_city} {away_name}"
+    home_abbr = team_abbrev_map.get(home_full, "").lower()
+    away_abbr = team_abbrev_map.get(away_full, "").lower()
 
-        home_abbr = team_abbrev_map.get(home_full, "").lower()
-        away_abbr = team_abbrev_map.get(away_full, "").lower()
+    # === Team Logos + VS ===
+    logo_col1, logo_col2, logo_col3 = st.columns([1, 0.2, 1])
+    with logo_col1:
+        st.image(f"{logo_base_url}{home_abbr}.png", width=110)
+    with logo_col2:
+        st.markdown("<h3 style='text-align:center;'>vs</h3>", unsafe_allow_html=True)
+    with logo_col3:
+        st.image(f"{logo_base_url}{away_abbr}.png", width=110)
 
-        # === TEAM HEADER (logos only) ===
-        logo_col1, logo_col2 = cols[idx].columns([1, 1])
-        with logo_col1:
-            st.image(f"{logo_base_url}{home_abbr}.png", width=100)
-        with logo_col2:
-            st.image(f"{logo_base_url}{away_abbr}.png", width=100)
+    # === Stat Comparison with League Ranks ===
+    stat_col1, stat_col2 = st.columns(2)
+    for label, func in stat_fields.items():
+        home_val = func(home_df)
+        away_val = func(away_df)
 
-        # === STAT COMPARISON ===
-        for label, func in stat_fields.items():
-            home_val = func(home_df)
-            away_val = func(away_df)
-            min_val = min(home_val, away_val)
-            max_val = max(home_val, away_val)
+        home_stat, home_rank = league_ranks[label].get(home_full, (home_val, None))
+        away_stat, away_rank = league_ranks[label].get(away_full, (away_val, None))
 
-            stat_col1, stat_col2 = cols[idx].columns([1, 1])
-            with stat_col1:
-                stat_col1.markdown(f"**{label}**<br>{home_val:.2f}", unsafe_allow_html=True)
-            with stat_col2:
-                stat_col2.markdown(f"<br>{away_val:.2f}", unsafe_allow_html=True)
+        with stat_col1:
+            stat_col1.markdown(f"**{label}**<br>{home_val:.2f} (Rank: {home_rank})", unsafe_allow_html=True)
+        with stat_col2:
+            stat_col2.markdown(f"<br>{away_val:.2f} (Rank: {away_rank})", unsafe_allow_html=True)
 
     st.markdown("---")
 
