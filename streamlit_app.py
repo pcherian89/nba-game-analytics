@@ -165,10 +165,11 @@ stat_fields = {
 }
 
 # === Normalize for progress bar ===
-def normalize(val, max_val):
-    if pd.isna(val) or max_val == 0:
-        return 0.0
-    return min(val / max_val, 1.0)
+
+def normalize(val, min_val, max_val):
+    if pd.isna(val) or max_val - min_val == 0:
+        return 0.5
+    return (val - min_val) / (max_val - min_val)
 
 # === UI Header ===
 st.markdown("## Today's NBA Matchups with Key Stats")
