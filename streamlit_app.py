@@ -147,40 +147,33 @@ display_standings_table(standings_df, "West")
 st.markdown("<br>", unsafe_allow_html=True)
 
 
-from difflib import get_close_matches
-
 # === Load Data ===
 todays_games = pd.read_csv("todays_games.csv")
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
 
 
-# === Fields to Show ===
+# === Stat Columns to Show ===
 stat_fields = {
-    "Score Differential": lambda df: df["teamScore"] - df["opponentScore"],
-    "Rebounds Total": "reboundsTotal",
-    "Assists": "assists",
-    "Steals": "steals",
-    "Field Goal %": "fieldGoalsPercentage",
-    "Three Point %": "threePointersPercentage",
-    "Turnovers": "turnovers"
+    "Score Differential": lambda df: (df["teamScore"] - df["opponentScore"]).mean(),
+    "Rebounds Total": lambda df: df["reboundsTotal"].mean(),
+    "Assists": lambda df: df["assists"].mean(),
+    "Steals": lambda df: df["steals"].mean(),
+    "Field Goal %": lambda df: df["fieldGoalsPercentage"].mean(),
+    "Three Point %": lambda df: df["threePointersPercentage"].mean(),
+    "Turnovers": lambda df: df["turnovers"].mean(),
 }
 
-# === Normalize Values ===
+# === Normalize for progress bar ===
 def normalize(val, max_val):
     if pd.isna(val) or max_val == 0:
         return 0.0
     return min(val / max_val, 1.0)
 
-# === Helper: Fuzzy match team name ===
-def fuzzy_match(team_name, all_names):
-    matches = get_close_matches(team_name, all_names, n=1, cutoff=0.6)
-    return matches[0] if matches else None
-
 # === UI Header ===
 st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
 
-# === Iterate through games ===
+# === Loop Through Games ===
 for _, row in todays_games.iterrows():
     home = row["Home_Team"]
     away = row["Away_Team"]
@@ -188,55 +181,36 @@ for _, row in todays_games.iterrows():
     home_abbr = team_abbrev_map.get(home, "").lower()
     away_abbr = team_abbrev_map.get(away, "").lower()
 
-    # Show logos only
-    col1, col2 = st.columns([1, 1])
+    # Display logos only
+    col1, col2 = st.columns(2)
     with col1:
         st.image(f"{logo_base_url}{home_abbr}.png", width=120)
-
     with col2:
         st.image(f"{logo_base_url}{away_abbr}.png", width=120)
 
-    # Fuzzy match team names
-    team_names = team_stats["teamName"].unique().tolist()
-    matched_home = fuzzy_match(home, team_names)
-    matched_away = fuzzy_match(away, team_names)
+    # Filter stats
+    home_df = team_stats[team_stats["teamName"] == home]
+    away_df = team_stats[team_stats["teamName"] == away]
 
-    home_df = team_stats[team_stats["teamName"] == matched_home]
-    away_df = team_stats[team_stats["teamName"] == matched_away]
-
-    # Skip if either team missing
     if home_df.empty or away_df.empty:
         st.warning(f"🚫 Stats not available for matchup: {home} vs {away}")
-        st.markdown("---")
         continue
 
-    # Compute stats
-    home_stats = home_df.mean(numeric_only=True)
-    away_stats = away_df.mean(numeric_only=True)
+    # === Show Stat Comparisons ===
+    for label, func in stat_fields.items():
+        home_val = func(home_df)
+        away_val = func(away_df)
+        max_val = max(home_val, away_val, 1e-6)
 
-    for label, field in stat_fields.items():
-        col1, col2 = st.columns([1, 1])
-
-        if callable(field):
-            home_val = field(home_df).mean()
-            away_val = field(away_df).mean()
-        else:
-            home_val = home_stats.get(field, 0)
-            away_val = away_stats.get(field, 0)
-
-        max_val = max(home_val if not pd.isna(home_val) else 0,
-                      away_val if not pd.isna(away_val) else 0, 1e-6)
-
+        col1, col2 = st.columns(2)
         with col1:
             st.markdown(f"**{label}**<br>{home_val:.2f}", unsafe_allow_html=True)
             st.progress(normalize(home_val, max_val), text="")
-
         with col2:
             st.markdown(f"<br>{away_val:.2f}", unsafe_allow_html=True)
             st.progress(normalize(away_val, max_val), text="")
 
     st.markdown("---")
-
 
 # === Top Players by Stat Section ===
 
