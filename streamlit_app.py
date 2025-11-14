@@ -171,7 +171,7 @@ def normalize(val, max_val):
     return min(val / max_val, 1.0)
 
 # === UI Header ===
-st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
+st.markdown("## Today's NBA Matchups with Key Stats")
 
 # === Loop Through Games ===
 for _, row in todays_games.iterrows():
