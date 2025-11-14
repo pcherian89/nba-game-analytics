@@ -146,9 +146,7 @@ display_standings_table(standings_df, "West")
 # === Add spacing after both standings tables ===
 st.markdown("<br>", unsafe_allow_html=True)
 
-import streamlit as st
-import pandas as pd
-import numpy as np
+
 
 # === Load Today’s Games CSV ===
 todays_games = pd.read_csv("todays_games.csv")
@@ -156,20 +154,6 @@ todays_games = pd.read_csv("todays_games.csv")
 # === Load Team Averages CSV ===
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
-
-# === Team Abbreviation Map (Already in your code) ===
-team_abbrev_map = {
-    "Atlanta Hawks": "atl", "Boston Celtics": "bos", "Brooklyn Nets": "bkn", "Charlotte Hornets": "cha",
-    "Chicago Bulls": "chi", "Cleveland Cavaliers": "cle", "Dallas Mavericks": "dal", "Denver Nuggets": "den",
-    "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
-    "LA Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
-    "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop", "New York Knicks": "nyk",
-    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phl", "Phoenix Suns": "phx",
-    "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas",
-    "Toronto Raptors": "tor", "Utah Jazz": "uth", "Washington Wizards": "was"
-}
-
-logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
 
 # === Stat Columns to Show ===
 stat_fields = {
