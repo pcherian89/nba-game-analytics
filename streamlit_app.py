@@ -193,6 +193,10 @@ avg_players["fieldGoalsPercentage"] = avg_players["fieldGoalsMade"] / avg_player
 avg_players["threePointersPercentage"] = avg_players["threePointersMade"] / avg_players["threePointersAttempted"]
 avg_players["freeThrowsPercentage"] = avg_players["freeThrowsMade"] / avg_players["freeThrowsAttempted"]
 
+
+# ✅ Apply filter: Only keep players who attempted > 10 three-pointers
+avg_players = avg_players[avg_players["threePointersAttempted"] > 10]
+
 # === Display Labels ===
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
