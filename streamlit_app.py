@@ -147,14 +147,15 @@ display_standings_table(standings_df, "West")
 st.markdown("<br>", unsafe_allow_html=True)
 
 
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
 # === Load Data ===
 todays_games = pd.read_csv("todays_games.csv")
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
-# === Key Stats ===
+
+# === Key Stats Functions ===
 stat_fields = {
     "Score Differential": lambda df: (df["teamScore"] - df["opponentScore"]).mean(),
     "Rebounds Total": lambda df: df["reboundsTotal"].mean(),
@@ -165,12 +166,6 @@ stat_fields = {
     "Turnovers": lambda df: df["turnovers"].mean()
 }
 
-# === Normalization Function ===
-def normalize(val, min_val, max_val):
-    if pd.isna(val) or max_val - min_val == 0:
-        return 0.5
-    return (val - min_val) / (max_val - min_val)
-
 # === Streamlit App Header ===
 st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
 
@@ -179,10 +174,11 @@ for _, row in todays_games.iterrows():
     home_full = row["Home_Team"]
     away_full = row["Away_Team"]
 
+    # Abbreviations for logos
     home_abbr = team_abbrev_map.get(home_full, "").lower()
     away_abbr = team_abbrev_map.get(away_full, "").lower()
 
-    # Split names for matching
+    # Split city and name safely
     try:
         home_city, home_name = home_full.rsplit(" ", 1)
         away_city, away_name = away_full.rsplit(" ", 1)
@@ -190,44 +186,46 @@ for _, row in todays_games.iterrows():
         st.warning(f"❌ Couldn't parse team names: {home_full} vs {away_full}")
         continue
 
-    # Match team stats
+    # === Match stats from filtered dataset ===
     home_df = team_stats[
-        (team_stats["teamCity"] == home_city) & (team_stats["teamName"] == home_name)
+        (team_stats["teamCity"] == home_city) &
+        (team_stats["teamName"] == home_name)
     ]
     away_df = team_stats[
-        (team_stats["teamCity"] == away_city) & (team_stats["teamName"] == away_name)
+        (team_stats["teamCity"] == away_city) &
+        (team_stats["teamName"] == away_name)
     ]
 
     if home_df.empty or away_df.empty:
         st.warning(f"🚫 Stats not available for matchup: {home_full} vs {away_full}")
         continue
 
-    # === Team Logos ===
+    # === Display Team Logos ===
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.image(f"{logo_base_url}{home_abbr}.png", width=120)
+        if home_abbr:
+            st.image(f"{logo_base_url}{home_abbr}.png", width=120)
+        st.markdown(f"### {home_full}")
     with col2:
-        st.image(f"{logo_base_url}{away_abbr}.png", width=120)
+        if away_abbr:
+            st.image(f"{logo_base_url}{away_abbr}.png", width=120)
+        st.markdown(f"### {away_full}")
 
-    # === Compare Stats ===
+    # === Display Stats Cleanly Side-by-Side ===
     for label, func in stat_fields.items():
         home_val = func(home_df)
         away_val = func(away_df)
 
-        # Safe min/max normalization
-        min_val = min(home_val, away_val)
-        max_val = max(home_val, away_val)
-
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.markdown(f"**{label}**<br>{home_val:.2f}", unsafe_allow_html=True)
-            st.progress(normalize(home_val, min_val, max_val))
-
+            st.markdown(f"**{label}**")
+            st.markdown(f"{home_val:.2f}")
         with col2:
-            st.markdown(f"<br>{away_val:.2f}", unsafe_allow_html=True)
-            st.progress(normalize(away_val, min_val, max_val))
+            st.markdown(" ")
+            st.markdown(f"{away_val:.2f}")
 
     st.markdown("---")
+
 
 # === Top Players by Stat Section ===
 
