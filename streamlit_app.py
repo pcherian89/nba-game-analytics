@@ -203,7 +203,7 @@ for stat_label, func in stat_fields.items():
     league_ranks[stat_label] = rank_map
 
 # === Streamlit Header ===
-st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
+st.markdown("## Today's NBA Matchups with Key Stats")
 
 # === Show Matchups with "vs" and Ranking ===
 for _, row in todays_games.iterrows():
