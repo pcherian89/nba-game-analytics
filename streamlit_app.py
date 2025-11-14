@@ -154,25 +154,22 @@ todays_games = pd.read_csv("todays_games.csv")
 # === Load Team Averages CSV ===
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
-
 # === Stat Columns to Show ===
 stat_fields = {
-    "Offensive Rating": "offensiveRating",
-    "Defensive Rating": "defensiveRating",
-    "Score": "score",
-    "Assists": "assists",
+    "Score Differential": lambda df: df["teamScore"] - df["opponentScore"],
     "Rebounds Total": "reboundsTotal",
-    "Steals": "steals"
+    "Assists": "assists",
+    "Steals": "steals",
+    "Field Goal %": "fieldGoalsPercentage",
+    "Three Point %": "threePointersPercentage",
+    "Turnovers": "turnovers"
 }
 
 # === Normalize for Bar Chart Comparison ===
-
 def normalize(val, max_val):
-    if max_val is None or max_val < 1e-6:
-        return 0.5  # fallback to midpoint
-    ratio = val / max_val
-    return max(0.0, min(ratio, 1.0))  # ensure range 0 to 1
-
+    if pd.isna(val) or max_val == 0:
+        return 0.0
+    return min(val / max_val, 1.0)
 
 # === Display Matchups with Stats ===
 st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
@@ -193,17 +190,33 @@ for _, row in todays_games.iterrows():
         st.image(f"{logo_base_url}{away_abbr}.png", width=120)
         st.markdown(f"### {away}")
 
-    # Get Team Stats
-    home_stats = team_stats[team_stats["teamName"] == home].mean(numeric_only=True)
-    away_stats = team_stats[team_stats["teamName"] == away].mean(numeric_only=True)
+    # Filter team data
+    home_df = team_stats[team_stats["teamName"] == home]
+    away_df = team_stats[team_stats["teamName"] == away]
 
-    # Comparison Bars
-    for label, col in stat_fields.items():
+    # Skip matchup if team data is missing
+    if home_df.empty or away_df.empty:
+        st.warning(f"🚫 Stats not available for matchup: {home} vs {away}")
+        continue
+
+    # Compute means
+    home_stats = home_df.mean(numeric_only=True)
+    away_stats = away_df.mean(numeric_only=True)
+
+    # Render stat comparison bars
+    for label, field in stat_fields.items():
         col1, col2 = st.columns([1, 1])
-        home_val = home_stats.get(col, 0)
-        away_val = away_stats.get(col, 0)
 
-        max_val = max(home_val, away_val, 1e-6)  # Avoid zero division
+        # Support lambdas for derived metrics
+        if callable(field):
+            home_val = field(home_df).mean()
+            away_val = field(away_df).mean()
+        else:
+            home_val = home_stats.get(field, 0)
+            away_val = away_stats.get(field, 0)
+
+        max_val = max(home_val if not pd.isna(home_val) else 0,
+                      away_val if not pd.isna(away_val) else 0, 1e-6)
 
         with col1:
             st.markdown(f"**{label}**<br>{home}: {home_val:.2f}", unsafe_allow_html=True)
@@ -212,8 +225,9 @@ for _, row in todays_games.iterrows():
         with col2:
             st.markdown(f"<br>{away}: {away_val:.2f}", unsafe_allow_html=True)
             st.progress(normalize(away_val, max_val), text="")
-    
+
     st.markdown("---")
+
 
 
 # === Top Players by Stat Section ===
