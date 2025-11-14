@@ -146,6 +146,84 @@ display_standings_table(standings_df, "West")
 # === Add spacing after both standings tables ===
 st.markdown("<br>", unsafe_allow_html=True)
 
+import streamlit as st
+import pandas as pd
+import numpy as np
+
+# === Load Today’s Games CSV ===
+todays_games = pd.read_csv("todays_games.csv")
+
+# === Load Team Averages CSV ===
+team_stats = pd.read_csv("team_stats_filtered.csv")  # Adjust path if needed
+
+# === Team Abbreviation Map (Already in your code) ===
+team_abbrev_map = {
+    "Atlanta Hawks": "atl", "Boston Celtics": "bos", "Brooklyn Nets": "bkn", "Charlotte Hornets": "cha",
+    "Chicago Bulls": "chi", "Cleveland Cavaliers": "cle", "Dallas Mavericks": "dal", "Denver Nuggets": "den",
+    "Detroit Pistons": "det", "Golden State Warriors": "gsw", "Houston Rockets": "hou", "Indiana Pacers": "ind",
+    "LA Clippers": "lac", "Los Angeles Lakers": "lal", "Memphis Grizzlies": "mem", "Miami Heat": "mia",
+    "Milwaukee Bucks": "mil", "Minnesota Timberwolves": "min", "New Orleans Pelicans": "nop", "New York Knicks": "nyk",
+    "Oklahoma City Thunder": "okc", "Orlando Magic": "orl", "Philadelphia 76ers": "phl", "Phoenix Suns": "phx",
+    "Portland Trail Blazers": "por", "Sacramento Kings": "sac", "San Antonio Spurs": "sas",
+    "Toronto Raptors": "tor", "Utah Jazz": "uth", "Washington Wizards": "was"
+}
+
+logo_base_url = "https://raw.githubusercontent.com/pcherian89/nba-game-analytics/main/"
+
+# === Stat Columns to Show ===
+stat_fields = {
+    "Offensive Rating": "offensiveRating",
+    "Defensive Rating": "defensiveRating",
+    "Score": "score",
+    "Assists": "assists",
+    "Rebounds Total": "reboundsTotal",
+    "Steals": "steals"
+}
+
+# === Normalize for Bar Chart Comparison ===
+def normalize(val, max_val):
+    return min(val / max_val, 1.0)
+
+# === Display Matchups with Stats ===
+st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
+
+for _, row in todays_games.iterrows():
+    home = row["Home_Team"]
+    away = row["Away_Team"]
+
+    home_abbr = team_abbrev_map.get(home, "").lower()
+    away_abbr = team_abbrev_map.get(away, "").lower()
+
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.image(f"{logo_base_url}{home_abbr}.png", width=120)
+        st.markdown(f"### {home}")
+
+    with col2:
+        st.image(f"{logo_base_url}{away_abbr}.png", width=120)
+        st.markdown(f"### {away}")
+
+    # Get Team Stats
+    home_stats = team_stats[team_stats["teamName"] == home].mean(numeric_only=True)
+    away_stats = team_stats[team_stats["teamName"] == away].mean(numeric_only=True)
+
+    # Comparison Bars
+    for label, col in stat_fields.items():
+        col1, col2 = st.columns([1, 1])
+        home_val = home_stats.get(col, 0)
+        away_val = away_stats.get(col, 0)
+
+        max_val = max(home_val, away_val, 1e-6)  # Avoid zero division
+
+        with col1:
+            st.markdown(f"**{label}**<br>{home}: {home_val:.2f}", unsafe_allow_html=True)
+            st.progress(normalize(home_val, max_val), text="")
+
+        with col2:
+            st.markdown(f"<br>{away}: {away_val:.2f}", unsafe_allow_html=True)
+            st.progress(normalize(away_val, max_val), text="")
+    
+    st.markdown("---")
 
 
 # === Top Players by Stat Section ===
