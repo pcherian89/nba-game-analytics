@@ -172,8 +172,15 @@ def normalize(val, min_val, max_val):
         return 0.5
     return (val - min_val) / (max_val - min_val)
 
+# === Fix for naming issue like Los Angeles Clippers → LA Clippers ===
+def fix_team_name(name):
+    if name == "Los Angeles Clippers":
+        return "LA Clippers"
+    return name
+
 # === Robust Parsing for teamCity and teamName ===
 def split_city_name(full_name):
+    full_name = fix_team_name(full_name)
     parts = full_name.split(" ")
     for i in range(1, len(parts)):
         city = " ".join(parts[:i])
@@ -186,9 +193,9 @@ def split_city_name(full_name):
     return None, None
 
 # === Streamlit Header ===
-st.markdown("## Today's NBA Matchups with Key Stats")
+st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
 
-# === Create Matchups in Pairs ===
+# === Create Matchups in Pairs (2 per row) ===
 matchups = list(todays_games.iterrows())
 for i in range(0, len(matchups), 2):
     cols = st.columns(2)
@@ -197,8 +204,8 @@ for i in range(0, len(matchups), 2):
             continue
 
         row = matchups[i + idx][1]
-        home_full = row["Home_Team"]
-        away_full = row["Away_Team"]
+        home_full = fix_team_name(row["Home_Team"])
+        away_full = fix_team_name(row["Away_Team"])
 
         home_city, home_name = split_city_name(home_full)
         away_city, away_name = split_city_name(away_full)
@@ -221,7 +228,7 @@ for i in range(0, len(matchups), 2):
         home_abbr = team_abbrev_map.get(home_full, "").lower()
         away_abbr = team_abbrev_map.get(away_full, "").lower()
 
-        # === TEAM HEADER (logos only, no names) ===
+        # === TEAM HEADER (logos only) ===
         logo_col1, logo_col2 = cols[idx].columns([1, 1])
         with logo_col1:
             st.image(f"{logo_base_url}{home_abbr}.png", width=100)
