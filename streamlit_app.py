@@ -166,8 +166,13 @@ stat_fields = {
 }
 
 # === Normalize for Bar Chart Comparison ===
+
 def normalize(val, max_val):
-    return min(val / max_val, 1.0)
+    if max_val is None or max_val < 1e-6:
+        return 0.5  # fallback to midpoint
+    ratio = val / max_val
+    return max(0.0, min(ratio, 1.0))  # ensure range 0 to 1
+
 
 # === Display Matchups with Stats ===
 st.markdown("## 🔥 Today's NBA Matchups with Key Stats")
