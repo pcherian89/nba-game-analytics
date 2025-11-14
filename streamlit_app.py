@@ -154,7 +154,8 @@ import numpy as np
 todays_games = pd.read_csv("todays_games.csv")
 
 # === Load Team Averages CSV ===
-team_stats = pd.read_csv("team_stats_filtered.csv")  # Adjust path if needed
+team_stats = pd.read_csv("TeamStatistics_filtered.csv")
+
 
 # === Team Abbreviation Map (Already in your code) ===
 team_abbrev_map = {
