@@ -173,6 +173,9 @@ def normalize(val, max_val):
 # === UI Header ===
 st.markdown("## Today's NBA Matchups with Key Stats")
 
+# Create full name column to match today's games format
+team_stats["full_name"] = team_stats["teamCity"] + " " + team_stats["teamName"]
+
 # === Loop Through Games ===
 for _, row in todays_games.iterrows():
     home = row["Home_Team"]
@@ -189,8 +192,10 @@ for _, row in todays_games.iterrows():
         st.image(f"{logo_base_url}{away_abbr}.png", width=120)
 
     # Filter stats
-    home_df = team_stats[team_stats["teamName"] == home]
-    away_df = team_stats[team_stats["teamName"] == away]
+
+    home_df = team_stats[team_stats["full_name"] == home]
+    away_df = team_stats[team_stats["full_name"] == away]
+
 
     if home_df.empty or away_df.empty:
         st.warning(f"🚫 Stats not available for matchup: {home} vs {away}")
