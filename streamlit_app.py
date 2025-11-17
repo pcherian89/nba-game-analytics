@@ -205,52 +205,59 @@ for stat_label, func in stat_fields.items():
 # === Streamlit Header ===
 st.markdown("## Today's NBA Matchups with Key Stats")
 
-# === Show Matchups with "vs" and Ranking ===
-for _, row in todays_games.iterrows():
-    home_team = row["Home_Team"]
-    away_team = row["Away_Team"]
+# === Show Matchups in Pairs (2 per row) with Logos, "vs", and Ranks ===
+matchups = list(todays_games.iterrows())
+for i in range(0, len(matchups), 2):
+    row_cols = st.columns(2)
+    
+    for col_idx in range(2):
+        if i + col_idx >= len(matchups):
+            continue
 
-    home_city, home_name = split_city_name(home_team)
-    away_city, away_name = split_city_name(away_team)
+        row = matchups[i + col_idx][1]
+        home_team = row["Home_Team"]
+        away_team = row["Away_Team"]
 
-    if not home_city or not away_city:
-        st.warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
-        continue
+        home_city, home_name = split_city_name(home_team)
+        away_city, away_name = split_city_name(away_team)
 
-    home_df = team_stats[(team_stats["teamCity"] == home_city) & (team_stats["teamName"] == home_name)]
-    away_df = team_stats[(team_stats["teamCity"] == away_city) & (team_stats["teamName"] == away_name)]
+        if not home_city or not away_city:
+            row_cols[col_idx].warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
+            continue
 
-    if home_df.empty or away_df.empty:
-        st.warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
-        continue
+        home_df = team_stats[(team_stats["teamCity"] == home_city) & (team_stats["teamName"] == home_name)]
+        away_df = team_stats[(team_stats["teamCity"] == away_city) & (team_stats["teamName"] == away_name)]
 
-    home_full = f"{home_city} {home_name}"
-    away_full = f"{away_city} {away_name}"
-    home_abbr = team_abbrev_map.get(home_full, "").lower()
-    away_abbr = team_abbrev_map.get(away_full, "").lower()
+        if home_df.empty or away_df.empty:
+            row_cols[col_idx].warning(f"🚫 Stats not available for: {home_team} vs {away_team}")
+            continue
 
-    # === Team Logos + VS ===
-    logo_col1, logo_col2, logo_col3 = st.columns([1, 0.2, 1])
-    with logo_col1:
-        st.image(f"{logo_base_url}{home_abbr}.png", width=110)
-    with logo_col2:
-        st.markdown("<h3 style='text-align:center;'>vs</h3>", unsafe_allow_html=True)
-    with logo_col3:
-        st.image(f"{logo_base_url}{away_abbr}.png", width=110)
+        home_full = f"{home_city} {home_name}"
+        away_full = f"{away_city} {away_name}"
+        home_abbr = team_abbrev_map.get(home_full, "").lower()
+        away_abbr = team_abbrev_map.get(away_full, "").lower()
 
-    # === Stat Comparison with League Ranks ===
-    stat_col1, stat_col2 = st.columns(2)
-    for label, func in stat_fields.items():
-        home_val = func(home_df)
-        away_val = func(away_df)
+        with row_cols[col_idx]:
+            logo1, mid, logo2 = st.columns([4, 1, 4])
+            with logo1:
+                st.image(f"{logo_base_url}{home_abbr}.png", width=90)
+            with mid:
+                st.markdown("<h4 style='text-align: center;'>vs</h4>", unsafe_allow_html=True)
+            with logo2:
+                st.image(f"{logo_base_url}{away_abbr}.png", width=90)
 
-        home_stat, home_rank = league_ranks[label].get(home_full, (home_val, None))
-        away_stat, away_rank = league_ranks[label].get(away_full, (away_val, None))
+            stat_left, stat_right = st.columns([1, 1])
+            for label, func in stat_fields.items():
+                home_val = func(home_df)
+                away_val = func(away_df)
 
-        with stat_col1:
-            stat_col1.markdown(f"**{label}**<br>{home_val:.2f} (Rank: {home_rank})", unsafe_allow_html=True)
-        with stat_col2:
-            stat_col2.markdown(f"<br>{away_val:.2f} (Rank: {away_rank})", unsafe_allow_html=True)
+                home_stat, home_rank = league_ranks[label].get(home_full, (home_val, None))
+                away_stat, away_rank = league_ranks[label].get(away_full, (away_val, None))
+
+                with stat_left:
+                    stat_left.markdown(f"**{label}**<br>{home_val:.2f} <span style='color:gray;'>(<b>Rank: {home_rank}</b>)</span>", unsafe_allow_html=True)
+                with stat_right:
+                    stat_right.markdown(f"<br>{away_val:.2f} <span style='color:gray;'>(<b>Rank: {away_rank}</b>)</span>", unsafe_allow_html=True)
 
     st.markdown("---")
 
