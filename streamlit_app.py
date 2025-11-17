@@ -166,13 +166,7 @@ stat_fields = {
     "Turnovers": lambda df: df["turnovers"].mean()
 }
 
-# === Normalize Function (for progress bars if needed) ===
-def normalize(val, min_val, max_val):
-    if pd.isna(val) or max_val - min_val == 0:
-        return 0.5
-    return (val - min_val) / (max_val - min_val)
-
-# === Parse Name Robustly ===
+# === Robust Parsing for teamCity/teamName ===
 def split_city_name(full_name):
     if full_name == "Los Angeles Clippers":
         return "LA", "Clippers"
@@ -186,6 +180,15 @@ def split_city_name(full_name):
         if not subset.empty:
             return city, name
     return None, None
+
+# === Rank Coloring Function ===
+def rank_color(rank):
+    if rank <= 10:
+        return "green"
+    elif rank <= 20:
+        return "orange"
+    else:
+        return "red"
 
 # === Pre-calculate League Ranks ===
 league_ranks = {}
