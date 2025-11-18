@@ -202,13 +202,11 @@ llm = ChatOpenAI(model="gpt-4o", temperature=0.45)  # balanced creativity
 
 team_scout_prompt = ChatPromptTemplate.from_template("""
 
-You are an elite NBA scouting analyst preparing a matchup report.
+You are an elite NBA scouting analyst generating a professional matchup report.
 
 Two teams are playing:
 - Team 1: {team1_name}
 - Team 2: {team2_name}
-
-Each team has clear strengths and weaknesses based on ranking advantages.
 
 Team 1 Strengths: {team1_strengths}
 Team 1 Weaknesses: {team1_weaknesses}
@@ -216,32 +214,39 @@ Team 1 Weaknesses: {team1_weaknesses}
 Team 2 Strengths: {team2_strengths}
 Team 2 Weaknesses: {team2_weaknesses}
 
-Write a **3–4 paragraph scouting report** including:
+=========================
+🚨 VERY IMPORTANT RULES
+=========================
+- ALWAYS include ALL FOUR section headings below.
+- DO NOT remove, rename, or merge any sections.
+- DO NOT add new section headings.
+- DO NOT repeat raw numeric values.
+- Write 3–5 sentences per section.
+- Make sure each section is matchup-specific.
+- Do NOT output anything before or after the sections.
 
-1. Offensive Analysis  
-   - Explain how each team generates offense  
-   - Mention offensive strengths & weaknesses  
-   - DO NOT repeat raw numbers
+=========================
+📌 FORMAT EXACTLY LIKE THIS:
+=========================
 
-2. Defensive Analysis  
-   - Pressure, steals, containment, rim protection, turnovers  
-   - Explain which team disrupts more
+### Offensive Analysis
+[Write analysis here]
 
-3. Rebounding & Possession Control  
-   - Who controls the glass, tempo, second-chance chances
+### Defensive Analysis
+[Write analysis here]
 
-4. Summary: Keys to the Matchup  
-   - 2–3 sentences about what will decide the game  
-   - MUST be unique to this matchup  
-   - DO NOT write generic or repeated text  
+### Rebounding & Possession Control
+[Write analysis here]
 
-RULES:
-- DO NOT mention exact numerical values (viewer sees them above).
-- DO NOT produce the same template across games.
-- Every matchup must feel unique.
-- Be specific in your reasoning based on the strengths/weakness patterns.
-- Avoid generic clichés (like “this will dictate the game” without context).
+### Summary: Keys to the Matchup
+[Write analysis here]
+
+=========================
+Now generate the report.
+=========================
+
 """)
+
 
 team_scout_chain = LLMChain(llm=llm, prompt=team_scout_prompt)
 
@@ -280,7 +285,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
     })
 
     # === Render ===
-    st.markdown("## 📝 Scouting Report")
+    #st.markdown("## Scouting Report")
     st.markdown(scouting_output)
     
 
