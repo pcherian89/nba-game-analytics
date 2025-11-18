@@ -455,35 +455,6 @@ mvp_html += "</tbody></table>"
 st.components.v1.html(mvp_html, height=600, scrolling=True)
 
 
-
-# === Display Section ===
-for label, stat_col in top_stat_fields.items():
-    st.markdown(f"####  {label}")
-
-    # Filter: at least 15 minutes per game
-    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
-
-    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
-    cols = st.columns(5)
-
-    for idx, row in enumerate(top_players.itertuples(index=False)):
-        stat_val = getattr(row, stat_col)
-        stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
-        max_value = top_players[stat_col].max()
-
-        with cols[idx]:
-            st.image(row.playerImageURL, width=100)
-            st.markdown(f"**{row.firstName} {row.lastName}**")
-            st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
-
-            # Visual stat indicator
-            #bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
-            #st.markdown(f"""
-            #<div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
-                #<div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
-            #</div>
-            #""", unsafe_allow_html=True)
-
 # === Display Leaderboard Heading ===
 st.markdown("## Leaderboard")
 
