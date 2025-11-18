@@ -229,16 +229,16 @@ Team 2 Weaknesses: {team2_weaknesses}
 📌 FORMAT EXACTLY LIKE THIS:
 =========================
 
-### Offensive Analysis
+#### Offensive Analysis
 [Write analysis here]
 
-### Defensive Analysis
+#### Defensive Analysis
 [Write analysis here]
 
-### Rebounding & Possession Control
+#### Rebounding & Possession Control
 [Write analysis here]
 
-### Summary: Keys to the Matchup
+#### Summary: Keys to the Matchup
 [Write analysis here]
 
 =========================
