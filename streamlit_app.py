@@ -484,6 +484,27 @@ for label, stat_col in top_stat_fields.items():
             #</div>
             #""", unsafe_allow_html=True)
 
+# === Display Leaderboard Heading ===
+st.markdown("## Leaderboard")
+
+# === Display Each Stat Category ===
+for label, stat_col in top_stat_fields.items():
+    st.markdown(f"#### {label}")
+
+    # Filter: at least 15 minutes per game
+    filtered_players = avg_players[avg_players["numMinutes"] >= 15]
+
+    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
+    cols = st.columns(5)
+
+    for idx, row in enumerate(top_players.itertuples(index=False)):
+        stat_val = getattr(row, stat_col)
+        stat_display = round(stat_val * 100, 2) if "Percentage" in stat_col else round(stat_val, 2)
+
+        with cols[idx]:
+            st.image(row.playerImageURL, width=100)
+            st.markdown(f"**{row.firstName} {row.lastName}**")
+            st.markdown(f"**{stat_display}{'%' if 'Percentage' in stat_col else ''}**")
 
 
 # === Chat Section ===
