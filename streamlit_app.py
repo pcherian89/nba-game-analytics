@@ -477,12 +477,12 @@ for label, stat_col in top_stat_fields.items():
             st.markdown(f"{stat_display}{'%' if 'Percentage' in stat_col else ''}")
 
             # Visual stat indicator
-            bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
-            st.markdown(f"""
-            <div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
-                <div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
-            </div>
-            """, unsafe_allow_html=True)
+            #bar_width = (stat_val / max_value) * 100 if max_value > 0 else 0
+            #st.markdown(f"""
+            #<div style="background-color: #eee; height: 10px; width: 100%; border-radius: 4px;">
+                #<div style="background-color: #4CAF50; width: {bar_width}%; height: 100%; border-radius: 4px;"></div>
+            #</div>
+            #""", unsafe_allow_html=True)
 
 
 
