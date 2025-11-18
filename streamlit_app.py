@@ -209,26 +209,26 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
             return team2_name
 
     st.markdown(f"""
-    ### 📊 **Scouting Report: {team1_name} vs {team2_name}**
+    ###  **Scouting Report: {team1_name} vs {team2_name}**
     """)
 
     # 🧠 Offensive Creation
-    st.markdown("#### 🔍 Offensive Creation")
+    st.markdown("####  Offensive Creation")
     for label in ["Assists", "Field Goal %", "Three Point %"]:
         st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
 
     # 🛡️ Defense
-    st.markdown("#### 🛡️ Defensive Activity")
+    st.markdown("####  Defensive Activity")
     for label in ["Steals", "Turnovers"]:
         st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
 
     # 💪 Rebounding
-    st.markdown("#### 💪 Rebounding & Score Differential")
+    st.markdown("####  Rebounding & Score Differential")
     for label in ["Rebounds Total", "Score Differential"]:
         st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
 
     # 🏁 Summary
-    st.markdown("#### 🏁 Summary")
+    st.markdown("####  Summary")
     st.markdown(f"""
     - {team1_name} thrives in **{', '.join([s for s in stat_fields if determine_advantage(s) == team1_name])}**.
     - {team2_name} excels in **{', '.join([s for s in stat_fields if determine_advantage(s) == team2_name])}**.
@@ -322,8 +322,8 @@ for i in range(0, len(matchups), 2):
             with stat_col2:
                 stat_col2.markdown(f"<br>{away_val:.2f} ({away_rank_str})", unsafe_allow_html=True)
                 # === Scouting Report Section ===
-            with cols[idx]:
-                generate_scouting_report(home_full, away_full, home_df, away_df)
+        with cols[idx]:
+            generate_scouting_report(home_full, away_full, home_df, away_df)
 
 
     st.markdown("---")
