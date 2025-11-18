@@ -154,7 +154,6 @@ import pandas as pd
 todays_games = pd.read_csv("todays_games.csv")
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
-
 # === Stat Fields and Labels ===
 stat_fields = {
     "Score Differential": lambda df: (df["teamScore"] - df["opponentScore"]).mean(),
@@ -190,13 +189,70 @@ def rank_color(rank):
     else:
         return "red"
 
-def generate_scouting_report(team1_name, team2_name, df1, df2):
-    def get_rank_text(stat_label, team, is_lower_better=False):
-        stat_val, stat_rank = league_ranks[stat_label][team]
-        color = rank_color(stat_rank)
-        rank_desc = f"<span style='color:{color}; font-weight:bold;'>(Rank: {stat_rank})</span>"
-        return f"{stat_val:.2f} {rank_desc}"
 
+# ========================================================
+# 🚀 NEW: LLM-POWERED TEAM SCOUTING REPORT (FULL FUNCTION)
+# ========================================================
+
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.chains import LLMChain
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0.45)  # balanced creativity
+
+team_scout_prompt = ChatPromptTemplate.from_template("""
+
+You are an elite NBA scouting analyst preparing a matchup report.
+
+Two teams are playing:
+- Team 1: {team1_name}
+- Team 2: {team2_name}
+
+Each team has clear strengths and weaknesses based on ranking advantages.
+
+Team 1 Strengths: {team1_strengths}
+Team 1 Weaknesses: {team1_weaknesses}
+
+Team 2 Strengths: {team2_strengths}
+Team 2 Weaknesses: {team2_weaknesses}
+
+Write a **3–4 paragraph scouting report** including:
+
+1. Offensive Analysis  
+   - Explain how each team generates offense  
+   - Mention offensive strengths & weaknesses  
+   - DO NOT repeat raw numbers
+
+2. Defensive Analysis  
+   - Pressure, steals, containment, rim protection, turnovers  
+   - Explain which team disrupts more
+
+3. Rebounding & Possession Control  
+   - Who controls the glass, tempo, second-chance chances
+
+4. Summary: Keys to the Matchup  
+   - 2–3 sentences about what will decide the game  
+   - MUST be unique to this matchup  
+   - DO NOT write generic or repeated text  
+
+RULES:
+- DO NOT mention exact numerical values (viewer sees them above).
+- DO NOT produce the same template across games.
+- Every matchup must feel unique.
+- Be specific in your reasoning based on the strengths/weakness patterns.
+- Avoid generic clichés (like “this will dictate the game” without context).
+""")
+
+team_scout_chain = LLMChain(llm=llm, prompt=team_scout_prompt)
+
+
+# ========================================================
+# 🎯 FINAL generate_scouting_report FUNCTION (LLM VERSION)
+# ========================================================
+
+def generate_scouting_report(team1_name, team2_name, df1, df2):
+
+    # helper: determine advantage from ranks
     def determine_advantage(stat_label):
         val1, _ = league_ranks[stat_label][team1_name]
         val2, _ = league_ranks[stat_label][team2_name]
@@ -205,71 +261,27 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
             return team1_name
         elif val1 == val2:
             return "Even"
-        else:
-            return team2_name
+        return team2_name
 
-    
-    
-    # --- Offensive Creation Paragraph ---
-    def offensive_paragraph():
-        assists_adv = determine_advantage("Assists")
-        fg_adv = determine_advantage("Field Goal %")
-        three_adv = determine_advantage("Three Point %")
-    
-        text = f"""
-        ### Offensive Creation  
-        {assists_adv} holds the edge in playmaking, generating more assisted opportunities and better ball movement.  
-        In terms of shooting efficiency, {fg_adv} shows superior shot selection and finishing at the rim.  
-        On the perimeter, {three_adv} has the advantage with stronger spacing and more reliable 3-point production.  
-        Overall, these factors shape the offensive rhythm heading into this matchup.
-        """
-        return text
-    
-    # --- Defensive Activity Paragraph ---
-    def defense_paragraph():
-        steals_adv = determine_advantage("Steals")
-        turnovers_adv = determine_advantage("Turnovers")
-    
-        text = f"""
-        ### Defensive Activity  
-        Defensively, {steals_adv} creates more disruption through ball pressure and passing-lane activity.  
-        However, turnover management leans toward {turnovers_adv}, giving them the advantage in maintaining cleaner offensive possessions.  
-        These two areas could swing momentum, especially if one team turns defense into transition scoring.
-        """
-        return text
-    
-    # --- Rebounding & Differential Paragraph ---
-    def rebounding_paragraph():
-        reb_adv = determine_advantage("Rebounds Total")
-        diff_adv = determine_advantage("Score Differential")
-    
-        text = f"""
-        ### Rebounding & Score Differential  
-        {reb_adv} enters with the stronger presence on the glass, allowing them to control pace and create extra possessions.  
-        Meanwhile, {diff_adv} shows better overall scoring margin, suggesting stronger consistency across recent games.  
-        The combination of rebounding and point differential often dictates late-game execution.
-        """
-        return text
-    
-    # --- Summary Paragraph ---
-    def summary_paragraph():
-        team1_strengths = [s for s in stat_fields if determine_advantage(s) == team1_name]
-        team2_strengths = [s for s in stat_fields if determine_advantage(s) == team2_name]
-    
-        text = f"""
-        ### Summary  
-        {team1_name} is strongest in **{', '.join(team1_strengths)}**, giving them clear tactical advantages in those areas.  
-        {team2_name} excels in **{', '.join(team2_strengths)}**, shaping their path to victory.  
-        The deciding factors in this matchup will likely be **3-point efficiency** and **turnover control**, two areas that historically decide tight games.
-        """
-        return text
-    
-    # Render paragraphs
-    st.markdown(offensive_paragraph(), unsafe_allow_html=True)
-    st.markdown(defense_paragraph(), unsafe_allow_html=True)
-    st.markdown(rebounding_paragraph(), unsafe_allow_html=True)
-    st.markdown(summary_paragraph(), unsafe_allow_html=True)
+    # compute strengths/weaknesses
+    team1_strengths = [s for s in stat_fields if determine_advantage(s) == team1_name]
+    team1_weaknesses = [s for s in stat_fields if determine_advantage(s) == team2_name]
+    team2_strengths = [s for s in stat_fields if determine_advantage(s) == team2_name]
+    team2_weaknesses = [s for s in stat_fields if determine_advantage(s) == team1_name]
 
+    # === Run LLM ===
+    scouting_output = team_scout_chain.run({
+        "team1_name": team1_name,
+        "team2_name": team2_name,
+        "team1_strengths": ", ".join(team1_strengths),
+        "team1_weaknesses": ", ".join(team1_weaknesses),
+        "team2_strengths": ", ".join(team2_strengths),
+        "team2_weaknesses": ", ".join(team2_weaknesses),
+    })
+
+    # === Render ===
+    st.markdown("## 📝 Scouting Report")
+    st.markdown(scouting_output)
     
 
 
