@@ -208,11 +208,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         else:
             return team2_name
 
-    # ================================
-    # 🧠 SCOUTING REPORT (PARAGRAPH FORMAT)
-    # ================================
     
-    st.markdown("## 📝 Scouting Report")
     
     # --- Offensive Creation Paragraph ---
     def offensive_paragraph():
@@ -221,7 +217,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         three_adv = determine_advantage("Three Point %")
     
         text = f"""
-        ### 🧠 Offensive Creation  
+        ### Offensive Creation  
         {assists_adv} holds the edge in playmaking, generating more assisted opportunities and better ball movement.  
         In terms of shooting efficiency, {fg_adv} shows superior shot selection and finishing at the rim.  
         On the perimeter, {three_adv} has the advantage with stronger spacing and more reliable 3-point production.  
@@ -235,7 +231,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         turnovers_adv = determine_advantage("Turnovers")
     
         text = f"""
-        ### 🛡️ Defensive Activity  
+        ### Defensive Activity  
         Defensively, {steals_adv} creates more disruption through ball pressure and passing-lane activity.  
         However, turnover management leans toward {turnovers_adv}, giving them the advantage in maintaining cleaner offensive possessions.  
         These two areas could swing momentum, especially if one team turns defense into transition scoring.
@@ -248,7 +244,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         diff_adv = determine_advantage("Score Differential")
     
         text = f"""
-        ### 💪 Rebounding & Score Differential  
+        ### Rebounding & Score Differential  
         {reb_adv} enters with the stronger presence on the glass, allowing them to control pace and create extra possessions.  
         Meanwhile, {diff_adv} shows better overall scoring margin, suggesting stronger consistency across recent games.  
         The combination of rebounding and point differential often dictates late-game execution.
@@ -261,7 +257,7 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         team2_strengths = [s for s in stat_fields if determine_advantage(s) == team2_name]
     
         text = f"""
-        ### 🏁 Summary  
+        ### Summary  
         {team1_name} is strongest in **{', '.join(team1_strengths)}**, giving them clear tactical advantages in those areas.  
         {team2_name} excels in **{', '.join(team2_strengths)}**, shaping their path to victory.  
         The deciding factors in this matchup will likely be **3-point efficiency** and **turnover control**, two areas that historically decide tight games.
