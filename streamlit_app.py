@@ -208,33 +208,72 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
         else:
             return team2_name
 
-    st.markdown(f"""
-    ###  **Scouting Report: {team1_name} vs {team2_name}**
-    """)
+    # ================================
+    # 🧠 SCOUTING REPORT (PARAGRAPH FORMAT)
+    # ================================
+    
+    st.markdown("## 📝 Scouting Report")
+    
+    # --- Offensive Creation Paragraph ---
+    def offensive_paragraph():
+        assists_adv = determine_advantage("Assists")
+        fg_adv = determine_advantage("Field Goal %")
+        three_adv = determine_advantage("Three Point %")
+    
+        text = f"""
+        ### 🧠 Offensive Creation  
+        {assists_adv} holds the edge in playmaking, generating more assisted opportunities and better ball movement.  
+        In terms of shooting efficiency, {fg_adv} shows superior shot selection and finishing at the rim.  
+        On the perimeter, {three_adv} has the advantage with stronger spacing and more reliable 3-point production.  
+        Overall, these factors shape the offensive rhythm heading into this matchup.
+        """
+        return text
+    
+    # --- Defensive Activity Paragraph ---
+    def defense_paragraph():
+        steals_adv = determine_advantage("Steals")
+        turnovers_adv = determine_advantage("Turnovers")
+    
+        text = f"""
+        ### 🛡️ Defensive Activity  
+        Defensively, {steals_adv} creates more disruption through ball pressure and passing-lane activity.  
+        However, turnover management leans toward {turnovers_adv}, giving them the advantage in maintaining cleaner offensive possessions.  
+        These two areas could swing momentum, especially if one team turns defense into transition scoring.
+        """
+        return text
+    
+    # --- Rebounding & Differential Paragraph ---
+    def rebounding_paragraph():
+        reb_adv = determine_advantage("Rebounds Total")
+        diff_adv = determine_advantage("Score Differential")
+    
+        text = f"""
+        ### 💪 Rebounding & Score Differential  
+        {reb_adv} enters with the stronger presence on the glass, allowing them to control pace and create extra possessions.  
+        Meanwhile, {diff_adv} shows better overall scoring margin, suggesting stronger consistency across recent games.  
+        The combination of rebounding and point differential often dictates late-game execution.
+        """
+        return text
+    
+    # --- Summary Paragraph ---
+    def summary_paragraph():
+        team1_strengths = [s for s in stat_fields if determine_advantage(s) == team1_name]
+        team2_strengths = [s for s in stat_fields if determine_advantage(s) == team2_name]
+    
+        text = f"""
+        ### 🏁 Summary  
+        {team1_name} is strongest in **{', '.join(team1_strengths)}**, giving them clear tactical advantages in those areas.  
+        {team2_name} excels in **{', '.join(team2_strengths)}**, shaping their path to victory.  
+        The deciding factors in this matchup will likely be **3-point efficiency** and **turnover control**, two areas that historically decide tight games.
+        """
+        return text
+    
+    # Render paragraphs
+    st.markdown(offensive_paragraph(), unsafe_allow_html=True)
+    st.markdown(defense_paragraph(), unsafe_allow_html=True)
+    st.markdown(rebounding_paragraph(), unsafe_allow_html=True)
+    st.markdown(summary_paragraph(), unsafe_allow_html=True)
 
-    # 🧠 Offensive Creation
-    st.markdown("####  Offensive Creation")
-    for label in ["Assists", "Field Goal %", "Three Point %"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
-
-    # 🛡️ Defense
-    st.markdown("####  Defensive Activity")
-    for label in ["Steals", "Turnovers"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
-
-
-    # 💪 Rebounding
-    st.markdown("####  Rebounding & Score Differential")
-    for label in ["Rebounds Total", "Score Differential"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
-
-
-    # 🏁 Summary
-    st.markdown(f"""
-    - {team1_name} thrives in **{', '.join([s for s in stat_fields if determine_advantage(s) == team1_name])}**.
-    - {team2_name} excels in **{', '.join([s for s in stat_fields if determine_advantage(s) == team2_name])}**.
-    - Key to watch: Which team wins the battle in **Turnovers** and **3PT%**, often decisive in close matchups.
-    """, unsafe_allow_html=True)
     
 
 
