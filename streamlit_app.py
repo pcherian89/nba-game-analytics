@@ -584,7 +584,7 @@ for label, stat_col in top_stat_fields.items():
 
 # === Chat Section ===
 st.markdown("---")
-st.markdown("### 💬 Game Matchup Analyzer")
+st.markdown("### 💬 Past Game Insights")
 st.markdown("Ask about a game like `'Lakers vs Nuggets'`, `'Celtics vs Heat'`, etc.")
 
 st.markdown("""
