@@ -215,25 +215,27 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
     # 🧠 Offensive Creation
     st.markdown("####  Offensive Creation")
     for label in ["Assists", "Field Goal %", "Three Point %"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
+        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
 
     # 🛡️ Defense
     st.markdown("####  Defensive Activity")
     for label in ["Steals", "Turnovers"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
+        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
+
 
     # 💪 Rebounding
     st.markdown("####  Rebounding & Score Differential")
     for label in ["Rebounds Total", "Score Differential"]:
-        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_")
+        st.markdown(f"- **{label}**: {team1_name}: {get_rank_text(label, team1_name)} | {team2_name}: {get_rank_text(label, team2_name)} → _Advantage: **{determine_advantage(label)}**_", unsafe_allow_html=True)
+
 
     # 🏁 Summary
-    st.markdown("####  Summary")
     st.markdown(f"""
     - {team1_name} thrives in **{', '.join([s for s in stat_fields if determine_advantage(s) == team1_name])}**.
     - {team2_name} excels in **{', '.join([s for s in stat_fields if determine_advantage(s) == team2_name])}**.
     - Key to watch: Which team wins the battle in **Turnovers** and **3PT%**, often decisive in close matchups.
-    """)
+    """, unsafe_allow_html=True)
+    
 
 
 # === Pre-calculate League Ranks ===
