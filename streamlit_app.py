@@ -200,10 +200,16 @@ for stat_label, func in stat_fields.items():
             "team": f"{team[0][0]} {team[0][1]}",
             "value": val
         })
+    
     rank_df = pd.DataFrame(values)
-    rank_df["rank"] = rank_df["value"].rank(ascending=False, method="min").astype(int)
+
+    # 👇 Use ascending=True for Turnovers (lower is better), descending for others
+    ascending = True if stat_label == "Turnovers" else False
+
+    rank_df["rank"] = rank_df["value"].rank(ascending=ascending, method="min").astype(int)
     rank_map = dict(zip(rank_df["team"], zip(rank_df["value"], rank_df["rank"])))
     league_ranks[stat_label] = rank_map
+
 
 # === Streamlit Header ===
 st.markdown("## Today's NBA Matchups with Key Stats")
