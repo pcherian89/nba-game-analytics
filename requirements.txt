@@ -6,22 +6,6 @@ fpdf
 openai>=1.0.0
 langchain==0.1.13
 langchain-openai==0.0.8
-streamlit
-pandas
-numpy
-plotly
-seaborn
-matplotlib
-tabulate
-fpdf
-requests
-pillow
-scikit-learn
-scipy
-python-dateutil
-openai>=1.0.0
-langchain==0.1.13
-langchain-openai==0.0.8
-nba-api
+
 
 
