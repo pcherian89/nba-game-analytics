@@ -1,7 +1,10 @@
 GAME_ID,GAME_DATE_EST,HOME_TEAM_ID,VISITOR_TEAM_ID,GAME_STATUS_TEXT,Home_Team,Away_Team,Home_Logo,Away_Logo
-0022500249,2025-11-18T00:00:00,1610612753,1610612744,7:00 pm ET,Orlando Magic,Golden State Warriors,https://a.espncdn.com/i/teamlogos/nba/500/magic.png,https://a.espncdn.com/i/teamlogos/nba/500/warriors.png
-0022500250,2025-11-18T00:00:00,1610612751,1610612738,7:30 pm ET,Brooklyn Nets,Boston Celtics,https://a.espncdn.com/i/teamlogos/nba/500/nets.png,https://a.espncdn.com/i/teamlogos/nba/500/celtics.png
-0022500251,2025-11-18T00:00:00,1610612737,1610612765,8:00 pm ET,Atlanta Hawks,Detroit Pistons,https://a.espncdn.com/i/teamlogos/nba/500/hawks.png,https://a.espncdn.com/i/teamlogos/nba/500/pistons.png
-0022500252,2025-11-18T00:00:00,1610612759,1610612763,8:00 pm ET,San Antonio Spurs,Memphis Grizzlies,https://a.espncdn.com/i/teamlogos/nba/500/spurs.png,https://a.espncdn.com/i/teamlogos/nba/500/grizzlies.png
-0022500253,2025-11-18T00:00:00,1610612747,1610612762,10:30 pm ET,Los Angeles Lakers,Utah Jazz,https://a.espncdn.com/i/teamlogos/nba/500/lakers.png,https://a.espncdn.com/i/teamlogos/nba/500/jazz.png
-0022500254,2025-11-18T00:00:00,1610612757,1610612756,11:00 pm ET,Portland Trail Blazers,Phoenix Suns,https://a.espncdn.com/i/teamlogos/nba/500/blazers.png,https://a.espncdn.com/i/teamlogos/nba/500/suns.png
+0022500255,2025-11-19T00:00:00,1610612739,1610612745,7:00 pm ET,Cleveland Cavaliers,Houston Rockets,https://a.espncdn.com/i/teamlogos/nba/500/cavaliers.png,https://a.espncdn.com/i/teamlogos/nba/500/rockets.png
+0022500256,2025-11-19T00:00:00,1610612754,1610612766,7:00 pm ET,Indiana Pacers,Charlotte Hornets,https://a.espncdn.com/i/teamlogos/nba/500/pacers.png,https://a.espncdn.com/i/teamlogos/nba/500/hornets.png
+0022500257,2025-11-19T00:00:00,1610612748,1610612744,7:00 pm ET,Miami Heat,Golden State Warriors,https://a.espncdn.com/i/teamlogos/nba/500/heat.png,https://a.espncdn.com/i/teamlogos/nba/500/warriors.png
+0022500258,2025-11-19T00:00:00,1610612755,1610612761,7:00 pm ET,Philadelphia 76ers,Toronto Raptors,https://a.espncdn.com/i/teamlogos/nba/500/76ers.png,https://a.espncdn.com/i/teamlogos/nba/500/raptors.png
+0022500259,2025-11-19T00:00:00,1610612750,1610612764,8:00 pm ET,Minnesota Timberwolves,Washington Wizards,https://a.espncdn.com/i/teamlogos/nba/500/timberwolves.png,https://a.espncdn.com/i/teamlogos/nba/500/wizards.png
+0022500260,2025-11-19T00:00:00,1610612740,1610612743,8:00 pm ET,New Orleans Pelicans,Denver Nuggets,https://a.espncdn.com/i/teamlogos/nba/500/pelicans.png,https://a.espncdn.com/i/teamlogos/nba/500/nuggets.png
+0022500261,2025-11-19T00:00:00,1610612760,1610612758,8:00 pm ET,Oklahoma City Thunder,Sacramento Kings,https://a.espncdn.com/i/teamlogos/nba/500/thunder.png,https://a.espncdn.com/i/teamlogos/nba/500/kings.png
+0022500262,2025-11-19T00:00:00,1610612742,1610612752,9:30 pm ET,Dallas Mavericks,New York Knicks,https://a.espncdn.com/i/teamlogos/nba/500/mavericks.png,https://a.espncdn.com/i/teamlogos/nba/500/knicks.png
+0022500263,2025-11-19T00:00:00,1610612757,1610612741,10:00 pm ET,Portland Trail Blazers,Chicago Bulls,https://a.espncdn.com/i/teamlogos/nba/500/blazers.png,https://a.espncdn.com/i/teamlogos/nba/500/bulls.png
