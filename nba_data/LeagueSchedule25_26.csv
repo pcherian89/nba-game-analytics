@@ -868,6 +868,10 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500789,2026-02-12T14:30:00.000000-0500,1610612760,1610612749,Oklahoma City,Thunder,Milwaukee,Bucks,Thu,Paycom Center,Oklahoma City,OK,"","","","",17
 22500790,2026-02-12T16:00:00.000000-0500,1610612762,1610612757,Utah,Jazz,Portland,Trail Blazers,Thu,Delta Center,Salt Lake City,UT,"","","","",17
 22500791,2026-02-12T17:00:00.000000-0500,1610612747,1610612742,Los Angeles,Lakers,Dallas,Mavericks,Thu,Crypto.com Arena,Los Angeles,CA,"","","","",17
+32500011,2026-02-14T19:00:00.000000-0500,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 1,"","",17
+32500021,2026-02-14T19:00:00.000000-0500,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 2,"","",17
+32500031,2026-02-14T19:00:00.000000-0500,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 3,"","",17
+32500041,2026-02-14T19:00:00.000000-0500,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star Championship,"","","",17
 22500792,2026-02-19T14:00:00.000000-0500,1610612766,1610612745,Charlotte,Hornets,Houston,Rockets,Thu,Spectrum Center,Charlotte,NC,"","","","",18
 22500793,2026-02-19T14:00:00.000000-0500,1610612739,1610612751,Cleveland,Cavaliers,Brooklyn,Nets,Thu,Rocket Arena,Cleveland,OH,"","","","",18
 22500794,2026-02-19T14:00:00.000000-0500,1610612755,1610612737,Philadelphia,76ers,Atlanta,Hawks,Thu,Xfinity Mobile Arena,Philadelphia,PA,"","","","",18
