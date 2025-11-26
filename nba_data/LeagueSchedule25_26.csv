@@ -431,9 +431,9 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22501203,2025-12-09 00:00:00Z,0,0,"","","","",Tue,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
 22501202,2025-12-10 00:00:00Z,0,0,"","","","",Wed,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
 22501204,2025-12-10 00:00:00Z,0,0,"","","","",Wed,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
-22501229,2025-12-13 00:00:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
-22501230,2025-12-13 00:00:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
-62500001,2025-12-16 00:00:00Z,0,0,"","","","",Tue,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Championship,in-season-knockout,"",9
+22501229,2025-12-13 17:30:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
+22501230,2025-12-13 21:00:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
+62500001,2025-12-16 20:30:00Z,0,0,"","","","",Tue,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Championship,in-season-knockout,"",9
 22500367,2025-12-17 20:00:00Z,1610612741,1610612739,Chicago,Bulls,Cleveland,Cavaliers,Wed,United Center,Chicago,IL,"","","","",9
 22500368,2025-12-17 20:00:00Z,1610612750,1610612763,Minnesota,Timberwolves,Memphis,Grizzlies,Wed,Target Center,Minneapolis,MN,"","","","",9
 22500369,2025-12-17 20:00:00Z,1610612760,1610612746,Oklahoma City,Thunder,LA,Clippers,Wed,Paycom Center,Oklahoma City,OK,"","","","",9
