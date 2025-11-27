@@ -425,8 +425,8 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500362,2025-12-07 19:30:00Z,1610612755,1610612747,Philadelphia,76ers,Los Angeles,Lakers,Sun,Xfinity Mobile Arena,Philadelphia,PA,"","","","",7
 22500363,2025-12-07 20:00:00Z,1610612762,1610612760,Utah,Jazz,Oklahoma City,Thunder,Sun,Delta Center,Salt Lake City,UT,"","","","",7
 22500364,2025-12-08 19:00:00Z,1610612754,1610612758,Indiana,Pacers,Sacramento,Kings,Mon,Gainbridge Fieldhouse,Indianapolis,IN,"","","","",8
-22500365,2025-12-08 20:00:00Z,1610612750,1610612756,Minnesota,Timberwolves,Phoenix,Suns,Mon,Target Center,Minneapolis,MN,"","","","",8
-22500366,2025-12-08 21:30:00Z,1610612740,1610612759,New Orleans,Pelicans,San Antonio,Spurs,Mon,Smoothie King Center,New Orleans,LA,"","","","",8
+22500365,2025-12-08 19:30:00Z,1610612750,1610612756,Minnesota,Timberwolves,Phoenix,Suns,Mon,Target Center,Minneapolis,MN,"","","","",8
+22500366,2025-12-08 20:00:00Z,1610612740,1610612759,New Orleans,Pelicans,San Antonio,Spurs,Mon,Smoothie King Center,New Orleans,LA,"","","","",8
 22501201,2025-12-09 00:00:00Z,0,0,"","","","",Tue,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
 22501203,2025-12-09 00:00:00Z,0,0,"","","","",Tue,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
 22501202,2025-12-10 00:00:00Z,0,0,"","","","",Wed,"","","",Emirates NBA Cup,Quarterfinal,in-season-knockout,"",8
