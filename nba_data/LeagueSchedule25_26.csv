@@ -442,16 +442,16 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22501213,2025-12-12 20:00:00Z,1610612763,1610612762,Memphis,Grizzlies,Utah,Jazz,Fri,FedExForum,Memphis,TN,"","","","",8
 22501214,2025-12-12 20:30:00Z,1610612742,1610612751,Dallas,Mavericks,Brooklyn,Nets,Fri,American Airlines Center,Dallas,TX,"","","","",8
 22501215,2025-12-12 22:00:00Z,1610612744,1610612750,Golden State,Warriors,Minnesota,Timberwolves,Fri,Chase Center,San Francisco,CA,"","","","",8
-22501229,2025-12-13 17:30:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
-22501230,2025-12-13 21:00:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,Semifinal,in-season-knockout,"",8
+22501229,2025-12-13 17:30:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,East Semifinal,in-season-knockout,"",8
+22501230,2025-12-13 21:00:00Z,0,0,"","","","",Sat,T-Mobile Arena,Las Vegas,NV,Emirates NBA Cup,West Semifinal,in-season-knockout,"",8
 22501216,2025-12-14 15:00:00Z,1610612754,1610612764,Indiana,Pacers,Washington,Wizards,Sun,Gainbridge Fieldhouse,Indianapolis,IN,"","","","",8
 22501217,2025-12-14 15:30:00Z,1610612737,1610612755,Atlanta,Hawks,Philadelphia,76ers,Sun,State Farm Arena,Atlanta,GA,"","","","",8
 22501218,2025-12-14 15:30:00Z,1610612739,1610612766,Cleveland,Cavaliers,Charlotte,Hornets,Sun,Rocket Arena,Cleveland,OH,"","","","",8
 22501219,2025-12-14 18:00:00Z,1610612751,1610612749,Brooklyn,Nets,Milwaukee,Bucks,Sun,Barclays Center,Brooklyn,NY,"","","","",8
 22501220,2025-12-14 19:00:00Z,1610612750,1610612758,Minnesota,Timberwolves,Sacramento,Kings,Sun,Target Center,Minneapolis,MN,"","","","",8
+22501223,2025-12-14 19:00:00Z,1610612741,1610612740,Chicago,Bulls,New Orleans,Pelicans,Sun,United Center,Chicago,IL,"","","","",8
 22501221,2025-12-14 21:00:00Z,1610612757,1610612744,Portland,Trail Blazers,Golden State,Warriors,Sun,Moda Center,Portland,OR,"","","","",8
 22501222,2025-12-15 19:00:00Z,1610612738,1610612765,Boston,Celtics,Detroit,Pistons,Mon,TD Garden,Boston,MA,"","","","",9
-22501223,2025-12-15 20:00:00Z,1610612741,1610612740,Chicago,Bulls,New Orleans,Pelicans,Mon,United Center,Chicago,IL,"","","","",9
 22501224,2025-12-15 21:00:00Z,1610612762,1610612742,Utah,Jazz,Dallas,Mavericks,Mon,Delta Center,Salt Lake City,UT,"","","","",9
 22501225,2025-12-15 21:30:00Z,1610612743,1610612745,Denver,Nuggets,Houston,Rockets,Mon,Ball Arena,Denver,CO,"","","","",9
 22501226,2025-12-15 22:30:00Z,1610612746,1610612763,LA,Clippers,Memphis,Grizzlies,Mon,Intuit Dome,Inglewood,CA,"","","","",9
