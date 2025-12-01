@@ -1,31 +1,31 @@
 Team,Conference,Rank,Wins,Losses,Win%,Streak,Home,Road,PointDiff
-Detroit Pistons,East,1,15,2,0.882,13,7-1,7-1,7.0
-Toronto Raptors,East,2,13,5,0.722,8,6-2,7-3,7.0
-Miami Heat,East,3,12,6,0.667,5,8-1,4-5,6.0
-Cleveland Cavaliers,East,4,12,7,0.632,-1,8-3,4-4,4.0
-New York Knicks,East,5,10,6,0.625,1,8-1,2-5,5.0
-Atlanta Hawks,East,6,11,7,0.611,2,3-4,8-3,3.0
-Philadelphia 76ers,East,7,9,7,0.563,-1,5-4,4-3,2.0
-Orlando Magic,East,8,10,8,0.556,-1,7-3,3-5,3.0
-Chicago Bulls,East,9,9,8,0.529,-1,6-2,3-6,-3.0
-Boston Celtics,East,10,9,8,0.529,1,5-4,4-4,5.0
-Milwaukee Bucks,East,11,8,10,0.444,-5,5-6,3-4,-3.0
-Charlotte Hornets,East,12,4,13,0.235,-6,3-5,1-8,-4.0
-Brooklyn Nets,East,13,3,14,0.176,-2,0-8,3-6,-10.0
-Indiana Pacers,East,14,2,15,0.118,-2,2-6,0-9,-12.0
-Washington Wizards,East,15,1,15,0.063,-14,0-6,1-9,-16.0
-Oklahoma City Thunder,West,1,17,1,0.944,9,8-0,9-1,17.0
-Denver Nuggets,West,2,13,4,0.765,1,6-2,7-2,10.0
-Los Angeles Lakers,West,3,12,4,0.75,4,4-2,8-2,3.0
-Houston Rockets,West,4,11,4,0.733,1,5-2,6-2,11.0
-San Antonio Spurs,West,5,11,5,0.688,-1,8-2,3-3,6.0
-Phoenix Suns,West,6,11,7,0.611,-1,8-3,3-4,4.0
-Minnesota Timberwolves,West,7,10,7,0.588,-2,5-3,5-4,5.0
-Golden State Warriors,West,8,10,9,0.526,1,6-1,4-8,1.0
-Portland Trail Blazers,West,9,8,10,0.444,1,3-4,5-6,-2.0
-Memphis Grizzlies,West,10,6,12,0.333,-1,4-6,2-6,-5.0
-Utah Jazz,West,11,5,12,0.294,-4,4-5,1-7,-7.0
-LA Clippers,West,12,5,12,0.294,-1,3-5,2-7,-5.0
-Sacramento Kings,West,13,5,13,0.278,2,3-5,2-8,-11.0
-Dallas Mavericks,West,14,5,14,0.263,-2,4-9,1-4,-6.0
-New Orleans Pelicans,West,15,3,15,0.167,1,2-8,1-7,-11.0
+Detroit Pistons,East,1,16,4,0.8,1,7-2,8-2,6.0
+New York Knicks,East,2,13,6,0.684,4,10-1,3-5,7.0
+Toronto Raptors,East,3,14,7,0.667,-2,7-2,7-5,5.0
+Miami Heat,East,4,13,7,0.65,-1,9-2,4-5,5.0
+Atlanta Hawks,East,5,13,8,0.619,2,4-4,9-4,2.0
+Orlando Magic,East,6,12,8,0.6,2,7-3,5-5,5.0
+Cleveland Cavaliers,East,7,12,9,0.571,-3,8-4,4-5,3.0
+Boston Celtics,East,8,11,9,0.55,1,6-4,5-5,4.0
+Philadelphia 76ers,East,9,10,9,0.526,-1,5-6,5-3,-1.0
+Chicago Bulls,East,10,9,10,0.474,-3,6-2,3-8,-3.0
+Milwaukee Bucks,East,11,9,12,0.429,1,6-6,3-6,-2.0
+Charlotte Hornets,East,12,6,14,0.3,2,5-6,1-8,-4.0
+Indiana Pacers,East,13,4,16,0.2,2,4-6,0-10,-9.0
+Brooklyn Nets,East,14,3,16,0.158,-4,0-9,3-7,-11.0
+Washington Wizards,East,15,2,16,0.111,-1,1-6,1-10,-15.0
+Oklahoma City Thunder,West,1,20,1,0.952,12,10-0,10-1,15.0
+Los Angeles Lakers,West,2,15,4,0.789,7,7-2,8-2,4.0
+Houston Rockets,West,3,13,4,0.765,3,5-2,8-2,12.0
+Denver Nuggets,West,4,14,5,0.737,1,6-3,8-2,10.0
+San Antonio Spurs,West,5,13,6,0.684,-1,8-2,5-4,5.0
+Minnesota Timberwolves,West,6,12,8,0.6,2,7-3,5-5,5.0
+Phoenix Suns,West,7,12,9,0.571,-2,8-4,4-5,3.0
+Golden State Warriors,West,8,11,10,0.524,1,7-2,4-8,1.0
+Memphis Grizzlies,West,9,9,12,0.429,3,4-6,5-6,-3.0
+Portland Trail Blazers,West,10,8,12,0.4,-2,3-6,5-6,-3.0
+Utah Jazz,West,11,6,13,0.316,-1,5-6,1-7,-8.0
+Dallas Mavericks,West,12,6,15,0.286,1,4-9,2-5,-6.0
+LA Clippers,West,13,5,15,0.25,-4,3-7,2-8,-6.0
+Sacramento Kings,West,14,5,16,0.238,-3,3-7,2-9,-11.0
+New Orleans Pelicans,West,15,3,18,0.143,-3,2-9,1-9,-11.0
