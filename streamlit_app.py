@@ -197,8 +197,9 @@ def rank_color(rank):
 from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
+import openai  # for RateLimitError
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0.45)  # balanced creativity
+llm = ChatOpenAI(model="gpt-4o", temperature=0.45, max_retries=3)  # balanced creativity
 
 team_scout_prompt = ChatPromptTemplate.from_template("""
 
@@ -247,8 +248,28 @@ Now generate the report.
 
 """)
 
-
 team_scout_chain = LLMChain(llm=llm, prompt=team_scout_prompt)
+
+
+# ========= CACHE LLM OUTPUT PER MATCHUP =========
+@st.cache_data(show_spinner=False)
+def get_team_scout_report_cached(
+    team1_name: str,
+    team2_name: str,
+    strengths1: str,
+    weaknesses1: str,
+    strengths2: str,
+    weaknesses2: str,
+) -> str:
+    """Call the LLM once per unique matchup and reuse the result."""
+    return team_scout_chain.run({
+        "team1_name": team1_name,
+        "team2_name": team2_name,
+        "team1_strengths": strengths1,
+        "team1_weaknesses": weaknesses1,
+        "team2_strengths": strengths2,
+        "team2_weaknesses": weaknesses2,
+    })
 
 
 # ========================================================
@@ -274,19 +295,29 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
     team2_strengths = [s for s in stat_fields if determine_advantage(s) == team2_name]
     team2_weaknesses = [s for s in stat_fields if determine_advantage(s) == team1_name]
 
-    # === Run LLM ===
-    scouting_output = team_scout_chain.run({
-        "team1_name": team1_name,
-        "team2_name": team2_name,
-        "team1_strengths": ", ".join(team1_strengths),
-        "team1_weaknesses": ", ".join(team1_weaknesses),
-        "team2_strengths": ", ".join(team2_strengths),
-        "team2_weaknesses": ", ".join(team2_weaknesses),
-    })
+    strengths1_str = ", ".join(team1_strengths) if team1_strengths else "None"
+    weaknesses1_str = ", ".join(team1_weaknesses) if team1_weaknesses else "None"
+    strengths2_str = ", ".join(team2_strengths) if team2_strengths else "None"
+    weaknesses2_str = ", ".join(team2_weaknesses) if team2_weaknesses else "None"
 
-    # === Render ===
-    #st.markdown("## Scouting Report")
-    st.markdown(scouting_output)
+    # === Run LLM (cached) ===
+    try:
+        scouting_output = get_team_scout_report_cached(
+            team1_name,
+            team2_name,
+            strengths1_str,
+            weaknesses1_str,
+            strengths2_str,
+            weaknesses2_str,
+        )
+        # === Render ===
+        st.markdown(scouting_output)
+    except openai.RateLimitError:
+        st.warning(
+            "⚠️ OpenAI rate limit reached while generating the scouting report. "
+            "Please wait a few seconds and rerun, or avoid refreshing too often."
+        )
+
     
 
 
