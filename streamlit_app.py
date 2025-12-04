@@ -1227,89 +1227,79 @@ if "vs" in user_input.lower():
         import streamlit as st
         import pandas as pd
         
-        # Ensure combined_players is already defined
-        # e.g., combined_players = pd.read_csv("your_cleaned_player_data.csv")
-        
         st.subheader(" Stats Comparison")
         
         # Only players who recorded minutes
-        valid_players = combined_players[combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)]
-        player_names = valid_players["fullName"].unique().tolist()
+        valid_players = combined_players[
+            combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)
+        ]
+        player_names = sorted(valid_players["fullName"].unique().tolist())
         
-        # Select players
+        # --- Player selectors ---
         col1, col2 = st.columns(2)
         with col1:
             player1 = st.selectbox("Select Player 1", player_names, key="p1")
+        
         with col2:
-            player2 = st.selectbox("Select Player 2", player_names, key="p2")
+            # Player 2 options exclude Player 1
+            player2_options = [p for p in player_names if p != player1]
+            if player2_options:
+                player2 = st.selectbox("Select Player 2", player2_options, key="p2")
+            else:
+                player2 = None
+                st.info("Select a different Player 1 to unlock Player 2 comparison.")
         
-        # Get stats
-        p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
-        p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
+        # Only continue if we have two different players
+        if player2 is not None:
+            # Get stats for each player
+            p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
+            p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
         
-        # Headshot function
-        def get_headshot_url(personId):
-            return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(personId)}.png"
+            # Headshot helper
+            def get_headshot_url(personId):
+                return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(personId)}.png"
         
-        # Stats to compare
-        compare_fields = {
-            "Points": "points",
-            "Assists": "assists",
-            "Total Rebounds": "reboundsTotal",
-            "Steals": "steals",
-            "Blocks": "blocks",
-            "Turnovers": "turnovers",
-            "FG%": "fieldGoalsPercentage",
-            "3P%": "threePointersPercentage",
-            "FT%": "freeThrowsPercentage",
-            "Offensive Rating": "OffensiveRating",
-            "Defensive Rating": "DefensiveRating"
-        }
+            # Stats to compare
+            compare_fields = {
+                "Points": "points",
+                "Assists": "assists",
+                "Total Rebounds": "reboundsTotal",
+                "Steals": "steals",
+                "Blocks": "blocks",
+                "Turnovers": "turnovers",
+                "FG%": "fieldGoalsPercentage",
+                "3P%": "threePointersPercentage",
+                "FT%": "freeThrowsPercentage",
+                "Offensive Rating": "OffensiveRating",
+                "Defensive Rating": "DefensiveRating",
+            }
         
-        # Show profile and stat bars
-        left, right = st.columns(2)
+            def format_stat(label, value):
+                if label.endswith("%"):      # percentages stored as 0–1
+                    return f"{value:.1%}"
+                else:
+                    return f"{value:.1f}"
         
-        with left:
-            st.image(get_headshot_url(p1_stats["personId"]), width=180)
-            st.markdown(f"### {player1}")
+            # --- Layout: two compact columns ---
+            left, right = st.columns(2)
         
-        with right:
-            st.image(get_headshot_url(p2_stats["personId"]), width=180)
-            st.markdown(f"### {player2}")
+            with left:
+                st.image(get_headshot_url(p1_stats["personId"]), width=180)
+                st.markdown(f"### {player1}")
+                st.markdown("##### Game Stats")
+                for label, field in compare_fields.items():
+                    val = p1_stats.get(field, 0.0)
+                    st.markdown(f"**{label}:** {format_stat(label, val)}")
         
-        for label, field in compare_fields.items():
-            p1_val = p1_stats.get(field, 0)
-            p2_val = p2_stats.get(field, 0)
-            max_val = max(p1_val, p2_val, 1)
-        
-            col1, col2 = st.columns([1, 5])
-            with col1:
-                st.markdown(f"**{label}**")
-        
-            col_left, col_right = st.columns(2)
-        
-            with col_left:
-                st.markdown(f"{player1}: {round(p1_val, 1)}")
-                st.markdown(
-                    f"""
-                    <div style="background-color:#eee; height:10px; border-radius:5px;">
-                        <div style="width:{(p1_val/max_val)*100}%; background-color:green; height:10px; border-radius:5px;"></div>
-                    </div>
-                    """, unsafe_allow_html=True)
-        
-            with col_right:
-                st.markdown(f"{player2}: {round(p2_val, 1)}")
-                st.markdown(
-                    f"""
-                    <div style="background-color:#eee; height:10px; border-radius:5px;">
-                        <div style="width:{(p2_val/max_val)*100}%; background-color:red; height:10px; border-radius:5px;"></div>
-                    </div>
-                    """, unsafe_allow_html=True)
+            with right:
+                st.image(get_headshot_url(p2_stats["personId"]), width=180)
+                st.markdown(f"### {player2}")
+                st.markdown("##### Game Stats")
+                for label, field in compare_fields.items():
+                    val = p2_stats.get(field, 0.0)
+                    st.markdown(f"**{label}:** {format_stat(label, val)}")
 
 
-
-  
-        
 
         # ============================
         # 🤖 Bot Analyst (no game summary block)
