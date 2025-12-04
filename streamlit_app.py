@@ -1083,23 +1083,25 @@ if "vs" in user_input.lower():
         player_names = combined_players["fullName"].unique()
         st.markdown("### **Select a player to view scouting card:**")
         selected_player = st.selectbox("", player_names)
-
         
         # === Filter selected player's stats ===
         player_row = combined_players[combined_players["fullName"] == selected_player].iloc[0]
         
-        # === Display headshot + name ===
-        st.markdown(f"###  Scouting Card: {selected_player}")
+        # === Display headshot + name (smaller + cleaner) ===
+        st.markdown(f"#### **{selected_player} – Scouting Card**")   # Smaller heading
+        
         player_id = player_row["personId"]
         image_url = get_player_image_url(player_id)
-        st.image(image_url, width=150)
+        
+        # tighter layout, smaller image
+        st.image(image_url, width=110)    
         
         # === 3 Side-by-Side Columns ===
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([1, 1, 1], gap="small")
         
         # === Column 1: Offensive Stats ===
         with col1:
-            st.markdown("###  Offensive")
+            st.markdown("#### Offense")
             st.markdown(f"**Points:** {player_row['points']}")
             st.markdown(f"**Assists:** {player_row['assists']}")
             st.markdown(f"**Turnovers:** {player_row['turnovers']}")
@@ -1109,47 +1111,50 @@ if "vs" in user_input.lower():
         
         # === Column 2: Defensive Stats ===
         with col2:
-            st.markdown("###  Defensive")
+            st.markdown("#### Defense")
             st.markdown(f"**Rebounds:** {player_row['reboundsTotal']}")
             st.markdown(f"**Steals:** {player_row['steals']}")
             st.markdown(f"**Blocks:** {player_row['blocks']}")
         
         # === Column 3: Summary Stats ===
         with col3:
-            st.markdown("###  Summary")
-            st.markdown(f"**Minutes Played:** {round(player_row['numMinutes'], 1)}")
+            st.markdown("#### Summary")
+            st.markdown(f"**Minutes:** {round(player_row['numMinutes'], 1)}")
             st.markdown(f"**Plus/Minus:** {player_row['plusMinusPoints']}")
             st.markdown(f"**Off Rating:** {round(player_row['OffensiveRating'], 2)}")
             st.markdown(f"**Def Rating:** {round(player_row['DefensiveRating'], 2)}")
-
-        from langchain.prompts import ChatPromptTemplate, PromptTemplate
+        
+        
+        # ============================
+        # 🔥 PLAYER SCOUTING SUMMARY LLM (On-Demand)
+        # ============================
+        
+        from langchain.prompts import ChatPromptTemplate
         from langchain_openai import ChatOpenAI
         from langchain.chains import LLMChain
         import openai
         
-        # ---------- SHARED LLM FOR THIS PAGE ----------
         analysis_llm = ChatOpenAI(
-            model="gpt-4o",        # or "gpt-4o-mini" if you want it cheaper
+            model="gpt-4o",
             temperature=0.35,
             max_retries=3,
         )
         
-        # ---------- PLAYER SCOUTING SUMMARY SETUP ----------
         player_summary_prompt = ChatPromptTemplate.from_template("""
         You are a basketball performance analyst.
         
         Below are game stats for {player_name}, who played {minutes} minutes in a recent game.
         
-        Your task is to write a concise performance summary with the following:
-        - Key strengths (e.g., efficient scoring, strong defense, rebounding, etc.)
-        - Notable weaknesses (e.g., low shooting %, high turnovers, low impact)
-        - Clear suggestions for improvement, if applicable
+        Your task is to write a concise performance summary with:
+        - Key strengths
+        - Notable weaknesses
+        - Suggestions for improvement
         
-        Important:
-        - In this system, higher Offensive and Defensive Ratings indicate better performance.
-        - Consider the player's stats relative to their minutes played.
-        - Do not assume values are low or high without comparing to playing time or efficiency.
-        - Keep the summary in 2–3 clear bullet points, each up to 50 words max.
+        Rules:
+        - Higher Off/Def Ratings = better performance.
+        - Consider efficiency relative to minutes.
+        - Avoid assuming "good/bad" without context.
+        - Write **2–3 bullet points**, max 50 words each.
         
         Stats:
         {stats}
@@ -1159,13 +1164,7 @@ if "vs" in user_input.lower():
         
         
         @st.cache_data(show_spinner=False)
-        def get_player_scout_summary(
-            game_id: int,
-            player_name: str,
-            minutes: float,
-            stats_text: str,
-        ) -> str:
-            """Cache player scouting summary per game + player."""
+        def get_player_scout_summary(game_id, player_name, minutes, stats_text):
             return player_summary_chain.run({
                 "player_name": player_name,
                 "minutes": minutes,
@@ -1173,10 +1172,7 @@ if "vs" in user_input.lower():
             })
         
         
-        # === Build and display player scouting summary (ON DEMAND) ===
-        player_name = player_row["fullName"]
-        minutes = float(player_row["numMinutes"])
-        
+        # final stats text
         stats_text = f"""
         Points: {player_row['points']}
         Assists: {player_row['assists']}
@@ -1192,36 +1188,30 @@ if "vs" in user_input.lower():
         Defensive Rating: {player_row['DefensiveRating']:.2f}
         """
         
-        st.markdown("###  Scouting Summary Report")
+        st.markdown("### 🔍 Scouting Summary Report")
         
-        # unique key so each game+player has its own button & stored text
-        player_btn_key = f"player_scout_{selected_gameId}_{player_name.replace(' ', '_')}"
+        player_btn_key = f"player_scout_{selected_gameId}_{selected_player.replace(' ', '_')}"
         
-        # only hit the LLM when the button is pressed
         if st.button("Generate Player Scouting Summary", key=player_btn_key):
             try:
                 summary_output = get_player_scout_summary(
                     selected_gameId,
-                    player_name,
-                    minutes,
+                    selected_player,
+                    float(player_row["numMinutes"]),
                     stats_text,
                 )
             except openai.RateLimitError:
-                summary_output = (
-                    "⚠️ Rate limit reached while generating player scouting. "
-                    "Please try again later."
-                )
+                summary_output = "⚠️ Rate limit reached. Please try again shortly."
         
-            # store in session_state so it persists across reruns
             st.session_state["player_scout_text"] = summary_output
             st.session_state["player_scout_key"] = player_btn_key
         
-        # display the stored summary if it belongs to this game+player
         if (
             st.session_state.get("player_scout_key") == player_btn_key
             and "player_scout_text" in st.session_state
         ):
             st.markdown(st.session_state["player_scout_text"])
+
 
 
         import streamlit as st
@@ -1367,8 +1357,8 @@ if "vs" in user_input.lower():
                     st.markdown(f"🤖 **{sender}**: {msg}")
         
             if st.button("🧹 Clear Chat"):
-                st.session_state.pop("chat_history", None)  # immediately remove stored messages
-                st.experimental_rerun()  # force UI refresh so messages disappear on first click
+                st.session_state.chat_history = []
+
 
             
     else:
