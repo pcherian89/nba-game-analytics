@@ -311,14 +311,13 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
             weaknesses2_str,
         )
         # === Render ===
+        st.markdown("#### Scouting Report")
         st.markdown(scouting_output)
     except openai.RateLimitError:
         st.warning(
             "⚠️ OpenAI rate limit reached while generating the scouting report. "
             "Please wait a few seconds and rerun, or avoid refreshing too often."
         )
-
-    
 
 
 # === Pre-calculate League Ranks ===
@@ -403,15 +402,24 @@ for i in range(0, len(matchups), 2):
             away_rank_str = f"<span style='color:{rank_color(away_rank)}; font-weight:bold;'>Rank: {away_rank}</span>"
 
             with stat_col1:
-                stat_col1.markdown(f"**{label}**<br>{home_val:.2f} ({home_rank_str})", unsafe_allow_html=True)
+                stat_col1.markdown(
+                    f"**{label}**<br>{home_val:.2f} ({home_rank_str})",
+                    unsafe_allow_html=True
+                )
             with stat_col2:
-                stat_col2.markdown(f"<br>{away_val:.2f} ({away_rank_str})", unsafe_allow_html=True)
-                # === Scouting Report Section ===
-        with cols[idx]:
-            generate_scouting_report(home_full, away_full, home_df, away_df)
+                stat_col2.markdown(
+                    f"<br>{away_val:.2f} ({away_rank_str})",
+                    unsafe_allow_html=True
+                )
 
+        # === Scouting Report Button & Output (LLM only on click) ===
+        with cols[idx]:
+            btn_key = f"scout_{home_full.replace(' ', '_')}_vs_{away_full.replace(' ', '_')}"
+            if st.button(f"Generate Scouting Report: {home_full} vs {away_full}", key=btn_key):
+                generate_scouting_report(home_full, away_full, home_df, away_df)
 
     st.markdown("---")
+
 
 
 # === Top Players by Stat Section ===
