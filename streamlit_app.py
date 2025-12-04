@@ -1173,7 +1173,7 @@ if "vs" in user_input.lower():
             })
         
         
-        # === Build and display player scouting summary ===
+        # === Build and display player scouting summary (ON DEMAND) ===
         player_name = player_row["fullName"]
         minutes = float(player_row["numMinutes"])
         
@@ -1192,17 +1192,36 @@ if "vs" in user_input.lower():
         Defensive Rating: {player_row['DefensiveRating']:.2f}
         """
         
-        try:
-            summary_output = get_player_scout_summary(
-                selected_gameId,  # make sure this is the game identifier you already have
-                player_name,
-                minutes,
-                stats_text,
-            )
-            st.markdown("###  Scouting Summary Report")
-            st.markdown(summary_output)
-        except openai.RateLimitError:
-            st.warning("⚠️ Rate limit reached while generating player scouting. Try again later.")
+        st.markdown("###  Scouting Summary Report")
+        
+        # unique key so each game+player has its own button & stored text
+        player_btn_key = f"player_scout_{selected_gameId}_{player_name.replace(' ', '_')}"
+        
+        # only hit the LLM when the button is pressed
+        if st.button("Generate Player Scouting Summary", key=player_btn_key):
+            try:
+                summary_output = get_player_scout_summary(
+                    selected_gameId,
+                    player_name,
+                    minutes,
+                    stats_text,
+                )
+            except openai.RateLimitError:
+                summary_output = (
+                    "⚠️ Rate limit reached while generating player scouting. "
+                    "Please try again later."
+                )
+        
+            # store in session_state so it persists across reruns
+            st.session_state["player_scout_text"] = summary_output
+            st.session_state["player_scout_key"] = player_btn_key
+        
+        # display the stored summary if it belongs to this game+player
+        if (
+            st.session_state.get("player_scout_key") == player_btn_key
+            and "player_scout_text" in st.session_state
+        ):
+            st.markdown(st.session_state["player_scout_text"])
 
 
         import streamlit as st
