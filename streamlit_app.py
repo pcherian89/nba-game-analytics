@@ -1229,76 +1229,67 @@ if "vs" in user_input.lower():
         
         st.subheader(" Stats Comparison")
         
-        # Only players who recorded minutes
+        # Filter only players who recorded minutes
         valid_players = combined_players[
             combined_players["numMinutes"].notna() & (combined_players["numMinutes"] > 0)
         ]
         player_names = sorted(valid_players["fullName"].unique().tolist())
         
         # --- Player selectors ---
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns([1, 1], gap="small")
+        
         with col1:
             player1 = st.selectbox("Select Player 1", player_names, key="p1")
         
         with col2:
             # Player 2 options exclude Player 1
             player2_options = [p for p in player_names if p != player1]
-            if player2_options:
-                player2 = st.selectbox("Select Player 2", player2_options, key="p2")
-            else:
-                player2 = None
-                st.info("Select a different Player 1 to unlock Player 2 comparison.")
+            player2 = st.selectbox("Select Player 2", player2_options, key="p2")
         
-        # Only continue if we have two different players
-        if player2 is not None:
-            # Get stats for each player
-            p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
-            p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
+        # --- Only continue if valid ---
+        p1_stats = valid_players[valid_players["fullName"] == player1].iloc[0]
+        p2_stats = valid_players[valid_players["fullName"] == player2].iloc[0]
         
-            # Headshot helper
-            def get_headshot_url(personId):
-                return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(personId)}.png"
+        # Headshot helper
+        def get_headshot_url(personId):
+            return f"https://cdn.nba.com/headshots/nba/latest/1040x760/{int(personId)}.png"
         
-            # Stats to compare
-            compare_fields = {
-                "Points": "points",
-                "Assists": "assists",
-                "Total Rebounds": "reboundsTotal",
-                "Steals": "steals",
-                "Blocks": "blocks",
-                "Turnovers": "turnovers",
-                "FG%": "fieldGoalsPercentage",
-                "3P%": "threePointersPercentage",
-                "FT%": "freeThrowsPercentage",
-                "Offensive Rating": "OffensiveRating",
-                "Defensive Rating": "DefensiveRating",
-            }
         
-            def format_stat(label, value):
-                if label.endswith("%"):      # percentages stored as 0–1
-                    return f"{value:.1%}"
-                else:
-                    return f"{value:.1f}"
+        # Stats to compare
+        compare_fields = {
+            "Points": "points",
+            "Assists": "assists",
+            "Total Rebounds": "reboundsTotal",
+            "Steals": "steals",
+            "Blocks": "blocks",
+            "Turnovers": "turnovers",
+            "FG%": "fieldGoalsPercentage",
+            "3P%": "threePointersPercentage",
+            "FT%": "freeThrowsPercentage",
+            "Offensive Rating": "OffensiveRating",
+            "Defensive Rating": "DefensiveRating",
+        }
         
-            # --- Layout: two compact columns ---
-            left, right = st.columns(2)
+        def format_stat(label, value):
+            if label.endswith("%"):
+                return f"{value:.1%}"
+            return f"{value:.1f}"
         
-            with left:
-                st.image(get_headshot_url(p1_stats["personId"]), width=180)
-                st.markdown(f"### {player1}")
-                st.markdown("##### Game Stats")
-                for label, field in compare_fields.items():
-                    val = p1_stats.get(field, 0.0)
-                    st.markdown(f"**{label}:** {format_stat(label, val)}")
         
-            with right:
-                st.image(get_headshot_url(p2_stats["personId"]), width=180)
-                st.markdown(f"### {player2}")
-                st.markdown("##### Game Stats")
-                for label, field in compare_fields.items():
-                    val = p2_stats.get(field, 0.0)
-                    st.markdown(f"**{label}:** {format_stat(label, val)}")
-
+        # --------- PLAYER DISPLAY AREA ---------
+        left, right = st.columns([1, 1], gap="small")
+        
+        with left:
+            st.image(get_headshot_url(p1_stats["personId"]), width=120)
+            st.markdown(f"#### {player1}")   # cleaner header
+            for label, field in compare_fields.items():
+                st.markdown(f"**{label}:** {format_stat(label, p1_stats.get(field, 0))}")
+        
+        with right:
+            st.image(get_headshot_url(p2_stats["personId"]), width=120)
+            st.markdown(f"#### {player2}")
+            for label, field in compare_fields.items():
+                st.markdown(f"**{label}:** {format_stat(label, p2_stats.get(field, 0))}")
 
 
         # ============================
@@ -1376,8 +1367,8 @@ if "vs" in user_input.lower():
                     st.markdown(f"🤖 **{sender}**: {msg}")
         
             if st.button("🧹 Clear Chat"):
-                st.session_state.chat_history = []
-
+                st.session_state.pop("chat_history", None)  # immediately remove stored messages
+                st.experimental_rerun()  # force UI refresh so messages disappear on first click
 
             
     else:
