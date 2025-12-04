@@ -1122,64 +1122,88 @@ if "vs" in user_input.lower():
             st.markdown(f"**Off Rating:** {round(player_row['OffensiveRating'], 2)}")
             st.markdown(f"**Def Rating:** {round(player_row['DefensiveRating'], 2)}")
 
-        from langchain.prompts import ChatPromptTemplate
-        from langchain_openai import ChatOpenAI
-        from langchain.chains import LLMChain
-        
-        # === Define prompt template ===
-        summary_prompt = ChatPromptTemplate.from_template("""
-        You are a basketball performance analyst.
-        
-        Below are game stats for {player_name}, who played {minutes} minutes in a recent game.
-        
-        Your task is to write a concise performance summary with the following:
-        - Key strengths (e.g., efficient scoring, strong defense, rebounding, etc.)
-        - Notable weaknesses (e.g., low shooting %, high turnovers, low impact)
-        - Clear suggestions for improvement, if applicable
-        
-        Important:
-        - In this system, higher Offensive and Defensive Ratings indicate better performance.
-        - Consider the player's stats relative to their minutes played.
-        - Do not assume values are low or high without comparing to playing time or efficiency.
-        - Keep the summary in 2–3 clear bullet points, each up to 50 words max.
-        
-        Stats:
-        {stats}
-        """)
-        
-        # === Initialize LLM ===
-        llm = ChatOpenAI(model="gpt-4", temperature=0)
-        summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
+        from langchain.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.chains import LLMChain
+import openai
 
-        # === Prepare input ===
-        player_name = player_row["fullName"]
-        minutes = player_row["numMinutes"]
-        stats_text = f"""
-        Points: {player_row['points']}
-        Assists: {player_row['assists']}
-        Turnovers: {player_row['turnovers']}
-        FG%: {player_row['fieldGoalsPercentage']:.1%}
-        3P%: {player_row['threePointersPercentage']:.1%}
-        FT%: {player_row['freeThrowsPercentage']:.1%}
-        Rebounds: {player_row['reboundsTotal']}
-        Steals: {player_row['steals']}
-        Blocks: {player_row['blocks']}
-        Plus/Minus: {player_row['plusMinusPoints']}
-        Offensive Rating: {player_row['OffensiveRating']:.2f}
-        Defensive Rating: {player_row['DefensiveRating']:.2f}
-        """
+# ---------- SHARED LLM FOR THIS PAGE ----------
+analysis_llm = ChatOpenAI(
+    model="gpt-4o",        # or "gpt-4o-mini" if you want it cheaper
+    temperature=0.35,
+    max_retries=3,
+)
 
-        
-        # === Run the agent ===
-        summary_output = summary_chain.run({
-            "player_name": player_name,
-            "minutes": minutes,
-            "stats": stats_text
-        })
-        
-        # === Display the scouting summary ===
-        st.markdown("###  Scouting Summary Report")
-        st.markdown(summary_output)
+# ---------- PLAYER SCOUTING SUMMARY SETUP ----------
+player_summary_prompt = ChatPromptTemplate.from_template("""
+You are a basketball performance analyst.
+
+Below are game stats for {player_name}, who played {minutes} minutes in a recent game.
+
+Your task is to write a concise performance summary with the following:
+- Key strengths (e.g., efficient scoring, strong defense, rebounding, etc.)
+- Notable weaknesses (e.g., low shooting %, high turnovers, low impact)
+- Clear suggestions for improvement, if applicable
+
+Important:
+- In this system, higher Offensive and Defensive Ratings indicate better performance.
+- Consider the player's stats relative to their minutes played.
+- Do not assume values are low or high without comparing to playing time or efficiency.
+- Keep the summary in 2–3 clear bullet points, each up to 50 words max.
+
+Stats:
+{stats}
+""")
+
+player_summary_chain = LLMChain(llm=analysis_llm, prompt=player_summary_prompt)
+
+
+@st.cache_data(show_spinner=False)
+def get_player_scout_summary(
+    game_id: int,
+    player_name: str,
+    minutes: float,
+    stats_text: str,
+) -> str:
+    """Cache player scouting summary per game + player."""
+    return player_summary_chain.run({
+        "player_name": player_name,
+        "minutes": minutes,
+        "stats": stats_text,
+    })
+
+
+# === Build and display player scouting summary ===
+player_name = player_row["fullName"]
+minutes = float(player_row["numMinutes"])
+
+stats_text = f"""
+Points: {player_row['points']}
+Assists: {player_row['assists']}
+Turnovers: {player_row['turnovers']}
+FG%: {player_row['fieldGoalsPercentage']:.1%}
+3P%: {player_row['threePointersPercentage']:.1%}
+FT%: {player_row['freeThrowsPercentage']:.1%}
+Rebounds: {player_row['reboundsTotal']}
+Steals: {player_row['steals']}
+Blocks: {player_row['blocks']}
+Plus/Minus: {player_row['plusMinusPoints']}
+Offensive Rating: {player_row['OffensiveRating']:.2f}
+Defensive Rating: {player_row['DefensiveRating']:.2f}
+"""
+
+try:
+    summary_output = get_player_scout_summary(
+        selected_gameId,  # make sure this is the game identifier you already have
+        player_name,
+        minutes,
+        stats_text,
+    )
+    st.markdown("###  Scouting Summary Report")
+    st.markdown(summary_output)
+except openai.RateLimitError:
+    st.warning("⚠️ Rate limit reached while generating player scouting. Try again later.")
+
 
         import streamlit as st
         import pandas as pd
