@@ -1309,56 +1309,7 @@ if "vs" in user_input.lower():
 
 
   
-        # === AI-Generated Game Summary with Session Persistence ===
-        st.subheader(" Game Summary")
         
-        # Check if summary already exists for current game
-        if "ai_summary" not in st.session_state or st.session_state.get("summary_game_id") != selected_gameId:
-        
-            # Convert team + player stats to markdown
-            team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
-                                  "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
-        
-            player_md = combined_players[["fullName", "points", "assists", "reboundsOffensive", 
-                                          "reboundsDefensive", "turnovers", "plusMinusPoints", 
-                                          "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
-        
-            prompt = f"""
-            You are a professional sports analyst. Analyze the following NBA game using the stats below:
-        
-            TEAM STATS:
-            {team_md}
-        
-            PLAYER STATS:
-            {player_md}
-        
-            Generate a structured analysis with the following sections:
-        
-            1. **Game Summary** – Brief overview of final score, standout players, momentum shifts.
-            2. **Offensive Analysis** – Field goal %, 3P%, assists, offensive ratings, top scorers.
-            3. **Defensive Analysis** – Steals, blocks, defensive rebounds, defensive ratings, impact defenders.
-            4. **Bench & Support Players** – Contributions from depth players or surprises.
-            5. **Final Verdict** – Why the winner prevailed and what limited the losing team.
-        
-            Keep the tone analytical but readable — like a top-tier sports recap.
-            """
-        
-            # Generate + store summary
-            with st.spinner(" Generating game summary..."):
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.6,
-                    max_tokens=600
-                )
-                summary_text = response.choices[0].message.content
-                st.session_state.ai_summary = summary_text
-                st.session_state.summary_game_id = selected_gameId
-        
-        # Display stored summary
-        # st.markdown("####  Game Summary")
-        st.write(st.session_state.ai_summary)
-
 
         st.markdown("### 🤖 Bot Analyst")
         st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
