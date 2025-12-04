@@ -1311,21 +1311,32 @@ if "vs" in user_input.lower():
   
         
 
+        # ============================
+        # 🤖 Bot Analyst (no game summary block)
+        # ============================
+        
         st.markdown("### 🤖 Bot Analyst")
-        st.markdown("Ask follow-up questions about this game — player roles, tactics, bench impact, or who the MVP was!")
+        st.markdown(
+            "Ask follow-up questions about this game — player roles, tactics, bench impact, "
+            "why a team won, who the MVP was, etc."
+        )
         
-        # Create one markdown table of relevant stats
-        team_md = team_stats[["teamName", "teamScore", "assists", "turnovers", "reboundsTotal", 
-                              "fieldGoalsPercentage", "threePointersPercentage"]].to_markdown(index=False)
+        # Build markdown context from team & player stats
+        team_md = team_stats[[
+            "teamName", "teamScore", "assists", "turnovers",
+            "reboundsTotal", "fieldGoalsPercentage", "threePointersPercentage"
+        ]].to_markdown(index=False)
         
-        player_md = combined_players[["fullName", "playerteamName", "points", "assists", "reboundsTotal", 
-                                      "turnovers", "plusMinusPoints", "OffensiveRating", "DefensiveRating"]].to_markdown(index=False)
+        player_md = combined_players[[
+            "fullName", "playerteamName", "points", "assists",
+            "reboundsTotal", "turnovers", "plusMinusPoints",
+            "OffensiveRating", "DefensiveRating"
+        ]].to_markdown(index=False)
         
-        # Full context
-        context = f"""TEAM STATS:\n{team_md}\n\nPLAYER STATS:\n{player_md}"""
+        bot_context = f"""TEAM STATS:\n{team_md}\n\nPLAYER STATS:\n{player_md}"""
         
-        # Define role + tone of the analyst
-        prompt_template = PromptTemplate(
+        # Use the SAME analysis_llm defined above (no new LLM)
+        bot_prompt_template = PromptTemplate(
             input_variables=["context", "question"],
             template="""
         You are a highly skilled basketball analyst working for a professional team. 
@@ -1334,7 +1345,7 @@ if "vs" in user_input.lower():
         Game context:
         {context}
         
-        Answer the user's question using this data. 
+        Answer the user's question using this data.
         Always highlight tactical trends, key player impact, and any relevant performance nuance.
         
         Question: {question}
@@ -1342,21 +1353,25 @@ if "vs" in user_input.lower():
         """
         )
         
-        # Setup LLM
-        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.4)
-        chain = LLMChain(llm=llm, prompt=prompt_template)
+        bot_chain = LLMChain(llm=analysis_llm, prompt=bot_prompt_template)
         
-        # Input and response
-        # === Session State Initialization ===
+        # === Session State for chat history ===
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = []
         
         # === Chat Input & Response Handling ===
-        user_question = st.chat_input("Ask your basketball question...")
+        user_question = st.chat_input("Ask your basketball question about this game...")
         
         if user_question:
             with st.spinner(" Analyzing game data..."):
-                response = chain.run({"context": context, "question": user_question})
+                try:
+                    response = bot_chain.run({"context": bot_context, "question": user_question})
+                except openai.RateLimitError:
+                    response = (
+                        "⚠️ Rate limit reached while answering this question. "
+                        "Please try again later."
+                    )
+        
                 st.session_state.chat_history.append(("You", user_question))
                 st.session_state.chat_history.append(("Bot", response))
         
@@ -1370,9 +1385,9 @@ if "vs" in user_input.lower():
                 else:
                     st.markdown(f"🤖 **{sender}**: {msg}")
         
-            # Add reset button
             if st.button("🧹 Clear Chat"):
                 st.session_state.chat_history = []
+
 
             
     else:
