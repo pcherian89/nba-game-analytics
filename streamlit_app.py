@@ -424,7 +424,7 @@ for i in range(0, len(matchups), 2):
 # 🏆 Top Teams by Stat – Single Row, 10 Teams
 # ============================================
 
-st.markdown("## Top Teams by Stat")
+st.markdown("### Top Teams by Stat")
 
 team_stat_labels = [
     "Score Differential",
