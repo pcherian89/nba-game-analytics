@@ -420,6 +420,67 @@ for i in range(0, len(matchups), 2):
 
     st.markdown("---")
 
+# ============================================
+# 🏆 Top Teams by Stat (using league_ranks)
+# ============================================
+
+st.markdown("## Top Teams by Stat")
+
+TOP_N = 10          # how many teams to show per stat
+TEAMS_PER_ROW = 5   # how many logos per row visually
+
+# We'll use the same stat labels you already use in matchups
+team_stat_labels = [
+    "Score Differential",
+    "Rebounds Total",
+    "Assists",
+    "Steals",
+    "Field Goal %",
+    "Three Point %",
+    "Turnovers",
+]
+
+def get_team_logo_url(team_full_name: str) -> str:
+    """Build logo URL using same mapping you use for matchups."""
+    abbr = team_abbrev_map.get(team_full_name, "").lower()
+    return f"{logo_base_url}{abbr}.png" if abbr else ""
+
+for stat_label in team_stat_labels:
+    st.markdown(f"### {stat_label}")
+
+    # league_ranks[stat_label] = { "City Name": (value, rank), ... }
+    rank_map = league_ranks[stat_label]
+
+    rows = []
+    for team_full, (val, rank) in rank_map.items():
+        rows.append({
+            "team": team_full,
+            "value": val,
+            "rank": rank,
+        })
+
+    stat_df = pd.DataFrame(rows)
+
+    # Sort by rank (you already handled ascending/descending when ranks were created)
+    stat_df = stat_df.sort_values("rank").head(TOP_N)
+
+    # Render in rows of TEAMS_PER_ROW teams
+    for start in range(0, len(stat_df), TEAMS_PER_ROW):
+        slice_df = stat_df.iloc[start:start + TEAMS_PER_ROW]
+        cols = st.columns(len(slice_df))
+
+        for col, (_, row) in zip(cols, slice_df.iterrows()):
+            with col:
+                logo_url = get_team_logo_url(row["team"])
+                if logo_url:
+                    st.image(logo_url, width=70)
+
+                # Team name
+                st.markdown(f"**{row['team']}**")
+
+                # Stat value + rank
+                st.markdown(f"{row['value']:.2f}  \nRank: **{int(row['rank'])}**")
+    st.markdown("---")
 
 
 import numpy as np  # make sure this is imported once at the top of your file
@@ -619,7 +680,7 @@ st.components.v1.html(mvp_html, height=600, scrolling=True)
 
 
 # === Display Leaderboard Heading ===
-#st.markdown("### Leaderboard")
+st.markdown("### Top Players by Stats")
 
 # === Display Each Stat Category ===
 for label, stat_col in top_stat_fields.items():
