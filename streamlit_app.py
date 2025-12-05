@@ -482,14 +482,12 @@ avg_players["freeThrowsPercentage"] = (
 
 # ✅ Apply stat-specific qualifiers instead of global filter
 
-# For FG%: only keep meaningful values where FGA > 50
-avg_players.loc[avg_players["fieldGoalsAttempted"] <= 50, "fieldGoalsPercentage"] = np.nan
+# For FG%: only keep meaningful values where FGA > 100
+avg_players.loc[avg_players["fieldGoalsAttempted"] <= 100, "fieldGoalsPercentage"] = np.nan
 
 # For 3P%: only keep meaningful values where 3PA > 10
 avg_players.loc[avg_players["threePointersAttempted"] <= 10, "threePointersPercentage"] = np.nan
 
-# (No global row filter anymore)
-# avg_players = avg_players[avg_players["threePointersAttempted"] > 10]  # ❌ remove this
 
 # === Display Labels ===
 top_stat_fields = {
