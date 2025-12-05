@@ -421,15 +421,11 @@ for i in range(0, len(matchups), 2):
     st.markdown("---")
 
 # ============================================
-# 🏆 Top Teams by Stat (using league_ranks)
+# 🏆 Top Teams by Stat – Single Row, 10 Teams
 # ============================================
 
 st.markdown("## Top Teams by Stat")
 
-TOP_N = 10          # how many teams to show per stat
-TEAMS_PER_ROW = 5   # how many logos per row visually
-
-# We'll use the same stat labels you already use in matchups
 team_stat_labels = [
     "Score Differential",
     "Rebounds Total",
@@ -441,9 +437,10 @@ team_stat_labels = [
 ]
 
 def get_team_logo_url(team_full_name: str) -> str:
-    """Build logo URL using same mapping you use for matchups."""
     abbr = team_abbrev_map.get(team_full_name, "").lower()
     return f"{logo_base_url}{abbr}.png" if abbr else ""
+
+TOP_N_TEAMS = 10
 
 for stat_label in team_stat_labels:
     st.markdown(f"### {stat_label}")
@@ -453,34 +450,30 @@ for stat_label in team_stat_labels:
 
     rows = []
     for team_full, (val, rank) in rank_map.items():
-        rows.append({
-            "team": team_full,
-            "value": val,
-            "rank": rank,
-        })
+        rows.append({"team": team_full, "value": val, "rank": rank})
 
-    stat_df = pd.DataFrame(rows)
+    stat_df = (
+        pd.DataFrame(rows)
+        .sort_values("rank")          # already handles direction via your rank logic
+        .head(TOP_N_TEAMS)
+        .reset_index(drop=True)
+    )
 
-    # Sort by rank (you already handled ascending/descending when ranks were created)
-    stat_df = stat_df.sort_values("rank").head(TOP_N)
+    # One row with 10 columns (or fewer if TOP_N_TEAMS < 10)
+    cols = st.columns(len(stat_df))
 
-    # Render in rows of TEAMS_PER_ROW teams
-    for start in range(0, len(stat_df), TEAMS_PER_ROW):
-        slice_df = stat_df.iloc[start:start + TEAMS_PER_ROW]
-        cols = st.columns(len(slice_df))
+    for col, (_, row) in zip(cols, stat_df.iterrows()):
+        with col:
+            logo_url = get_team_logo_url(row["team"])
+            if logo_url:
+                st.image(logo_url, width=80)
 
-        for col, (_, row) in zip(cols, slice_df.iterrows()):
-            with col:
-                logo_url = get_team_logo_url(row["team"])
-                if logo_url:
-                    st.image(logo_url, width=70)
+            # team name
+            st.markdown(f"**{row['team']}**")
 
-                # Team name
-                st.markdown(f"**{row['team']}**")
+            # value (keep format like your matchup cards: 0.50, 11.42, etc.)
+            st.markdown(f"{row['value']:.2f}")
 
-                # Stat value + rank
-                st.markdown(f"{row['value']:.2f}  \nRank: **{int(row['rank'])}**")
-    st.markdown("---")
 
 
 import numpy as np  # make sure this is imported once at the top of your file
