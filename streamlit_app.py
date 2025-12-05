@@ -422,7 +422,7 @@ for i in range(0, len(matchups), 2):
 
 
 
-import numpy as np
+import numpy as np  # make sure this is imported once at the top of your file
 
 # === Top Players by Stat Section ===
 
@@ -431,60 +431,67 @@ player_df["playerImageURL"] = player_df["personId"].apply(
     lambda pid: f"https://cdn.nba.com/headshots/nba/latest/260x190/{pid}.png"
 )
 
-# --- Stat Categories we average per game ---
+# --- Stat Categories ---
 avg_stats = [
     "points", "assists", "reboundsTotal", "steals", "blocks",
     "turnovers", "plusMinusPoints", "numMinutes"
 ]
 
-# Totals we sum across games (for shooting calculations)
+# Totals for shooting calculations
 totals_to_sum = [
     "fieldGoalsMade", "fieldGoalsAttempted",
     "threePointersMade", "threePointersAttempted",
-    "freeThrowsMade", "freeThrowsAttempted",
+    "freeThrowsMade", "freeThrowsAttempted"
 ]
 
-# Additional totals to display (already in totals_to_sum)
+# Additional totals to display
 extra_totals = ["threePointersMade", "freeThrowsMade"]
 
-# === Compute per-game averages ===
+# === Compute Averages ===
 avg_players = (
-    player_df
-    .groupby(["firstName", "lastName", "personId", "playerImageURL"])[avg_stats]
+    player_df.groupby(["firstName", "lastName", "personId", "playerImageURL"])[avg_stats]
     .mean()
     .reset_index()
 )
 
-# === Compute season totals ===
+# === Compute Totals ===
 totals = (
-    player_df
-    .groupby(["firstName", "lastName", "personId"])[totals_to_sum]
+    player_df.groupby(["firstName", "lastName", "personId"])[totals_to_sum]
     .sum()
     .reset_index()
 )
 
-# === Merge averages + totals ===
+# === Merge avg + totals ===
 avg_players = pd.merge(
     avg_players,
     totals,
     on=["firstName", "lastName", "personId"],
-    how="left",
+    how="left"
 )
 
-# === Compute shooting percentages (safe division) ===
-def safe_pct(num_col, den_col, out_col):
-    avg_players[out_col] = np.where(
-        avg_players[den_col] > 0,
-        avg_players[num_col] / avg_players[den_col],
-        np.nan,   # players with 0 attempts
-    )
+# === Compute shooting percentages based on totals ===
+avg_players["fieldGoalsPercentage"] = (
+    avg_players["fieldGoalsMade"] / avg_players["fieldGoalsAttempted"]
+)
+avg_players["threePointersPercentage"] = (
+    avg_players["threePointersMade"] / avg_players["threePointersAttempted"]
+)
+avg_players["freeThrowsPercentage"] = (
+    avg_players["freeThrowsMade"] / avg_players["freeThrowsAttempted"]
+)
 
-safe_pct("fieldGoalsMade", "fieldGoalsAttempted", "fieldGoalsPercentage")
-safe_pct("threePointersMade", "threePointersAttempted", "threePointersPercentage")
-safe_pct("freeThrowsMade", "freeThrowsAttempted", "freeThrowsPercentage")
+# ✅ Apply stat-specific qualifiers instead of global filter
 
+# For FG%: only keep meaningful values where FGA > 50
+avg_players.loc[avg_players["fieldGoalsAttempted"] <= 50, "fieldGoalsPercentage"] = np.nan
 
-# === Stat labels used for leaderboards ===
+# For 3P%: only keep meaningful values where 3PA > 10
+avg_players.loc[avg_players["threePointersAttempted"] <= 10, "threePointersPercentage"] = np.nan
+
+# (No global row filter anymore)
+# avg_players = avg_players[avg_players["threePointersAttempted"] > 10]  # ❌ remove this
+
+# === Display Labels ===
 top_stat_fields = {
     "Points Per Game (PPG)": "points",
     "Rebounds Per Game (RPG)": "reboundsTotal",
@@ -497,53 +504,9 @@ top_stat_fields = {
     "Three Point %": "threePointersPercentage",
     # "Free Throw %": "freeThrowsPercentage",
     "Total 3-Pointers Made": "threePointersMade",
-    "Total Free Throws Made": "freeThrowsMade",
+    "Total Free Throws Made": "freeThrowsMade"
 }
 
-# === Qualifier masks (your requested thresholds) ===
-fg_qual_mask = avg_players["fieldGoalsAttempted"] > 50      # FG% → FGA > 50
-tp_qual_mask = avg_players["threePointersAttempted"] > 10   # 3P% → 3PA > 10
-
-def get_qualified_df(stat_col: str) -> pd.DataFrame:
-    """Return the correct filtered df for a given stat."""
-    if stat_col == "fieldGoalsPercentage":
-        return avg_players[fg_qual_mask]
-    elif stat_col == "threePointersPercentage":
-        return avg_players[tp_qual_mask]
-    else:
-        # all others: no extra filter (your request)
-        return avg_players
-
-# === Example rendering of leaderboards in Streamlit ===
-st.subheader("Top Players by Stat")
-
-TOP_N = 10  # change to 5 / 15 etc if you want
-
-for label, col in top_stat_fields.items():
-    st.markdown(f"#### {label}")
-
-    df_src = get_qualified_df(col).dropna(subset=[col])
-
-    # Sort descending (top values). If you ever want "lowest turnovers", flip.
-    df_top = (
-        df_src
-        .sort_values(col, ascending=False)
-        .head(TOP_N)
-        .copy()
-    )
-
-    # Combine name for display
-    df_top["Player"] = df_top["firstName"] + " " + df_top["lastName"]
-
-    display_cols = ["Player", col]
-    if col in extra_totals:
-        # For total 3PM / FTM you may want to show attempts too
-        display_cols.append("threePointersAttempted" if col == "threePointersMade" else "freeThrowsAttempted")
-
-    st.dataframe(
-        df_top[display_cols],
-        hide_index=True,
-    )
 
 
 # === MVP Leaderboard ===
