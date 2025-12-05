@@ -628,8 +628,8 @@ for label, stat_col in top_stat_fields.items():
     # Filter: at least 15 minutes per game
     filtered_players = avg_players[avg_players["numMinutes"] >= 15]
 
-    top_players = filtered_players.sort_values(stat_col, ascending=False).head(5)
-    cols = st.columns(5)
+    top_players = filtered_players.sort_values(stat_col, ascending=False).head(10)
+    cols = st.columns(10)
 
     for idx, row in enumerate(top_players.itertuples(index=False)):
         stat_val = getattr(row, stat_col)
