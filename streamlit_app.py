@@ -619,7 +619,7 @@ st.components.v1.html(mvp_html, height=600, scrolling=True)
 
 
 # === Display Leaderboard Heading ===
-st.markdown("## Leaderboard")
+#st.markdown("### Leaderboard")
 
 # === Display Each Stat Category ===
 for label, stat_col in top_stat_fields.items():
