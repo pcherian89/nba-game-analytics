@@ -426,6 +426,74 @@ for i in range(0, len(matchups), 2):
 
 st.markdown("### Top Teams by Stat")
 
+# =========================================================
+# ✅ TEAM RATINGS (League-wide) — Offensive & Defensive
+# Uses the same possessions formula you already use
+# =========================================================
+
+st.markdown("## Team Ratings")
+
+# --- Step 1: start from your full team_df (all games, all teams)
+all_team_games_df = team_df.copy()
+
+# --- Step 2: possessions (same formula)
+def estimate_possessions(row):
+    return row["fieldGoalsAttempted"] + 0.44 * row["freeThrowsAttempted"] - row["reboundsOffensive"] + row["turnovers"]
+
+all_team_games_df["possessions"] = all_team_games_df.apply(estimate_possessions, axis=1)
+
+# avoid divide-by-zero / weird games
+all_team_games_df = all_team_games_df[all_team_games_df["possessions"] > 0].copy()
+
+# --- Step 3: get opponent score for each team within each gameId
+# (since team_df has 2 rows per gameId: one per team)
+all_team_games_df["opponentScore"] = (
+    all_team_games_df.groupby("gameId")["teamScore"].transform("sum") - all_team_games_df["teamScore"]
+)
+
+# --- Step 4: compute ratings for every row (team in that game)
+all_team_games_df["OffensiveRating"] = 100 * all_team_games_df["teamScore"] / all_team_games_df["possessions"]
+all_team_games_df["DefensiveRating"] = 100 * all_team_games_df["opponentScore"] / all_team_games_df["possessions"]
+
+# --- Step 5: season averages by team
+team_ratings = (
+    all_team_games_df.groupby("teamName")[["OffensiveRating", "DefensiveRating"]]
+    .mean()
+    .reset_index()
+)
+
+# rank: OffRtg higher is better, DefRtg lower is better
+team_ratings["OffRtg_Rank"] = team_ratings["OffensiveRating"].rank(ascending=False, method="min").astype(int)
+team_ratings["DefRtg_Rank"] = team_ratings["DefensiveRating"].rank(ascending=True, method="min").astype(int)
+
+# --- Step 6: show Top 10 tables
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("### Offensive Rating (Top 10)")
+    top_off = team_ratings.sort_values("OffensiveRating", ascending=False).head(10)
+    st.dataframe(
+        top_off[["teamName", "OffensiveRating", "OffRtg_Rank"]].rename(columns={
+            "teamName": "Team",
+            "OffensiveRating": "OffRtg",
+            "OffRtg_Rank": "Rank",
+        }),
+        use_container_width=True
+    )
+
+with col2:
+    st.markdown("### Defensive Rating (Top 10)")
+    top_def = team_ratings.sort_values("DefensiveRating", ascending=True).head(10)
+    st.dataframe(
+        top_def[["teamName", "DefensiveRating", "DefRtg_Rank"]].rename(columns={
+            "teamName": "Team",
+            "DefensiveRating": "DefRtg",
+            "DefRtg_Rank": "Rank",
+        }),
+        use_container_width=True
+    )
+
+
 team_stat_labels = [
     "Score Differential",
     "Rebounds Total",
