@@ -426,117 +426,6 @@ for i in range(0, len(matchups), 2):
 
 st.markdown("### Top Teams by Stat")
 
-# =========================================================
-# ✅ TEAM RATINGS (League-wide) — Offensive & Defensive
-# Full calculation + logo-based display
-# =========================================================
-
-st.markdown("## Team Ratings")
-
-# ---------- Logo helper (YOU already use this pattern) ----------
-def get_team_logo_url(team_full_name: str) -> str:
-    abbr = team_abbrev_map.get(team_full_name, "").lower()
-    return f"{logo_base_url}{abbr}.png" if abbr else ""
-
-# ---------- STEP 1: start from full team_df ----------
-all_team_games_df = team_df.copy()
-
-# ---------- STEP 2: possessions (same formula you already use) ----------
-def estimate_possessions(row):
-    return (
-        row["fieldGoalsAttempted"]
-        + 0.44 * row["freeThrowsAttempted"]
-        - row["reboundsOffensive"]
-        + row["turnovers"]
-    )
-
-all_team_games_df["possessions"] = all_team_games_df.apply(
-    estimate_possessions, axis=1
-)
-
-# guard against bad rows
-all_team_games_df = all_team_games_df[
-    all_team_games_df["possessions"] > 0
-].copy()
-
-# ---------- STEP 3: opponent score (SAFE, no extra columns needed) ----------
-# team_df has exactly 2 rows per gameId
-all_team_games_df["opponentScore"] = (
-    all_team_games_df.groupby("gameId")["teamScore"].transform("sum")
-    - all_team_games_df["teamScore"]
-)
-
-# ---------- STEP 4: per-game ratings ----------
-all_team_games_df["OffensiveRating"] = (
-    100 * all_team_games_df["teamScore"] / all_team_games_df["possessions"]
-)
-
-all_team_games_df["DefensiveRating"] = (
-    100 * all_team_games_df["opponentScore"] / all_team_games_df["possessions"]
-)
-
-# ---------- STEP 5: league-wide averages ----------
-team_ratings = (
-    all_team_games_df
-    .groupby("teamName")[["OffensiveRating", "DefensiveRating"]]
-    .mean()
-    .reset_index()
-)
-
-# =========================================================
-# DISPLAY — same style as your other Top Team stats
-# =========================================================
-
-# ---------- Offensive Rating ----------
-st.markdown("### Offensive Rating")
-
-top_off = (
-    team_ratings
-    .sort_values("OffensiveRating", ascending=False)
-    .head(10)
-)
-
-cols = st.columns(10)
-for i, (_, row) in enumerate(top_off.iterrows()):
-    with cols[i]:
-        logo_url = get_team_logo_url(row["teamName"])
-        if logo_url:
-            st.image(logo_url, width=60)
-        st.markdown(
-            f"""
-            <div style="text-align:center;">
-                <strong>{row['teamName']}</strong><br>
-                {row['OffensiveRating']:.2f}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-# ---------- Defensive Rating ----------
-st.markdown("### Defensive Rating")
-
-top_def = (
-    team_ratings
-    .sort_values("DefensiveRating", ascending=True)  # lower = better
-    .head(10)
-)
-
-cols = st.columns(10)
-for i, (_, row) in enumerate(top_def.iterrows()):
-    with cols[i]:
-        logo_url = get_team_logo_url(row["teamName"])
-        if logo_url:
-            st.image(logo_url, width=60)
-        st.markdown(
-            f"""
-            <div style="text-align:center;">
-                <strong>{row['teamName']}</strong><br>
-                {row['DefensiveRating']:.2f}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
 
 team_stat_labels = [
     "Score Differential",
@@ -546,8 +435,6 @@ team_stat_labels = [
     "Field Goal %",
     "Three Point %",
     "Turnovers",
-    "OffensiveRating"
-    "DefensiveRating"
 ]
 
 def get_team_logo_url(team_full_name: str) -> str:
