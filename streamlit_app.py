@@ -466,32 +466,49 @@ team_ratings = (
 team_ratings["OffRtg_Rank"] = team_ratings["OffensiveRating"].rank(ascending=False, method="min").astype(int)
 team_ratings["DefRtg_Rank"] = team_ratings["DefensiveRating"].rank(ascending=True, method="min").astype(int)
 
-# --- Step 6: show Top 10 tables
-col1, col2 = st.columns(2)
+# =========================================================
+# 🏀 TEAM RATINGS — VISUAL ROW (Using YOUR repo logos)
+# Place this RIGHT ABOVE "Score Differential"
+# Requires:
+#   - team_ratings dataframe with: teamName, OffensiveRating, DefensiveRating
+#   - get_team_logo_url(team_full_name)
+# =========================================================
 
-with col1:
-    st.markdown("### Offensive Rating (Top 10)")
-    top_off = team_ratings.sort_values("OffensiveRating", ascending=False).head(10)
-    st.dataframe(
-        top_off[["teamName", "OffensiveRating", "OffRtg_Rank"]].rename(columns={
-            "teamName": "Team",
-            "OffensiveRating": "OffRtg",
-            "OffRtg_Rank": "Rank",
-        }),
-        use_container_width=True
-    )
+st.markdown("### Offensive Rating")
 
-with col2:
-    st.markdown("### Defensive Rating (Top 10)")
-    top_def = team_ratings.sort_values("DefensiveRating", ascending=True).head(10)
-    st.dataframe(
-        top_def[["teamName", "DefensiveRating", "DefRtg_Rank"]].rename(columns={
-            "teamName": "Team",
-            "DefensiveRating": "DefRtg",
-            "DefRtg_Rank": "Rank",
-        }),
-        use_container_width=True
-    )
+top_off = team_ratings.sort_values("OffensiveRating", ascending=False).head(10)
+
+off_cols = st.columns(10)
+for i, row in enumerate(top_off.itertuples()):
+    with off_cols[i]:
+        team_full_name = row.teamName  # must match keys in team_abbrev_map
+        logo_url = get_team_logo_url(team_full_name)
+
+        if logo_url:
+            st.image(logo_url, width=80)
+
+        st.markdown(f"**{team_full_name}**")
+        st.markdown(f"{row.OffensiveRating:.2f}")
+
+st.markdown("---")
+
+st.markdown("### Defensive Rating")
+
+# lower defensive rating = better defense
+top_def = team_ratings.sort_values("DefensiveRating", ascending=True).head(10)
+
+def_cols = st.columns(10)
+for i, row in enumerate(top_def.itertuples()):
+    with def_cols[i]:
+        team_full_name = row.teamName
+        logo_url = get_team_logo_url(team_full_name)
+
+        if logo_url:
+            st.image(logo_url, width=80)
+
+        st.markdown(f"**{team_full_name}**")
+        st.markdown(f"{row.DefensiveRating:.2f}")
+
 
 
 team_stat_labels = [
