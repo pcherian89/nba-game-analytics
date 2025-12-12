@@ -426,6 +426,94 @@ for i in range(0, len(matchups), 2):
 
 st.markdown("### Top Teams by Stat")
 
+# =====================================================
+# 🔥 League-Wide Offensive & Defensive Ratings (Top 10)
+# =====================================================
+
+st.markdown("---")
+st.markdown("## Team Ratings")
+
+# ---------- Estimate possessions ----------
+def estimate_possessions(row):
+    return (
+        row["fieldGoalsAttempted"]
+        + 0.44 * row["freeThrowsAttempted"]
+        - row["reboundsOffensive"]
+        + row["turnovers"]
+    )
+
+all_team_games_df["possessions"] = all_team_games_df.apply(
+    estimate_possessions, axis=1
+)
+
+# ---------- Compute per-game ratings ----------
+all_team_games_df["OffensiveRating"] = (
+    100 * all_team_games_df["teamScore"] / all_team_games_df["possessions"]
+)
+
+all_team_games_df["DefensiveRating"] = (
+    100 * all_team_games_df["opponentScore"] / all_team_games_df["possessions"]
+)
+
+# ---------- Aggregate to team averages ----------
+team_ratings = (
+    all_team_games_df
+    .groupby("teamName")[["OffensiveRating", "DefensiveRating"]]
+    .mean()
+    .reset_index()
+)
+
+# ---------- Logo helper ----------
+def get_team_logo(team_name):
+    return f"https://a.espncdn.com/i/teamlogos/nba/500/{team_name.split()[-1].lower()}.png"
+
+# =========================
+# 🚀 Offensive Rating (Top 10)
+# =========================
+st.markdown("### Offensive Rating")
+
+top_offense = team_ratings.sort_values(
+    "OffensiveRating", ascending=False
+).head(10)
+
+cols = st.columns(10)
+for i, (_, row) in enumerate(top_offense.iterrows()):
+    with cols[i]:
+        st.image(get_team_logo(row["teamName"]), width=65)
+        st.markdown(
+            f"""
+            <div style="text-align:center">
+                <strong>{row['teamName']}</strong><br>
+                {row['OffensiveRating']:.2f}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+# =========================
+# 🛡️ Defensive Rating (Top 10)
+# =========================
+st.markdown("### Defensive Rating")
+
+top_defense = team_ratings.sort_values(
+    "DefensiveRating", ascending=True
+).head(10)
+
+cols = st.columns(10)
+for i, (_, row) in enumerate(top_defense.iterrows()):
+    with cols[i]:
+        st.image(get_team_logo(row["teamName"]), width=65)
+        st.markdown(
+            f"""
+            <div style="text-align:center">
+                <strong>{row['teamName']}</strong><br>
+                {row['DefensiveRating']:.2f}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
 team_stat_labels = [
     "Score Differential",
     "Rebounds Total",
