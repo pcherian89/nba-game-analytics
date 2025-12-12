@@ -474,28 +474,6 @@ for stat_label in team_stat_labels:
             # value (keep format like your matchup cards: 0.50, 11.42, etc.)
             st.markdown(f"{row['value']:.2f}")
 
-st.markdown("## Offensive Rating")
-
-top_offense = (
-    team_stats
-    .sort_values("OffensiveRating", ascending=False)
-    .head(10)
-)
-
-cols = st.columns(10)
-for i, (_, row) in enumerate(top_offense.iterrows()):
-    with cols[i]:
-        st.image(get_team_logo(row["teamName"]), width=70)
-        st.markdown(
-            f"""
-            <div style="text-align:center">
-                <strong>{row['teamName']}</strong><br>
-                {row['OffensiveRating']:.2f}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
 
 import numpy as np  # make sure this is imported once at the top of your file
 
