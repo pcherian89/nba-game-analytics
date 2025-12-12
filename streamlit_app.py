@@ -547,7 +547,7 @@ team_stat_labels = [
     "Three Point %",
     "Turnovers",
     "OffensiveRating"
-    "DefensiveRating
+    "DefensiveRating"
 ]
 
 def get_team_logo_url(team_full_name: str) -> str:
