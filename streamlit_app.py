@@ -358,6 +358,13 @@ def generate_scouting_report(team1_name, team2_name, df1, df2):
 
 # === Pre-calculate League Ranks ===
 league_ranks = {}
+
+# stats where LOWER is better
+lower_is_better_stats = {
+    "Turnovers",
+    "Defensive Rating",
+}
+
 for stat_label, func in stat_fields.items():
     values = []
     for team in team_stats.groupby(["teamCity", "teamName"]):
@@ -366,15 +373,23 @@ for stat_label, func in stat_fields.items():
             "team": f"{team[0][0]} {team[0][1]}",
             "value": val
         })
-    
+
     rank_df = pd.DataFrame(values)
 
-    # 👇 Use ascending=True for Turnovers (lower is better), descending for others
-    ascending = True if stat_label == "Turnovers" else False
+    # ✅ Correct ranking direction
+    ascending = stat_label in lower_is_better_stats
 
-    rank_df["rank"] = rank_df["value"].rank(ascending=ascending, method="min").astype(int)
-    rank_map = dict(zip(rank_df["team"], zip(rank_df["value"], rank_df["rank"])))
+    rank_df["rank"] = (
+        rank_df["value"]
+        .rank(ascending=ascending, method="min")
+        .astype(int)
+    )
+
+    rank_map = dict(
+        zip(rank_df["team"], zip(rank_df["value"], rank_df["rank"]))
+    )
     league_ranks[stat_label] = rank_map
+
 
 
 # === Streamlit Header ===
