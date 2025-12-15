@@ -154,16 +154,52 @@ import pandas as pd
 todays_games = pd.read_csv("todays_games.csv")
 team_stats = pd.read_csv("TeamStatistics_filtered.csv")
 
+# ============================================
+# Compute Offensive & Defensive Rating (GLOBAL)
+# ============================================
+
+def estimate_possessions(row):
+    return (
+        row["fieldGoalsAttempted"]
+        + 0.44 * row["freeThrowsAttempted"]
+        - row["reboundsOffensive"]
+        + row["turnovers"]
+    )
+
+# possessions per team-game
+team_stats["possessions"] = team_stats.apply(estimate_possessions, axis=1)
+
+# safety
+team_stats = team_stats[team_stats["possessions"] > 0].copy()
+
+# opponent score per game (no merge, no KeyError risk)
+team_stats["opponentScore_calc"] = (
+    team_stats.groupby("gameId")["teamScore"].transform("sum")
+    - team_stats["teamScore"]
+)
+
+# ratings per game
+team_stats["OffensiveRating"] = (
+    100 * team_stats["teamScore"] / team_stats["possessions"]
+)
+
+team_stats["DefensiveRating"] = (
+    100 * team_stats["opponentScore_calc"] / team_stats["possessions"]
+)
+
 # === Stat Fields and Labels ===
 stat_fields = {
+    "Offensive Rating": lambda df: df["OffensiveRating"].mean(),
+    "Defensive Rating": lambda df: df["DefensiveRating"].mean(),
     "Score Differential": lambda df: (df["teamScore"] - df["opponentScore"]).mean(),
     "Rebounds Total": lambda df: df["reboundsTotal"].mean(),
     "Assists": lambda df: df["assists"].mean(),
     "Steals": lambda df: df["steals"].mean(),
     "Field Goal %": lambda df: df["fieldGoalsPercentage"].mean(),
     "Three Point %": lambda df: df["threePointersPercentage"].mean(),
-    "Turnovers": lambda df: df["turnovers"].mean()
+    "Turnovers": lambda df: df["turnovers"].mean(),
 }
+
 
 # === Robust Parsing for teamCity/teamName ===
 def split_city_name(full_name):
@@ -428,6 +464,8 @@ st.markdown("### Top Teams by Stat")
 
 
 team_stat_labels = [
+    "Offensive Rating",
+    "Defensive Rating",
     "Score Differential",
     "Rebounds Total",
     "Assists",
@@ -436,6 +474,7 @@ team_stat_labels = [
     "Three Point %",
     "Turnovers",
 ]
+
 
 def get_team_logo_url(team_full_name: str) -> str:
     abbr = team_abbrev_map.get(team_full_name, "").lower()
