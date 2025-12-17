@@ -3657,6 +3657,7 @@ personId,firstName,lastName,birthdate,lastAttended,country,height,bodyWeight,gua
 21603,Stefano,Mancinelli,"","","","","","","","","","",""
 77452,John,Mandic,1919-10-03,Oregon State,USA,76.0,205.0,False,True,False,1947.0,"",""
 1630211,Karim,Mane,2000-05-16,"",Senegal,75.0,190.0,True,False,False,-1.0,-1.0,-1.0
+1630667,Kyle,Mangas,"","","","","","","","","","",""
 77453,Frank,Mangiapane,1925-08-25,New York University,USA,70.0,195.0,True,False,False,-1.0,-1.0,-1.0
 986,Marcus,Mann,1973-12-19,Mississippi Valley State,USA,80.0,986.0,False,True,False,1996.0,2.0,40.0
 1629611,Terance,Mann,"","","","","",True,False,False,"","",""
