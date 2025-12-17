@@ -1,13 +1,13 @@
 Team,Conference,Rank,Wins,Losses,Win%,Streak,Home,Road,PointDiff
-Detroit Pistons,East,1,20,5,0.8,3,11-2,8-3,6.0
+Detroit Pistons,East,1,21,5,0.808,4,11-2,9-3,6.0
 New York Knicks,East,2,18,7,0.72,5,13-1,4-6,9.0
-Boston Celtics,East,3,15,10,0.6,-1,8-4,7-6,6.0
-Orlando Magic,East,4,15,11,0.577,-1,10-4,5-6,4.0
-Toronto Raptors,East,5,15,11,0.577,-4,8-6,7-5,2.0
-Miami Heat,East,6,14,11,0.56,-4,10-3,4-8,4.0
-Philadelphia 76ers,East,7,14,11,0.56,-1,8-7,6-4,1.0
-Cleveland Cavaliers,East,8,15,12,0.556,-1,9-7,6-5,3.0
-Atlanta Hawks,East,9,15,12,0.556,1,5-6,10-6,1.0
+Toronto Raptors,East,3,16,11,0.593,1,8-6,8-5,2.0
+Boston Celtics,East,4,15,11,0.577,-2,8-5,7-6,5.0
+Orlando Magic,East,5,15,11,0.577,-1,10-4,5-6,4.0
+Philadelphia 76ers,East,6,14,11,0.56,-1,8-7,6-4,1.0
+Cleveland Cavaliers,East,7,15,12,0.556,-1,9-7,6-5,3.0
+Atlanta Hawks,East,8,15,12,0.556,1,5-6,10-6,1.0
+Miami Heat,East,9,14,12,0.538,-5,10-4,4-8,3.0
 Milwaukee Bucks,East,10,11,16,0.407,-1,8-7,3-9,-4.0
 Chicago Bulls,East,11,10,15,0.4,-1,6-6,4-9,-5.0
 Charlotte Hornets,East,12,8,18,0.308,1,5-8,3-10,-4.0
@@ -15,17 +15,17 @@ Brooklyn Nets,East,13,7,18,0.28,1,3-10,4-8,-6.0
 Indiana Pacers,East,14,6,20,0.231,-2,5-9,1-11,-8.0
 Washington Wizards,East,15,4,20,0.167,1,2-9,2-11,-14.0
 Oklahoma City Thunder,West,1,24,2,0.923,-1,12-0,12-1,17.0
-Denver Nuggets,West,2,18,6,0.75,4,6-4,12-2,10.0
-Houston Rockets,West,3,16,6,0.727,1,8-2,8-4,10.0
-Los Angeles Lakers,West,4,18,7,0.72,1,7-4,11-3,2.0
-San Antonio Spurs,West,5,18,7,0.72,3,9-2,8-5,5.0
+Denver Nuggets,West,2,19,6,0.76,5,7-4,12-2,9.0
+Los Angeles Lakers,West,3,18,7,0.72,1,7-4,11-3,2.0
+San Antonio Spurs,West,4,18,7,0.72,3,9-2,8-5,5.0
+Houston Rockets,West,5,16,7,0.696,-1,8-2,8-5,10.0
 Minnesota Timberwolves,West,6,17,9,0.654,2,9-4,8-5,5.0
 Phoenix Suns,West,7,14,12,0.538,-2,8-5,6-7,0.0
 Golden State Warriors,West,8,13,14,0.481,-2,7-4,6-10,1.0
-Memphis Grizzlies,West,9,11,14,0.44,-1,6-7,5-7,-2.0
-Dallas Mavericks,West,10,10,16,0.385,2,7-9,3-6,-4.0
+Memphis Grizzlies,West,9,12,14,0.462,1,6-7,6-7,-1.0
+Utah Jazz,West,10,10,15,0.4,2,7-7,3-8,-7.0
 Portland Trail Blazers,West,11,10,16,0.385,1,4-6,6-10,-4.0
-Utah Jazz,West,12,9,15,0.375,1,6-7,3-8,-8.0
-LA Clippers,West,13,6,19,0.24,-3,3-7,3-12,-5.0
-Sacramento Kings,West,14,6,20,0.231,-3,3-8,3-12,-12.0
+Dallas Mavericks,West,12,10,17,0.37,-1,7-9,3-7,-4.0
+Sacramento Kings,West,13,6,20,0.231,-3,3-8,3-12,-12.0
+LA Clippers,West,14,6,20,0.231,-4,3-8,3-12,-6.0
 New Orleans Pelicans,West,15,5,22,0.185,2,3-12,2-10,-9.0
