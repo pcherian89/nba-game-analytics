@@ -615,13 +615,13 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500516,2026-01-07 19:00:00Z,1610612766,1610612761,Charlotte,Hornets,Toronto,Raptors,Wed,Spectrum Center,Charlotte,NC,"","","","",12
 22500517,2026-01-07 19:00:00Z,1610612765,1610612741,Detroit,Pistons,Chicago,Bulls,Wed,Little Caesars Arena,Detroit,MI,"","","","",12
 22500518,2026-01-07 19:00:00Z,1610612755,1610612764,Philadelphia,76ers,Washington,Wizards,Wed,Xfinity Mobile Arena,Philadelphia,PA,"","","","",12
+22500520,2026-01-07 19:00:00Z,1610612738,1610612743,Boston,Celtics,Denver,Nuggets,Wed,TD Garden,Boston,MA,"","","","",12
 22500519,2026-01-07 19:30:00Z,1610612737,1610612740,Atlanta,Hawks,New Orleans,Pelicans,Wed,State Farm Arena,Atlanta,GA,"","","","",12
-22500520,2026-01-07 19:30:00Z,1610612738,1610612743,Boston,Celtics,Denver,Nuggets,Wed,TD Garden,Boston,MA,"","","","",12
 22500521,2026-01-07 19:30:00Z,1610612751,1610612753,Brooklyn,Nets,Orlando,Magic,Wed,Barclays Center,Brooklyn,NY,"","","","",12
 22500522,2026-01-07 19:30:00Z,1610612752,1610612746,New York,Knicks,LA,Clippers,Wed,Madison Square Garden,New York,NY,"","","","",12
-22500523,2026-01-07 19:30:00Z,1610612759,1610612747,San Antonio,Spurs,Los Angeles,Lakers,Wed,Frost Bank Center,San Antonio,TX,"","","","",12
 22500524,2026-01-07 20:00:00Z,1610612763,1610612756,Memphis,Grizzlies,Phoenix,Suns,Wed,FedExForum,Memphis,TN,"","","","",12
 22500525,2026-01-07 20:00:00Z,1610612760,1610612762,Oklahoma City,Thunder,Utah,Jazz,Wed,Paycom Center,Oklahoma City,OK,"","","","",12
+22500523,2026-01-07 21:30:00Z,1610612759,1610612747,San Antonio,Spurs,Los Angeles,Lakers,Wed,Frost Bank Center,San Antonio,TX,"","","","",12
 22500526,2026-01-07 22:00:00Z,1610612744,1610612749,Golden State,Warriors,Milwaukee,Bucks,Wed,Chase Center,San Francisco,CA,"","","","",12
 22500527,2026-01-07 22:00:00Z,1610612757,1610612745,Portland,Trail Blazers,Houston,Rockets,Wed,Moda Center,Portland,OR,"","","","",12
 22500528,2026-01-08 19:00:00Z,1610612766,1610612754,Charlotte,Hornets,Indiana,Pacers,Thu,Spectrum Center,Charlotte,NC,"","","","",12
