@@ -740,8 +740,8 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500637,2026-01-23 19:30:00Z,1610612751,1610612738,Brooklyn,Nets,Boston,Celtics,Fri,Barclays Center,Brooklyn,NY,"","","","",14
 22500638,2026-01-23 19:30:00Z,1610612739,1610612758,Cleveland,Cavaliers,Sacramento,Kings,Fri,Rocket Arena,Cleveland,OH,"","","","",14
 22500639,2026-01-23 20:00:00Z,1610612763,1610612740,Memphis,Grizzlies,New Orleans,Pelicans,Fri,FedExForum,Memphis,TN,"","","","",14
-22500640,2026-01-23 20:00:00Z,1610612749,1610612743,Milwaukee,Bucks,Denver,Nuggets,Fri,Fiserv Forum,Milwaukee,WI,"","","","",14
-22500641,2026-01-23 21:30:00Z,1610612760,1610612754,Oklahoma City,Thunder,Indiana,Pacers,Fri,Paycom Center,Oklahoma City,OK,"","","","",14
+22500641,2026-01-23 20:00:00Z,1610612760,1610612754,Oklahoma City,Thunder,Indiana,Pacers,Fri,Paycom Center,Oklahoma City,OK,"","","","",14
+22500640,2026-01-23 21:30:00Z,1610612749,1610612743,Milwaukee,Bucks,Denver,Nuggets,Fri,Fiserv Forum,Milwaukee,WI,"","","","",14
 22500642,2026-01-23 22:00:00Z,1610612757,1610612761,Portland,Trail Blazers,Toronto,Raptors,Fri,Moda Center,Portland,OR,"","","","",14
 22500643,2026-01-24 15:00:00Z,1610612755,1610612752,Philadelphia,76ers,New York,Knicks,Sat,Xfinity Mobile Arena,Philadelphia,PA,"","","","",14
 22500644,2026-01-24 17:30:00Z,1610612750,1610612744,Minnesota,Timberwolves,Golden State,Warriors,Sat,Target Center,Minneapolis,MN,"","","","",14
