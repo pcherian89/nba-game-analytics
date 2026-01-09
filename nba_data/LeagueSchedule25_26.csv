@@ -683,9 +683,9 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500584,2026-01-15 22:00:00Z,1610612744,1610612752,Golden State,Warriors,New York,Knicks,Thu,Chase Center,San Francisco,CA,"","","","",13
 22500585,2026-01-15 22:00:00Z,1610612757,1610612737,Portland,Trail Blazers,Atlanta,Hawks,Thu,Moda Center,Portland,OR,"","","","",13
 22500586,2026-01-15 22:30:00Z,1610612747,1610612766,Los Angeles,Lakers,Charlotte,Hornets,Thu,Crypto.com Arena,Los Angeles,CA,"","","","",13
-22500587,2026-01-16 19:00:00Z,1610612751,1610612741,Brooklyn,Nets,Chicago,Bulls,Fri,Barclays Center,Brooklyn,NY,"","","","",13
 22500588,2026-01-16 19:00:00Z,1610612754,1610612740,Indiana,Pacers,New Orleans,Pelicans,Fri,Gainbridge Fieldhouse,Indianapolis,IN,"","","","",13
 22500589,2026-01-16 19:00:00Z,1610612755,1610612739,Philadelphia,76ers,Cleveland,Cavaliers,Fri,Xfinity Mobile Arena,Philadelphia,PA,"","","","",13
+22500587,2026-01-16 19:30:00Z,1610612751,1610612741,Brooklyn,Nets,Chicago,Bulls,Fri,Barclays Center,Brooklyn,NY,"","","","",13
 22500590,2026-01-16 19:30:00Z,1610612761,1610612746,Toronto,Raptors,LA,Clippers,Fri,Scotiabank Arena,Toronto,ON,"","","","",13
 22500591,2026-01-16 21:30:00Z,1610612745,1610612750,Houston,Rockets,Minnesota,Timberwolves,Fri,Toyota Center,Houston,TX,"","","","",13
 22500592,2026-01-16 22:00:00Z,1610612758,1610612764,Sacramento,Kings,Washington,Wizards,Fri,Golden 1 Center,Sacramento,CA,"","","","",13
@@ -794,8 +794,8 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500691,2026-01-30 19:30:00Z,1610612740,1610612763,New Orleans,Pelicans,Memphis,Grizzlies,Fri,Smoothie King Center,New Orleans,LA,"","","","",15
 22500692,2026-01-30 20:00:00Z,1610612748,1610612741,Miami,Heat,Chicago,Bulls,Fri,Kaseya Center,Miami,FL,"","","","",15
 22500693,2026-01-30 21:00:00Z,1610612756,1610612739,Phoenix,Suns,Cleveland,Cavaliers,Fri,Mortgage Matchup Center,Phoenix,AZ,"","","","",15
+22500695,2026-01-30 21:00:00Z,1610612743,1610612746,Denver,Nuggets,LA,Clippers,Fri,Ball Arena,Denver,CO,"","","","",15
 22500694,2026-01-30 21:30:00Z,1610612762,1610612751,Utah,Jazz,Brooklyn,Nets,Fri,Delta Center,Salt Lake City,UT,"","","","",15
-22500695,2026-01-30 22:00:00Z,1610612743,1610612746,Denver,Nuggets,LA,Clippers,Fri,Ball Arena,Denver,CO,"","","","",15
 22500696,2026-01-30 22:00:00Z,1610612744,1610612765,Golden State,Warriors,Detroit,Pistons,Fri,Chase Center,San Francisco,CA,"","","","",15
 22500697,2026-01-31 15:00:00Z,1610612766,1610612759,Charlotte,Hornets,San Antonio,Spurs,Sat,Spectrum Center,Charlotte,NC,"","","","",15
 22500698,2026-01-31 19:00:00Z,1610612754,1610612737,Indiana,Pacers,Atlanta,Hawks,Sat,Gainbridge Fieldhouse,Indianapolis,IN,"","","","",15
