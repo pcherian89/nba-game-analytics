@@ -787,8 +787,8 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500684,2026-01-29 21:00:00Z,1610612743,1610612751,Denver,Nuggets,Brooklyn,Nets,Thu,Ball Arena,Denver,CO,"","","","",15
 22500685,2026-01-29 21:00:00Z,1610612756,1610612765,Phoenix,Suns,Detroit,Pistons,Thu,Mortgage Matchup Center,Phoenix,AZ,"","","","",15
 22500686,2026-01-29 21:30:00Z,1610612750,1610612760,Minnesota,Timberwolves,Oklahoma City,Thunder,Thu,Target Center,Minneapolis,MN,"","","","",15
-22500687,2026-01-30 19:00:00Z,1610612753,1610612761,Orlando,Magic,Toronto,Raptors,Fri,Kia Center,Orlando,FL,"","","","",15
 22500688,2026-01-30 19:00:00Z,1610612764,1610612747,Washington,Wizards,Los Angeles,Lakers,Fri,Capital One Arena,Washington,DC,"","","","",15
+22500687,2026-01-30 19:30:00Z,1610612753,1610612761,Orlando,Magic,Toronto,Raptors,Fri,Kia Center,Orlando,FL,"","","","",15
 22500689,2026-01-30 19:30:00Z,1610612738,1610612758,Boston,Celtics,Sacramento,Kings,Fri,TD Garden,Boston,MA,"","","","",15
 22500690,2026-01-30 19:30:00Z,1610612752,1610612757,New York,Knicks,Portland,Trail Blazers,Fri,Madison Square Garden,New York,NY,"","","","",15
 22500691,2026-01-30 19:30:00Z,1610612740,1610612763,New Orleans,Pelicans,Memphis,Grizzlies,Fri,Smoothie King Center,New Orleans,LA,"","","","",15
@@ -942,13 +942,13 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500832,2026-02-24 19:30:00Z,1610612737,1610612764,Atlanta,Hawks,Washington,Wizards,Tue,State Farm Arena,Atlanta,GA,"","","","",19
 22500833,2026-02-24 19:30:00Z,1610612751,1610612742,Brooklyn,Nets,Dallas,Mavericks,Tue,Barclays Center,Brooklyn,NY,"","","","",19
 22500834,2026-02-24 19:30:00Z,1610612761,1610612760,Toronto,Raptors,Oklahoma City,Thunder,Tue,Scotiabank Arena,Toronto,ON,"","","","",19
-22500835,2026-02-24 20:00:00Z,1610612739,1610612752,Cleveland,Cavaliers,New York,Knicks,Tue,Rocket Arena,Cleveland,OH,"","","","",19
+22500835,2026-02-24 19:30:00Z,1610612739,1610612752,Cleveland,Cavaliers,New York,Knicks,Tue,Rocket Arena,Cleveland,OH,"","","","",19
 22500836,2026-02-24 20:00:00Z,1610612741,1610612766,Chicago,Bulls,Charlotte,Hornets,Tue,United Center,Chicago,IL,"","","","",19
 22500837,2026-02-24 20:00:00Z,1610612749,1610612748,Milwaukee,Bucks,Miami,Heat,Tue,Fiserv Forum,Milwaukee,WI,"","","","",19
 22500838,2026-02-24 20:00:00Z,1610612740,1610612744,New Orleans,Pelicans,Golden State,Warriors,Tue,Smoothie King Center,New Orleans,LA,"","","","",19
 22500839,2026-02-24 21:00:00Z,1610612756,1610612738,Phoenix,Suns,Boston,Celtics,Tue,Mortgage Matchup Center,Phoenix,AZ,"","","","",19
+22500841,2026-02-24 22:00:00Z,1610612757,1610612750,Portland,Trail Blazers,Minnesota,Timberwolves,Tue,Moda Center,Portland,OR,"","","","",19
 22500840,2026-02-24 22:30:00Z,1610612747,1610612753,Los Angeles,Lakers,Orlando,Magic,Tue,Crypto.com Arena,Los Angeles,CA,"","","","",19
-22500841,2026-02-24 23:00:00Z,1610612757,1610612750,Portland,Trail Blazers,Minnesota,Timberwolves,Tue,Moda Center,Portland,OR,"","","","",19
 22500842,2026-02-25 19:00:00Z,1610612765,1610612760,Detroit,Pistons,Oklahoma City,Thunder,Wed,Little Caesars Arena,Detroit,MI,"","","","",19
 22500843,2026-02-25 19:30:00Z,1610612761,1610612759,Toronto,Raptors,San Antonio,Spurs,Wed,Scotiabank Arena,Toronto,ON,"","","","",19
 22500844,2026-02-25 19:30:00Z,1610612763,1610612744,Memphis,Grizzlies,Golden State,Warriors,Wed,FedExForum,Memphis,TN,"","","","",19
