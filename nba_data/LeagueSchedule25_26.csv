@@ -756,9 +756,9 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500654,2026-01-25 19:00:00Z,1610612759,1610612740,San Antonio,Spurs,New Orleans,Pelicans,Sun,Frost Bank Center,San Antonio,TX,"","","","",14
 22500655,2026-01-25 20:00:00Z,1610612756,1610612748,Phoenix,Suns,Miami,Heat,Sun,Mortgage Matchup Center,Phoenix,AZ,"","","","",14
 22500656,2026-01-25 21:00:00Z,1610612746,1610612751,LA,Clippers,Brooklyn,Nets,Sun,Intuit Dome,Inglewood,CA,"","","","",14
-22500657,2026-01-26 19:00:00Z,1610612766,1610612755,Charlotte,Hornets,Philadelphia,76ers,Mon,Spectrum Center,Charlotte,NC,"","","","",15
+22500659,2026-01-26 13:30:00Z,1610612737,1610612754,Atlanta,Hawks,Indiana,Pacers,Mon,State Farm Arena,Atlanta,GA,"","","","",15
+22500657,2026-01-26 15:00:00Z,1610612766,1610612755,Charlotte,Hornets,Philadelphia,76ers,Mon,Spectrum Center,Charlotte,NC,"","","","",15
 22500658,2026-01-26 19:00:00Z,1610612739,1610612753,Cleveland,Cavaliers,Orlando,Magic,Mon,Rocket Arena,Cleveland,OH,"","","","",15
-22500659,2026-01-26 19:30:00Z,1610612737,1610612754,Atlanta,Hawks,Indiana,Pacers,Mon,State Farm Arena,Atlanta,GA,"","","","",15
 22500660,2026-01-26 20:00:00Z,1610612738,1610612757,Boston,Celtics,Portland,Trail Blazers,Mon,TD Garden,Boston,MA,"","","","",15
 22500661,2026-01-26 20:00:00Z,1610612741,1610612747,Chicago,Bulls,Los Angeles,Lakers,Mon,United Center,Chicago,IL,"","","","",15
 22500662,2026-01-26 20:00:00Z,1610612745,1610612763,Houston,Rockets,Memphis,Grizzlies,Mon,Toyota Center,Houston,TX,"","","","",15
