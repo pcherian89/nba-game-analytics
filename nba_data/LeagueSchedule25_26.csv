@@ -802,7 +802,7 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500692,2026-01-31 20:00:00Z,1610612748,1610612741,Miami,Heat,Chicago,Bulls,Sat,Kaseya Center,Miami,FL,"","","","",15
 22500700,2026-01-31 20:00:00Z,1610612763,1610612750,Memphis,Grizzlies,Minnesota,Timberwolves,Sat,FedExForum,Memphis,TN,"","","","",15
 22500701,2026-01-31 20:30:00Z,1610612745,1610612742,Houston,Rockets,Dallas,Mavericks,Sat,Toyota Center,Houston,TX,"","","","",15
-22500702,2026-02-01 15:30:00Z,1610612738,1610612749,Boston,Celtics,Milwaukee,Bucks,Sun,TD Garden,Boston,MA,"","","","",15
+22500702,2026-02-01 15:30:00Z,1610612738,1610612749,Boston,Celtics,Milwaukee,Bucks,Sun,TD Garden,Boston,MA,NBA Pioneers Classic,"","","",15
 22500703,2026-02-01 16:00:00Z,1610612759,1610612753,San Antonio,Spurs,Orlando,Magic,Sun,Frost Bank Center,San Antonio,TX,"","","","",15
 22500704,2026-02-01 18:00:00Z,1610612765,1610612751,Detroit,Pistons,Brooklyn,Nets,Sun,Little Caesars Arena,Detroit,MI,"","","","",15
 22500705,2026-02-01 18:00:00Z,1610612748,1610612741,Miami,Heat,Chicago,Bulls,Sun,Kaseya Center,Miami,FL,"","","","",15
@@ -892,9 +892,9 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22500789,2026-02-12 19:30:00Z,1610612760,1610612749,Oklahoma City,Thunder,Milwaukee,Bucks,Thu,Paycom Center,Oklahoma City,OK,"","","","",17
 22500790,2026-02-12 21:00:00Z,1610612762,1610612757,Utah,Jazz,Portland,Trail Blazers,Thu,Delta Center,Salt Lake City,UT,"","","","",17
 22500791,2026-02-12 22:00:00Z,1610612747,1610612742,Los Angeles,Lakers,Dallas,Mavericks,Thu,Crypto.com Arena,Los Angeles,CA,"","","","",17
-32500004,2026-02-13 00:00:00Z,0,0,"","","","",Fri,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 1,"","",17
-32500005,2026-02-13 00:00:00Z,0,0,"","","","",Fri,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 2,"","",17
-32500006,2026-02-13 00:00:00Z,0,0,"","","","",Fri,Intuit Dome,Inglewood,CA,Rising Stars Final,Championship,"","",17
+32500004,2026-02-13 21:00:00Z,1610616865,1610616862,"",Team Austin,"",Team Melo,Fri,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 1,"","",17
+32500005,2026-02-13 21:55:00Z,1610616864,1610616863,"",Team T-Mac,"",Team Vince,Fri,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 2,"","",17
+32500006,2026-02-13 22:35:00Z,0,0,"","","","",Fri,Intuit Dome,Inglewood,CA,Rising Stars Final,Championship,"","",17
 32500011,2026-02-15 00:00:00Z,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 1,"","",17
 32500021,2026-02-15 00:00:00Z,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 2,"","",17
 32500031,2026-02-15 00:00:00Z,0,0,"","","","",Sun,Intuit Dome,Inglewood,CA,All-Star,Game 3,"","",17
@@ -1308,6 +1308,12 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 22501198,2026-04-12 20:30:00Z,1610612747,1610612762,Los Angeles,Lakers,Utah,Jazz,Sun,Crypto.com Arena,Los Angeles,CA,"","","","",25
 22501199,2026-04-12 20:30:00Z,1610612746,1610612744,LA,Clippers,Golden State,Warriors,Sun,Intuit Dome,Inglewood,CA,"","","","",25
 22501200,2026-04-12 20:30:00Z,1610612757,1610612758,Portland,Trail Blazers,Sacramento,Kings,Sun,Moda Center,Portland,OR,"","","","",25
+52500101,2026-04-14 00:00:00Z,0,0,"","","","",Tue,"","","",SoFi Play-In Tournament,"","","",26
+52500121,2026-04-14 00:00:00Z,0,0,"","","","",Tue,"","","",SoFi Play-In Tournament,"","","",26
+52500111,2026-04-15 00:00:00Z,0,0,"","","","",Wed,"","","",SoFi Play-In Tournament,"","","",26
+52500131,2026-04-15 00:00:00Z,0,0,"","","","",Wed,"","","",SoFi Play-In Tournament,"","","",26
+52500201,2026-04-17 00:00:00Z,0,0,"","","","",Fri,"","","",SoFi Play-In Tournament,East,"","",26
+52500211,2026-04-17 00:00:00Z,0,0,"","","","",Fri,"","","",SoFi Play-In Tournament,West,"","",26
 42500401,2026-06-03 20:30:00Z,0,0,"","","","",Wed,"","","",NBA Finals,Game 1,"",Game 1,33
 42500402,2026-06-05 20:30:00Z,0,0,"","","","",Fri,"","","",NBA Finals,Game 2,"",Game 2,33
 42500403,2026-06-08 20:30:00Z,0,0,"","","","",Mon,"","","",NBA Finals,Game 3,"",Game 3,34
