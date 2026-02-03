@@ -236,7 +236,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 76074,Ken,Austin,,,USA,,,False,True,False,1983.0,5.0,101.0
 1643113,Zack,Austin,,,,,,,,,,,
 56070,Vule,Avdalovic,,,"",,,"","","","","",""
-1630166,Deni,Avdija,,,,,,false,false,false,,,
+1630166,Deni,Avdija,,,,,,,,,,,
 138,Anthony,Avent,,,USA,,,False,False,True,1991.0,1.0,15.0
 76076,William,Averitt,,,USA,,,True,False,False,1973.0,4.0,55.0
 1895,William,Avery,,,USA,,,True,False,False,1999.0,1.0,14.0
@@ -760,7 +760,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 202904,Gilbert,Brown,,,"",,,"","","","","",""
 76275,Harold,Brown,,,USA,,,True,False,False,-1.0,-1.0,-1.0
 203913,Jabari,Brown,,,USA,,,True,False,False,2014.0,"",""
-1627759,Jaylen,Brown,,,,,,,,,,,
+1627759,Jaylen,Brown,,,,,,false,false,false,,,
 196295492,John,Brown,,,,,,false,false,false,,,
 76276,John,Brown,,,USA,,,False,True,False,1973.0,1.0,10.0
 2208,Kedrick,Brown,,,USA,,,False,False,False,2001.0,1.0,11.0
@@ -1007,7 +1007,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 76376,Jerry,Chambers,,,USA,,,False,True,False,1966.0,1.0,7.0
 1472,Tom,Chambers,,,USA,,,False,True,False,1981.0,1.0,8.0
 1630577,Julian,Champagnie,,,,,,false,false,false,,,
-1630551,Justin,Champagnie,,,,,,false,false,false,,,
+1630551,Justin,Champagnie,,,,,,,,,,,
 76378,Mike,Champion,,,USA,,,False,True,False,-1.0,-1.0,-1.0
 1631113,Kennedy,Chandler,,,,,,,,,,,
 2199,Tyson,Chandler,,,USA,,,False,False,True,2001.0,1.0,2.0
@@ -1065,7 +1065,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 538,Cinciarini,Cinciarini,,,"",,,"","","","","",""
 1966938134,Lucas,Cipolini,,,"",,,"","","","","",""
 1630619,Moussa,Cisse,,,,,,,,,,,
-1631321,Sidy,Cissoko,,,,,,,,,,,
+1631321,Sidy,Cissoko,,,,,,false,false,false,,,
 2439,Sam,Clancy,,,"",,,"","","","","",""
 76397,Archie,Clark,,,USA,,,True,False,False,1966.0,4.0,37.0
 76398,Carlos,Clark,,,USA,,,True,False,False,1983.0,4.0,91.0
@@ -1092,7 +1092,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 1628499,Antonius,Cleveland,,,USA,,,True,False,False,-22.0,-22.0,-22.0
 196294102,Antonius,Cleveland,,,"",,,False,False,False,"","",""
 1642888,Matthew,Cleveland,,,,,,,,,,,
-1642363,Nique,Clifford,,,,,,,,,,,
+1642363,Nique,Clifford,,,,,,false,false,false,,,
 76404,Nat,Clifton,,,USA,,,False,False,True,-1.0,-1.0,-1.0
 1642270,Donovan,Clingan,,,,,,false,false,false,,,
 76406,Bill,Closs,,,USA,,,False,True,False,-1.0,-1.0,-1.0
@@ -1120,7 +1120,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 76415,Norris,Coleman,,,USA,,,False,True,False,1987.0,2.0,38.0
 1630645,Matt,Coleman III,,,USA,,,False,False,False,-22.0,-22.0,-22.0
 902,Bimbo,Coles,,,USA,,,True,False,False,1990.0,2.0,40.0
-1642268,Isaiah,Collier,,,,,,,,,,,
+1642268,Isaiah,Collier,,,,,,false,false,false,,,
 2044,Jason,Collier,,,USA,,,False,False,True,2000.0,1.0,15.0
 76416,Art,Collins,,,USA,,,True,False,False,1976.0,6.0,103.0
 201653,Coleman,Collins,,,"",,,"","","","","",""
@@ -1808,7 +1808,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 1630835,LJ,Figueroa,,,USA,,,False,False,False,-22.0,-22.0,-22.0
 76714,Ron,Filipek,,,USA,,,False,True,False,1967.0,9.0,100.0
 196294613,Marko,Filipovity,,,"",,,False,True,False,"","",""
-1642271,Kyle,Filipowski,,,,,,false,false,false,,,
+1642271,Kyle,Filipowski,,,,,,,,,,,
 76715,Greg,Fillmore,,,USA,,,False,False,True,1970.0,8.0,136.0
 76716,Hank,Finkel,,,USA,,,False,False,True,1966.0,2.0,17.0
 714,Michael,Finley,,,USA,,,True,True,False,1995.0,1.0,21.0
@@ -2155,7 +2155,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 285,Greg,Grant,,,USA,,,True,False,False,1989.0,2.0,52.0
 265,Harvey,Grant,,,USA,,,False,True,False,1988.0,1.0,12.0
 270,Horace,Grant,,,USA,,,False,False,True,1987.0,1.0,10.0
-203924,Jerami,Grant,,,,,,,,,,,
+203924,Jerami,Grant,,,,,,false,false,false,,,
 1626170,Jerian,Grant,,,USA,,,True,False,False,2015.0,1.0,19.0
 76852,Josh,Grant,,,USA,,,False,True,False,1993.0,2.0,43.0
 1514,Paul,Grant,,,USA,,,False,False,True,1997.0,1.0,20.0
@@ -2883,7 +2883,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 1137,Chris,Jent,,,USA,,,False,True,False,-1.0,-1.0,-1.0
 77129,Les,Jepsen,,,USA,,,True,False,False,1990.0,2.0,28.0
 201973,Jonas,Jerebko,,,Sweden,,,False,True,False,2009.0,2.0,39.0
-1629660,Ty,Jerome,,,,,,,,,,,
+1629660,Ty,Jerome,,,,,,false,false,false,,,
 201998,Curtis,Jerrells,,,USA,,,True,False,False,-1.0,-1.0,-1.0
 1962937813,Grant,Jerrett,,,"",,,"","","","","",""
 203511,Grant,Jerrett,,,USA,,,False,True,False,2013.0,2.0,40.0
@@ -3687,7 +3687,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 1890,Shawn,Marion,,,USA,,,True,True,False,1999.0,1.0,9.0
 1626246,Boban,Marjanovic,,,Serbia,,,False,False,True,-1.0,-1.0,-1.0
 9007,Boban,Marjanovic,,,"",,,"","","","","",""
-1628374,Lauri,Markkanen,,,,,,,,,,,
+1628374,Lauri,Markkanen,,,,,,false,false,false,,,
 200806,Damir,Markota,,,Croatia,,,False,True,False,2006.0,2.0,59.0
 1752,Sean,Marks,,,New Zealand,,,False,True,True,1998.0,2.0,44.0
 77464,Harvey,Marlatt,,,USA,,,True,False,False,-1.0,-1.0,-1.0
@@ -4228,7 +4228,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 982,Martin,Muursepp,,,Estonia,,,False,True,False,1996.0,1.0,25.0
 64132,Shirelijian,Muxtar,,,"",,,True,False,False,"","",""
 939,Pete,Myers,,,USA,,,True,False,False,1986.0,6.0,120.0
-1629004,Svi,Mykhailiuk,,,,,,false,false,false,,,
+1629004,Svi,Mykhailiuk,,,,,,,,,,,
 1823,Makhtar,N'diaye,,,Senegal,,,False,True,False,-22.0,-22.0,-22.0
 2055,Mamadou,N'diaye,,,Senegal,,,False,False,True,2000.0,1.0,26.0
 77681,Bob,Naber,,,USA,,,False,True,False,-1.0,-1.0,-1.0
@@ -5159,7 +5159,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 40017,Sergio,Sanchez,,,"",,,"","","","","",""
 78057,Frankie,Sanders,,,USA,,,False,True,False,1978.0,1.0,20.0
 1874,Jeff,Sanders,,,USA,,,False,True,False,1989.0,1.0,20.0
-1642920,Kobe,Sanders,,,,,,,,,,,
+1642920,Kobe,Sanders,,,,,,false,false,false,,,
 202336,Larry,Sanders,,,USA,,,False,False,False,2010.0,1.0,15.0
 2684,Melvin,Sanders,,,USA,,,True,True,False,-1.0,-1.0,-1.0
 78059,Mike,Sanders,,,USA,,,False,True,False,1982.0,4.0,74.0
@@ -5218,7 +5218,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 78078,Ossie,Schectman,,,USA,,,True,False,False,-1.0,-1.0,-1.0
 88,Steve,Scheffler,,,USA,,,False,True,False,1990.0,2.0,39.0
 78080,Tom,Scheffler,,,USA,,,False,False,True,1977.0,6.0,117.0
-1631248,Baylor,Scheierman,,,,,,false,false,false,,,
+1631248,Baylor,Scheierman,,,,,,,,,,,
 78081,Dave,Schellhase,,,USA,,,True,False,False,1966.0,1.0,10.0
 101195,Luke,Schenscher,,,USA,,,False,False,True,-22.0,-22.0,-22.0
 78082,Herb,Scherer,,,USA,,,False,False,True,1950.0,2.0,""
@@ -5564,7 +5564,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 201578,Marreese,Speights,,,USA,,,False,True,True,2008.0,1.0,16.0
 1629016,Omari,Spellman,,,USA,,,False,True,False,2018.0,1.0,30.0
 78227,Andre,Spencer,,,USA,,,False,True,False,-1.0,-1.0,-1.0
-1642285,Cam,Spencer,,,,,,false,false,false,,,
+1642285,Cam,Spencer,,,,,,,,,,,
 771,Elmore,Spencer,,,USA,,,False,False,True,1992.0,1.0,25.0
 280,Felton,Spencer,,,USA,,,False,False,True,1990.0,1.0,6.0
 1630311,Pat,Spencer,,,,,,,,,,,
@@ -6453,7 +6453,7 @@ personId,firstName,lastName,birthDate,school,country,heightInches,bodyWeightLbs,
 1630533,Ziaire,Williams,,,,,,,,,,,
 1629057,Robert,Williams III,,,,,,,,,,,
 1628475,Matt,Williams Jr.,,,USA,,,True,False,False,-1.0,-1.0,-1.0
-1631246,Vince,Williams Jr.,,,,,,,,,,,
+1631246,Vince,Williams Jr.,,,,,,false,false,false,,,
 1628430,Nigel,Williams-Goss,,,USA,,,True,False,False,2017.0,2.0,55.0
 722,Corliss,Williamson,,,USA,,,False,True,False,1995.0,1.0,13.0
 78575,John,Williamson,,,USA,,,True,False,False,1973.0,6.0,96.0
