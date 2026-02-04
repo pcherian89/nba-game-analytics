@@ -893,10 +893,10 @@ gameId,gameDateTimeEst,homeTeamId,awayTeamId,homeTeamCity,homeTeamName,awayTeamC
 32500004,2026-02-13 21:00:00,1610616865,1610616862,"",Team Austin,"",Team Melo,,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 1,,,17
 32500005,2026-02-13 21:55:00,1610616864,1610616863,"",Team T-Mac,"",Team Vince,,Intuit Dome,Inglewood,CA,Rising Stars Semifinal,Game 2,,,17
 32500006,2026-02-13 22:35:00,0,0,,,,,,Intuit Dome,Inglewood,CA,Rising Stars Final,Championship,,,17
-32500011,2026-02-15 00:00:00,0,0,,,,,,Intuit Dome,Inglewood,CA,All-Star,Game 1,,,17
-32500021,2026-02-15 00:00:00,0,0,,,,,,Intuit Dome,Inglewood,CA,All-Star,Game 2,,,17
-32500031,2026-02-15 00:00:00,0,0,,,,,,Intuit Dome,Inglewood,CA,All-Star,Game 3,,,17
-32500041,2026-02-15 00:00:00,0,0,,,,,,Intuit Dome,Inglewood,CA,All-Star Championship,,,,17
+32500011,2026-02-15 17:00:00,1610616861,1610616859,"",World,"",Stars,,Intuit Dome,Inglewood,CA,All-Star,Game 1,,,17
+32500021,2026-02-15 17:55:00,0,1610616860,,,"",Stripes,,Intuit Dome,Inglewood,CA,All-Star,Game 2,,,17
+32500031,2026-02-15 18:25:00,0,1610616860,,,"",Stripes,,Intuit Dome,Inglewood,CA,All-Star,Game 3,,,17
+32500041,2026-02-15 19:10:00,0,0,,,,,,Intuit Dome,Inglewood,CA,All-Star Championship,,,,17
 22500792,2026-02-19 19:00:00,1610612766,1610612745,Charlotte,Hornets,Houston,Rockets,,Spectrum Center,Charlotte,NC,,,,,18
 22500793,2026-02-19 19:00:00,1610612739,1610612751,Cleveland,Cavaliers,Brooklyn,Nets,,Rocket Arena,Cleveland,OH,,,,,18
 22500794,2026-02-19 19:00:00,1610612755,1610612737,Philadelphia,76ers,Atlanta,Hawks,,Xfinity Mobile Arena,Philadelphia,PA,,,,,18
